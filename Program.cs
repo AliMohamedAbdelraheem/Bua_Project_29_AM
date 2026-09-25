@@ -6,7 +6,7 @@ namespace BUA_project
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +26,43 @@ namespace BUA_project
             });
 
             var app = builder.Build();
+
+
+            // =========================================
+            // Seed Identity Data
+            // =========================================
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                await IdentitySeed.SeedAsync(services);
+            }
+
+
+            // Configure the HTTP request pipeline.
+
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.MapStaticAssets();
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Account}/{action=Login}/{id?}")
+                .WithStaticAssets();
+
+            app.Run();
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

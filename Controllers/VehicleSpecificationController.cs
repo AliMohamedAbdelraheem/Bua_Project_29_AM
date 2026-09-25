@@ -1,9 +1,11 @@
 using BUA_project.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BUA_project.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class VehicleSpecificationController : Controller
     {
         private readonly Entity _context = new Entity();
@@ -133,13 +135,22 @@ namespace BUA_project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var specification =
-                await _context.VehicleSpecifications
-                    .FirstOrDefaultAsync(
-                        vs => vs.VehicleSpecificationId == id);
+            var specification = await _context.VehicleSpecifications
+                .Include(vs => vs.Vehicles)
+                .FirstOrDefaultAsync(
+                    vs => vs.VehicleSpecificationId == id);
 
             if (specification == null)
                 return NotFound();
+
+            if (specification.Vehicles != null &&
+                specification.Vehicles.Any())
+            {
+                TempData["Error"] =
+                    "This specification cannot be deleted because it is assigned to one or more vehicles.";
+
+                return RedirectToAction(nameof(Index));
+            }
 
             _context.VehicleSpecifications.Remove(specification);
 

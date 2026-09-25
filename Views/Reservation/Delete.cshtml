@@ -1,6 +1,7 @@
-﻿@model Reservation
+﻿@model BUA_project.Models.Reservation
 
 @{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Delete Reservation";
 }
 
@@ -91,7 +92,7 @@
         </button>
 
         <a asp-action="Index"
-               class="btn btn-secondary">
+           class="btn btn-secondary">
             Cancel
         </a>
 

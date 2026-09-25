@@ -1,0 +1,271 @@
+@model BUA_project.Models.VehicleMaintenance
+
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Maintenance";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2>Edit Maintenance Record</h2>
+        <p class="text-muted mb-0">
+            Update maintenance record information.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="VehicleMaintenanceId" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+
+                <!-- Vehicle -->
+
+                <div class="mb-3">
+
+                    <label asp-for="VehicleId"
+                           class="form-label">
+                        Vehicle
+                    </label>
+
+                    <select asp-for="VehicleId"
+                            class="form-select">
+
+                        <option value="">
+                            -- Select Vehicle --
+                        </option>
+
+                        @foreach (var vehicle in ViewBag.Vehicles)
+                        {
+                        <option value="@vehicle.VehicleId">
+                            @vehicle.Brand @vehicle.Model
+                            - @vehicle.PlateNumber
+                        </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="VehicleId"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Maintenance Type -->
+
+                <div class="mb-3">
+
+                    <label asp-for="MaintenanceType"
+                           class="form-label">
+                        Maintenance Type
+                    </label>
+
+                    <select asp-for="MaintenanceType"
+                            class="form-select">
+
+                        <option value="">
+                            -- Select Maintenance Type --
+                        </option>
+
+                        <option value="Oil Change">
+                            Oil Change
+                        </option>
+
+                        <option value="Brake Service">
+                            Brake Service
+                        </option>
+
+                        <option value="Tire Replacement">
+                            Tire Replacement
+                        </option>
+
+                        <option value="Engine Repair">
+                            Engine Repair
+                        </option>
+
+                        <option value="Periodic Maintenance">
+                            Periodic Maintenance
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="MaintenanceType"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Description -->
+
+                <div class="mb-3">
+
+                    <label asp-for="Description"
+                           class="form-label">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Enter maintenance details..."></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- Service Date -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="ServiceDate"
+                               class="form-label">
+                            Service Date
+                        </label>
+
+                        <input asp-for="ServiceDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="ServiceDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Next Service Date -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="NextServiceDate"
+                               class="form-label">
+                            Next Service Date
+                        </label>
+
+                        <input asp-for="NextServiceDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="NextServiceDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- Cost -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Cost"
+                               class="form-label">
+                            Cost
+                        </label>
+
+                        <input asp-for="Cost"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               class="form-control" />
+
+                        <span asp-validation-for="Cost"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Status"
+                               class="form-label">
+                            Status
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Status --
+                            </option>
+
+                            <option value="Scheduled">
+                                Scheduled
+                            </option>
+
+                            <option value="In Progress">
+                                In Progress
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="Status"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex gap-2 mt-4">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,185 @@
+@model BUA_project.Models.VehicleSpecification
+
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Specification Details";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold mb-1">
+            Specification Details
+        </h2>
+
+        <p class="text-muted mb-0">
+            View technical details and associated vehicles.
+        </p>
+
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Specification ID
+                    </small>
+
+                    <h5>
+                        @Model.VehicleSpecificationId
+                    </h5>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Fuel Consumption
+                    </small>
+
+                    <h5>
+                        @Model.NominalLPer100Km L/100 km
+                    </h5>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Tank Capacity
+                    </small>
+
+                    <h5>
+                        @Model.TankCapacity L
+                    </h5>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Accessibility
+                    </small>
+
+                    <h5>
+                        @Model.Accessibility
+                    </h5>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Transmission
+                    </small>
+
+                    <h5>
+                        @Model.Transmission
+                    </h5>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        Allowed Load
+                    </small>
+
+                    <h5>
+                        @Model.AllowedLoad kg
+                    </h5>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">
+                Associated Vehicles
+            </h5>
+
+            @if (Model.Vehicles != null &&
+                 Model.Vehicles.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Brand</th>
+                                <th>Model</th>
+                                <th>Plate Number</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        @foreach (var vehicle in Model.Vehicles)
+                        {
+                            <tr>
+                                <td>
+                                    @vehicle.VehicleId
+                                </td>
+
+                                <td>
+                                    @vehicle.Brand
+                                </td>
+
+                                <td>
+                                    @vehicle.Model
+                                </td>
+
+                                <td>
+                                    @vehicle.PlateNumber
+                                </td>
+
+                                <td>
+                                    @vehicle.Status
+                                </td>
+                            </tr>
+                        }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">
+                    No vehicles are currently using
+                    this specification.
+                </p>
+            }
+
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+
+        <a asp-action="Edit"
+           asp-route-id="@Model.VehicleSpecificationId"
+           class="btn btn-primary">
+            Edit
+        </a>
+
+        <a asp-action="Delete"
+           asp-route-id="@Model.VehicleSpecificationId"
+           class="btn btn-outline-danger ms-2">
+            Delete
+        </a>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary ms-2">
+            Back to List
+        </a>
+
+    </div>
+
+</div>

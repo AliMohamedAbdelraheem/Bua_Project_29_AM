@@ -1,0 +1,174 @@
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
+@model IEnumerable<BUA_project.Models.VehicleSpecification>
+
+    @{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Vehicle Specifications";
+    }
+
+    <div class="container-fluid py-4">
+
+        @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show"
+             role="alert">
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+            </button>
+
+        </div>
+    }
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h2 class="fw-bold mb-1">
+                    Vehicle Specifications
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Manage technical specifications assigned to vehicles.
+                </p>
+            </div>
+
+            <a asp-action="Create"
+               class="btn btn-primary">
+                + Add Specification
+            </a>
+
+        </div>
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+
+                                <th>ID</th>
+
+                                <th>
+                                    Fuel Consumption
+                                </th>
+
+                                <th>
+                                    Tank Capacity
+                                </th>
+
+                                <th>
+                                    Accessibility
+                                </th>
+
+                                <th>
+                                    Transmission
+                                </th>
+
+                                <th>
+                                    Allowed Load
+                                </th>
+
+                                <th>
+                                    Vehicles
+                                </th>
+
+                                <th class="text-end">
+                                    Actions
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @item.VehicleSpecificationId
+                                </td>
+
+                                <td>
+                                    @item.NominalLPer100Km L/100 km
+                                </td>
+
+                                <td>
+                                    @item.TankCapacity L
+                                </td>
+
+                                <td>
+                                    @item.Accessibility
+                                </td>
+
+                                <td>
+                                    @item.Transmission
+                                </td>
+
+                                <td>
+                                    @item.AllowedLoad kg
+                                </td>
+
+                                <td>
+                                    @(item.Vehicles?.Count() ?? 0)
+                                </td>
+
+                                <td class="text-end">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.VehicleSpecificationId"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Details
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.VehicleSpecificationId"
+                                       class="btn btn-sm btn-outline-primary ms-1">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.VehicleSpecificationId"
+                                       class="btn btn-sm btn-outline-danger ms-1">
+                                        Delete
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                            <tr>
+                                <td colspan="8"
+                                    class="text-center text-muted py-4">
+                                    No vehicle specifications found.
+                                </td>
+                            </tr>
+                    }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>

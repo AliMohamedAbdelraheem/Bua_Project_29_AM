@@ -34,6 +34,9 @@ a {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
+
+
+
 button.accept-policy {
   font-size: 1rem;
   line-height: inherit;
@@ -46,3 +49,76 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+
+
+```css
+/* =========================================
+   ADMIN NAVBAR
+   ========================================= */
+.admin-navbar {
+    min-height: 64px;
+    margin-bottom: 0 !important;
+}
+
+
+/* Brand */
+
+.admin-navbar .navbar-brand {
+    color: #1f2937;
+    font-size: 21px;
+}
+
+
+/* Navigation Links */
+
+.admin-navbar .nav-link {
+    color: #374151;
+    font-weight: 500;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+
+    .admin-navbar .nav-link:hover {
+        color: #1b6ec2;
+    }
+
+
+/* Fleet Dropdown */
+
+.admin-navbar .dropdown-menu {
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+.admin-navbar .dropdown-item {
+    padding: 9px 16px;
+}
+
+
+    .admin-navbar .dropdown-item:hover {
+        background-color: #f3f4f6;
+    }
+
+
+/* Logout */
+
+.admin-logout-btn {
+    color: #dc2626;
+    background: transparent;
+    border: 1px solid #dc2626;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 6px;
+}
+
+
+    .admin-logout-btn:hover {
+        color: #ffffff;
+        background-color: #dc2626;
+        border-color: #dc2626;
+    }
+
+```

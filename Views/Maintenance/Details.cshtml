@@ -1,0 +1,196 @@
+@model BUA_project.Models.VehicleMaintenance
+
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Maintenance Details";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Maintenance Details</h2>
+            <p class="text-muted mb-0">
+                View maintenance record details.
+            </p>
+        </div>
+
+        <div>
+            <a asp-action="Edit"
+               asp-route-id="@Model.VehicleMaintenanceId"
+               class="btn btn-primary">
+                Edit
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <dl class="row mb-0">
+
+                <dt class="col-sm-4">
+                    Vehicle
+                </dt>
+
+                <dd class="col-sm-8">
+                    @if (Model.Vehicle != null)
+                    {
+                    <strong>
+                        @Model.Vehicle.Brand @Model.Vehicle.Model
+                    </strong>
+
+                    <br />
+
+                    <span class="text-muted">
+                        Plate Number:
+                        @Model.Vehicle.PlateNumber
+                    </span>
+                    }
+                    else
+                    {
+                    <span class="text-muted">
+                        Unknown Vehicle
+                    </span>
+                    }
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Maintenance Type
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.MaintenanceType
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Description
+                </dt>
+
+                <dd class="col-sm-8">
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                    @Model.Description
+                    }
+                    else
+                    {
+                    <span class="text-muted">
+                        No description
+                    </span>
+                    }
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Service Date
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.ServiceDate.ToString("dd/MM/yyyy")
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Next Service Date
+                </dt>
+
+                <dd class="col-sm-8">
+                    @if (Model.NextServiceDate.HasValue)
+                    {
+                    @Model.NextServiceDate.Value.ToString("dd/MM/yyyy")
+                    }
+                    else
+                    {
+                    <span class="text-muted">
+                        Not scheduled
+                    </span>
+                    }
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Cost
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.Cost.ToString("N2")
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Status
+                </dt>
+
+                <dd class="col-sm-8">
+                    @if (Model.Status == "Completed")
+                    {
+                    <span class="badge bg-success">
+                        Completed
+                    </span>
+                    }
+                    else if (Model.Status == "In Progress")
+                    {
+                    <span class="badge bg-warning text-dark">
+                        In Progress
+                    </span>
+                    }
+                    else if (Model.Status == "Scheduled")
+                    {
+                    <span class="badge bg-primary">
+                        Scheduled
+                    </span>
+                    }
+                    else if (Model.Status == "Cancelled")
+                    {
+                    <span class="badge bg-danger">
+                        Cancelled
+                    </span>
+                    }
+                    else
+                    {
+                    <span class="badge bg-secondary">
+                        @Model.Status
+                    </span>
+                    }
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Created At
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                </dd>
+
+
+                <dt class="col-sm-4">
+                    Created By
+                </dt>
+
+                <dd class="col-sm-8">
+                    @if (Model.CreatedByUser != null)
+                    {
+                    @Model.CreatedByUser.Name
+                    }
+                    else
+                    {
+                    <span class="text-muted">
+                        Not specified
+                    </span>
+                    }
+                </dd>
+
+            </dl>
+
+        </div>
+    </div>
+
+</div>

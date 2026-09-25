@@ -1,0 +1,135 @@
+@model BUA_project.Models.VehicleSpecification
+
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Delete Vehicle Specification";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold mb-1">
+            Delete Vehicle Specification
+        </h2>
+
+        <p class="text-muted mb-0">
+            Review the specification before deleting it.
+        </p>
+
+    </div>
+
+    @if (Model.Vehicles != null &&
+         Model.Vehicles.Any())
+    {
+    <div class="alert alert-warning">
+
+        <strong>
+            Cannot delete this specification.
+        </strong>
+
+        It is currently assigned to
+
+        <strong>
+            @Model.Vehicles.Count()
+        </strong>
+
+        vehicle(s).
+
+        Remove or change the specification
+        from those vehicles first.
+
+    </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body">
+
+            <dl class="row mb-0">
+
+                <dt class="col-sm-4">
+                    ID
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.VehicleSpecificationId
+                </dd>
+
+                <dt class="col-sm-4">
+                    Fuel Consumption
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.NominalLPer100Km L/100 km
+                </dd>
+
+                <dt class="col-sm-4">
+                    Tank Capacity
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.TankCapacity L
+                </dd>
+
+                <dt class="col-sm-4">
+                    Accessibility
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.Accessibility
+                </dd>
+
+                <dt class="col-sm-4">
+                    Transmission
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.Transmission
+                </dd>
+
+                <dt class="col-sm-4">
+                    Allowed Load
+                </dt>
+
+                <dd class="col-sm-8">
+                    @Model.AllowedLoad kg
+                </dd>
+
+            </dl>
+
+            <div class="mt-4">
+
+                @if (Model.Vehicles == null ||
+                     !Model.Vehicles.Any())
+                {
+                <form asp-action="Delete"
+                      method="post"
+                      class="d-inline">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.VehicleSpecificationId" />
+
+                    <button type="submit"
+                            class="btn btn-danger">
+                        Confirm Delete
+                    </button>
+
+                </form>
+                }
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

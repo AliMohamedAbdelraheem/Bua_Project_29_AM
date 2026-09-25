@@ -1,6 +1,7 @@
-﻿@model Reservation
+﻿@model BUA_project.Models.Reservation
 
 @{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Edit Reservation";
 }
 
@@ -107,6 +108,7 @@
 
         <input asp-for="Load"
                type="number"
+               step="0.01"
                class="form-control" />
 
         <span asp-validation-for="Load"
@@ -123,134 +125,141 @@
         </label>
 
         <textarea asp-for="Purpose"
-                      class="form-control">
+                  class="form-control">
         </textarea>
 
-            <span asp-validation-for="Purpose"
-                  class="text-danger">
-            </span>
+        <span asp-validation-for="Purpose"
+              class="text-danger">
+        </span>
 
-        </div>
-
-
-        <div class="mb-3">
-
-            <label asp-for="Status"
-                   class="form-label">
-            </label>
-
-            <input asp-for="Status"
-                   class="form-control" />
-
-            <span asp-validation-for="Status"
-                  class="text-danger">
-            </span>
-
-        </div>
+    </div>
 
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <label asp-for="VehicleId"
-                   class="form-label">
-                Vehicle
-            </label>
+        <label asp-for="Status"
+               class="form-label">
+        </label>
 
-            <select asp-for="VehicleId"
-                    class="form-select">
+        <select asp-for="Status"
+                class="form-select">
 
-                @foreach (var vehicle in ViewBag.Vehicles)
-                {
-                    <option value="@vehicle.VehicleId">
-                        @vehicle.PlateNumber -
-                        @vehicle.Brand
-                        @vehicle.Model
-                    </option>
-                }
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
 
-            </select>
+        </select>
 
-            <span asp-validation-for="VehicleId"
-                  class="text-danger">
-            </span>
+        <span asp-validation-for="Status"
+              class="text-danger">
+        </span>
 
-        </div>
+    </div>
 
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <label asp-for="UserId"
-                   class="form-label">
-                Requester
-            </label>
+        <label asp-for="VehicleId"
+               class="form-label">
+            Vehicle
+        </label>
 
-            <select asp-for="UserId"
-                    class="form-select">
+        <select asp-for="VehicleId"
+                class="form-select">
 
-                @foreach (var user in ViewBag.Users)
-                {
-                    <option value="@user.UserId">
-                        @user.Name
-                    </option>
-                }
+            @foreach (var vehicle in ViewBag.Vehicles)
+            {
+            <option value="@vehicle.VehicleId">
+                @vehicle.PlateNumber -
+                @vehicle.Brand
+                @vehicle.Model
+            </option>
+            }
 
-            </select>
+        </select>
 
-            <span asp-validation-for="UserId"
-                  class="text-danger">
-            </span>
+        <span asp-validation-for="VehicleId"
+              class="text-danger">
+        </span>
 
-        </div>
-
-
-        <div class="mb-3">
-
-            <label asp-for="DriverId"
-                   class="form-label">
-                Driver
-            </label>
-
-            <select asp-for="DriverId"
-                    class="form-select">
-
-                <option value="">
-                    -- No Driver --
-                </option>
-
-                @foreach (var driver in ViewBag.Drivers)
-                {
-                    <option value="@driver.DriverId">
-                        @driver.DriverId
-                    </option>
-                }
-
-            </select>
-
-            <span asp-validation-for="DriverId"
-                  class="text-danger">
-            </span>
-
-        </div>
+    </div>
 
 
-        <button type="submit"
-                class="btn btn-primary">
-            Save Changes
-        </button>
+    <div class="mb-3">
 
-        <a asp-action="Index"
-               class="btn btn-secondary">
-            Back
-        </a>
+        <label asp-for="UserId"
+               class="form-label">
+            Requester
+        </label>
 
-    </form>
+        <select asp-for="UserId"
+                class="form-select">
+
+            @foreach (var user in ViewBag.Users)
+            {
+            <option value="@user.UserId">
+                @user.Name
+            </option>
+            }
+
+        </select>
+
+        <span asp-validation-for="UserId"
+              class="text-danger">
+        </span>
+
+    </div>
 
 
-    @section Scripts {
+    <div class="mb-3">
 
-        @{
-            await Html.RenderPartialAsync(
-                "_ValidationScriptsPartial");
-        }
+        <label asp-for="DriverId"
+               class="form-label">
+            Driver
+        </label>
 
+        <select asp-for="DriverId"
+                class="form-select">
+
+            <option value="">
+                -- No Driver --
+            </option>
+
+            @foreach (var driver in ViewBag.Drivers)
+            {
+            <option value="@driver.DriverId">
+                @driver.Name
+            </option>
+            }
+
+        </select>
+
+        <span asp-validation-for="DriverId"
+              class="text-danger">
+        </span>
+
+    </div>
+
+
+    <button type="submit"
+            class="btn btn-primary">
+        Save Changes
+    </button>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Back
+    </a>
+
+</form>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
+
+}

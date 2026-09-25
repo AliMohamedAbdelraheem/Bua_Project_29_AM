@@ -1,37 +1,40 @@
-﻿@model IEnumerable<Vehicle>
-
-@{
-    ViewData["Title"] = "Vehicles";
+﻿@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
 }
+@model IEnumerable<Vehicle>
 
-<h1>Vehicles</h1>
+    @{
+    ViewData["Title"] = "Vehicles";
+    }
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">
-        Add New Vehicle
-    </a>
-</p>
+    <h1>Vehicles</h1>
 
-<table class="table table-bordered table-striped">
+    <p>
+        <a asp-action="Create" class="btn btn-primary">
+            Add New Vehicle
+        </a>
+    </p>
 
-    <thead>
-        <tr>
-            <th>Plate Number</th>
-            <th>Brand</th>
-            <th>Model</th>
-            <th>Type</th>
-            <th>Seats</th>
-            <th>Fuel Type</th>
-            <th>Status</th>
-            <th>Year</th>
-            <th>Specification</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+    <table class="table table-bordered table-striped">
 
-    <tbody>
+        <thead>
+            <tr>
+                <th>Plate Number</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Seats</th>
+                <th>Fuel Type</th>
+                <th>Status</th>
+                <th>Year</th>
+                <th>Specification</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
 
-        @foreach (var vehicle in Model)
+        <tbody>
+
+            @foreach (var vehicle in Model)
         {
             <tr>
 
@@ -58,20 +61,20 @@
                 <td>
 
                     <a asp-action="Details"
-                           asp-route-id="@vehicle.VehicleId"
-                           class="btn btn-info btn-sm">
+                       asp-route-id="@vehicle.VehicleId"
+                       class="btn btn-info btn-sm">
                         Details
                     </a>
 
                     <a asp-action="Edit"
-                           asp-route-id="@vehicle.VehicleId"
-                           class="btn btn-warning btn-sm">
+                       asp-route-id="@vehicle.VehicleId"
+                       class="btn btn-warning btn-sm">
                         Edit
                     </a>
 
                     <a asp-action="Delete"
-                           asp-route-id="@vehicle.VehicleId"
-                           class="btn btn-danger btn-sm">
+                       asp-route-id="@vehicle.VehicleId"
+                       class="btn btn-danger btn-sm">
                         Delete
                     </a>
 
@@ -80,6 +83,6 @@
             </tr>
         }
 
-    </tbody>
+        </tbody>
 
-</table>
+    </table>

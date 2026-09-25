@@ -1,53 +1,54 @@
-﻿@model IEnumerable<Reservation>
+﻿@model IEnumerable<BUA_project.Models.Reservation>
 
-@{
+    @{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Reservations";
-}
+    }
 
-<h1>Reservations</h1>
+    <h1>Reservations</h1>
 
-<p>
-    <a asp-action="Create"
+    <p>
+        <a asp-action="Create"
            class="btn btn-primary">
-        Create New Reservation
-    </a>
-</p>
+            Create New Reservation
+        </a>
+    </p>
 
-<table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped">
 
-    <thead>
-        <tr>
+        <thead>
+            <tr>
 
-            <th>Start</th>
+                <th>Start</th>
 
-            <th>End</th>
+                <th>End</th>
 
-            <th>Origin</th>
+                <th>Origin</th>
 
-            <th>Destination</th>
+                <th>Destination</th>
 
-            <th>Passengers</th>
+                <th>Passengers</th>
 
-            <th>Load</th>
+                <th>Load</th>
 
-            <th>Purpose</th>
+                <th>Purpose</th>
 
-            <th>Status</th>
+                <th>Status</th>
 
-            <th>Vehicle</th>
+                <th>Vehicle</th>
 
-            <th>User</th>
+                <th>User</th>
 
-            <th>Driver</th>
+                <th>Driver</th>
 
-            <th>Actions</th>
+                <th>Actions</th>
 
-        </tr>
-    </thead>
+            </tr>
+        </thead>
 
-    <tbody>
+        <tbody>
 
-        @foreach (var reservation in Model)
+            @foreach (var reservation in Model)
         {
             <tr>
 
@@ -98,20 +99,20 @@
                 <td>
 
                     <a asp-action="Details"
-                           asp-route-id="@reservation.ReservationId"
-                           class="btn btn-info btn-sm">
+                       asp-route-id="@reservation.ReservationId"
+                       class="btn btn-info btn-sm">
                         Details
                     </a>
 
                     <a asp-action="Edit"
-                           asp-route-id="@reservation.ReservationId"
-                           class="btn btn-warning btn-sm">
+                       asp-route-id="@reservation.ReservationId"
+                       class="btn btn-warning btn-sm">
                         Edit
                     </a>
 
                     <a asp-action="Delete"
-                           asp-route-id="@reservation.ReservationId"
-                           class="btn btn-danger btn-sm">
+                       asp-route-id="@reservation.ReservationId"
+                       class="btn btn-danger btn-sm">
                         Delete
                     </a>
 
@@ -120,6 +121,6 @@
             </tr>
         }
 
-    </tbody>
+        </tbody>
 
-</table>
+    </table>

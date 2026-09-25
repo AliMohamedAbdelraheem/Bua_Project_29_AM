@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BUA_project.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class VehicleController : Controller
     {
         private readonly Entity _context = new Entity();
@@ -65,7 +66,6 @@ namespace BUA_project.Controllers
         }
 
         // GET: Vehicle/Edit/5
-        [Authorize(Roles = "Admin,Dispatcher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)

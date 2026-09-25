@@ -1,152 +1,135 @@
-﻿@model Reservation
+﻿@model BUA_project.Models.Reservation
 
 @{
-    ViewData["Title"] = "Reservation Details";
+Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+ViewData["Title"] = "Reservation Details";
 }
 
 <h1>Reservation Details</h1>
 
 <div>
-
     <dl class="row">
 
+        ```
         <dt class="col-sm-3">
             Start Date
         </dt>
-
         <dd class="col-sm-9">
             @Model.StartDateTime
         </dd>
 
-
         <dt class="col-sm-3">
             End Date
         </dt>
-
         <dd class="col-sm-9">
             @Model.EndDateTime
         </dd>
 
-
         <dt class="col-sm-3">
             Origin
         </dt>
-
         <dd class="col-sm-9">
             @Model.Origin
         </dd>
 
-
         <dt class="col-sm-3">
             Destination
         </dt>
-
         <dd class="col-sm-9">
             @Model.Destination
         </dd>
 
-
         <dt class="col-sm-3">
             Passengers
         </dt>
-
         <dd class="col-sm-9">
             @Model.Passengers
         </dd>
 
-
         <dt class="col-sm-3">
             Load
         </dt>
-
         <dd class="col-sm-9">
             @Model.Load
         </dd>
 
-
         <dt class="col-sm-3">
             Purpose
         </dt>
-
         <dd class="col-sm-9">
             @Model.Purpose
         </dd>
 
-
         <dt class="col-sm-3">
             Status
         </dt>
-
         <dd class="col-sm-9">
             @Model.Status
         </dd>
 
-
         <dt class="col-sm-3">
             Vehicle
         </dt>
-
         <dd class="col-sm-9">
-
             @if (Model.Vehicle != null)
-            {
-                @Model.Vehicle.PlateNumber
-                <text> - </text>
-                @Model.Vehicle.Brand
-                <text> </text>
-                @Model.Vehicle.Model
-            }
-
+        {
+            @Model.Vehicle.PlateNumber
+            <text> - </text>
+            @Model.Vehicle.Brand
+            <text> </text>
+            @Model.Vehicle.Model
+        }
+        else
+        {
+            <span>No Vehicle</span>
+        }
         </dd>
-
 
         <dt class="col-sm-3">
             Requester
         </dt>
-
         <dd class="col-sm-9">
-
             @if (Model.User != null)
-            {
-                @Model.User.Name
-            }
-
+        {
+            @Model.User.Name
+        }
+        else
+        {
+            <span>No Requester</span>
+        }
         </dd>
-
 
         <dt class="col-sm-3">
             Driver
         </dt>
-
         <dd class="col-sm-9">
-
             @if (Model.Driver != null)
-            {
-                @Model.Driver.DriverId
-            }
-            else
-            {
-                <span>No Driver Assigned</span>
-            }
-
+        {
+            @Model.Driver.Name
+        }
+        else
+        {
+            <span>No Driver Assigned</span>
+        }
         </dd>
 
     </dl>
+    ```
 
 </div>
 
-
 <div>
-
     <a asp-action="Edit"
-           asp-route-id="@Model.ReservationId"
-           class="btn btn-warning">
+       asp-route-id="@Model.ReservationId"
+       class="btn btn-warning">
         Edit
     </a>
 
+    ```
     <a asp-action="Index"
-           class="btn btn-secondary">
+       class="btn btn-secondary">
         Back
     </a>
+    ```
 
 </div>
