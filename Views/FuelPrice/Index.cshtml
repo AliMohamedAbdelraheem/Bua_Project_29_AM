@@ -1,0 +1,261 @@
+@model IEnumerable<BUA_project.Models.FuelPrice>
+
+    @{
+    ViewData["Title"] = "Fuel Prices";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+
+    var fuelPrices = Model.ToList();
+
+    // Get the latest price for each fuel type
+    var currentPrices = fuelPrices
+        .GroupBy(f => f.FuelType)
+        .Select(g => g
+            .OrderByDescending(f => f.EffectiveDate)
+            .First())
+        .OrderBy(f => f.FuelType)
+        .ToList();
+
+    // All older prices are historical
+    var currentPriceIds = currentPrices
+        .Select(f => f.FuelPriceId)
+        .ToHashSet();
+
+    var historicalPrices = fuelPrices
+        .Where(f => !currentPriceIds.Contains(f.FuelPriceId))
+        .OrderBy(f => f.FuelType)
+        .ThenByDescending(f => f.EffectiveDate)
+        .ToList();
+    }
+
+    <div class="container-fluid py-4">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Fuel Prices</h2>
+                <p class="text-muted mb-0">
+                    Manage current and historical fuel prices
+                </p>
+            </div>
+
+            <a asp-controller="FuelPrice"
+               asp-action="Create"
+               class="btn btn-primary">
+                + Add New Price
+            </a>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+        @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+        @if (!fuelPrices.Any())
+    {
+        <!-- Empty State -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+
+                <h5 class="fw-bold mb-2">
+                    No Fuel Prices Found
+                </h5>
+
+                <p class="text-muted mb-3">
+                    No fuel price records have been added yet.
+                </p>
+
+                <a asp-controller="FuelPrice"
+                   asp-action="Create"
+                   class="btn btn-primary">
+                    Add First Fuel Price
+                </a>
+
+            </div>
+        </div>
+    }
+    else
+    {
+ <!-- ========================= -->
+ <!-- CURRENT FUEL PRICES -->
+ <!-- ========================= -->
+
+        <div class="mb-5">
+
+            <div class="mb-3">
+                <h4 class="fw-bold mb-1">
+                    Current Fuel Prices
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Latest effective price for each fuel type
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                @foreach (var fuelPrice in currentPrices)
+                {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card border-0 shadow-sm h-100">
+
+                        <div class="card-body p-4">
+
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+
+                                <div>
+                                    <h5 class="fw-bold mb-1">
+                                        @fuelPrice.FuelType
+                                    </h5>
+
+                                    <span class="badge bg-success">
+                                        Current
+                                    </span>
+                                </div>
+
+                                <div class="text-end">
+                                    <div class="fs-3 fw-bold">
+                                        @fuelPrice.PricePerLiter.ToString("0.00")
+                                    </div>
+
+                                    <div class="text-muted small">
+                                        EGP / Liter
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <hr />
+
+                            <div class="small text-muted">
+                                Effective from
+                            </div>
+
+                            <div class="fw-semibold">
+                                @fuelPrice.EffectiveDate.ToString("dd MMM yyyy")
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                }
+
+            </div>
+
+        </div>
+
+
+ <!-- ========================= -->
+ <!-- PRICE HISTORY -->
+ <!-- ========================= -->
+
+        <div>
+
+            <div class="mb-3">
+                <h4 class="fw-bold mb-1">
+                    Price History
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Previous fuel prices are preserved for historical accuracy
+                </p>
+            </div>
+
+            @if (!historicalPrices.Any())
+            {
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+
+                    <p class="text-muted mb-0">
+                        No historical fuel prices available.
+                    </p>
+
+                </div>
+            </div>
+            }
+            else
+            {
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th>Fuel Type</th>
+                                    <th>Price / Liter</th>
+                                    <th>Effective Date</th>
+                                    <th>Created At</th>
+                                    <th>Created By</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var fuelPrice in historicalPrices)
+                                    {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @fuelPrice.FuelType
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold">
+                                            @fuelPrice.PricePerLiter.ToString("0.00")
+                                        </span>
+
+                                        <span class="text-muted">
+                                            EGP/L
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @fuelPrice.EffectiveDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @fuelPrice.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @(fuelPrice.CreatedByUser?.Name ?? "System")
+                                    </td>
+
+                                </tr>
+                                    }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+            }
+
+        </div>
+    }
+
+    </div>

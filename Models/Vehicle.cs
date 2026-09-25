@@ -14,7 +14,7 @@
         public int Year { get; set; }
 
         public int VehicleSpecificationId { get; set; }
-        public VehicleSpecification VehicleSpecification { get; set; }
+        public VehicleSpecification? VehicleSpecification { get; set; }
 
         public ICollection<Reservation> Reservations { get; set; }
             = new List<Reservation>();

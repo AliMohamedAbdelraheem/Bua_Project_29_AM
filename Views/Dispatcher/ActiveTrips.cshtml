@@ -1,0 +1,107 @@
+@model IEnumerable<BUA_project.Models.Trip>
+
+    @{
+    Layout = "~/Views/Dispatcher/Shared/_DispatcherLayout.cshtml";
+    ViewData["Title"] = "Active Trips";
+    }
+
+    <div class="container mt-4">
+
+        <div class="mb-4">
+            <h1 class="fw-bold">Active Trips</h1>
+            <p class="text-muted">
+                View all trips that are currently in progress.
+            </p>
+        </div>
+
+        @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            There are no active trips at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Trip</th>
+                                <th>Requester</th>
+                                <th>Vehicle</th>
+                                <th>Driver</th>
+                                <th>Route</th>
+                                <th>Started At</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var trip in Model)
+                            {
+                            <tr>
+
+                                <td>
+                                    <strong>#@trip.TripId</strong>
+                                </td>
+
+                                <td>
+                                    @trip.Reservation?.User?.Name
+                                </td>
+
+                                <td>
+                                    @trip.Reservation?.Vehicle?.PlateNumber
+                                </td>
+
+                                <td>
+                                    @trip.Reservation?.Driver?.Name
+                                </td>
+
+                                <td>
+                                    @trip.Reservation?.Origin
+                                    ?
+                                    @trip.Reservation?.Destination
+                                </td>
+
+                                <td>
+                                    @trip.StartedAt.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-success">
+                                        In Progress
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a asp-controller="Trip"
+                                       asp-action="Details"
+                                       asp-route-id="@trip.TripId"
+                                       class="btn btn-sm btn-info">
+                                        Details
+                                    </a>
+                                </td>
+
+                            </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+    </div>

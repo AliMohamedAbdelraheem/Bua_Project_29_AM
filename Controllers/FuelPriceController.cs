@@ -1,78 +1,70 @@
 using BUA_project.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BUA_project.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class FuelPriceController : Controller
     {
         private readonly Entity _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public FuelPriceController(Entity context)
+        public FuelPriceController(
+            Entity context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: FuelPrice
         public async Task<IActionResult> Index()
         {
-            var fuelPrice = await _context.FuelPrices
-                .OrderByDescending(f => f.UpdatedAt)
-                .FirstOrDefaultAsync();
+            var fuelPrices = await _context.FuelPrices
+                .Include(f => f.CreatedByUser)
+                .OrderBy(f => f.FuelType)
+                .ThenByDescending(f => f.EffectiveDate)
+                .ToListAsync();
 
-            return View(fuelPrice);
+            return View(fuelPrices);
         }
 
-        // GET: FuelPrice/Edit
-        public async Task<IActionResult> Edit()
+        // GET: FuelPrice/Create
+        public IActionResult Create()
         {
-            var fuelPrice = await _context.FuelPrices
-                .OrderByDescending(f => f.UpdatedAt)
-                .FirstOrDefaultAsync();
-
-            if (fuelPrice == null)
-            {
-                fuelPrice = new FuelPrice
-                {
-                    PricePerLiter = 0,
-                    UpdatedAt = DateTime.Now
-                };
-            }
-
-            return View(fuelPrice);
+            return View();
         }
 
-        // POST: FuelPrice/Edit
+        // POST: FuelPrice/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            FuelPrice model)
+        public async Task<IActionResult> Create(FuelPrice model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            var currentPrice = await _context.FuelPrices
-                .OrderByDescending(f => f.UpdatedAt)
-                .FirstOrDefaultAsync();
+            var identityAdmin =
+                await _userManager.GetUserAsync(User);
 
-            if (currentPrice == null)
+            if (identityAdmin == null ||
+                identityAdmin.BusinessUserId == null)
             {
-                currentPrice = new FuelPrice
-                {
-                    PricePerLiter = model.PricePerLiter,
-                    UpdatedAt = DateTime.Now
-                };
-
-                _context.FuelPrices.Add(currentPrice);
+                return Forbid();
             }
-            else
+
+            var fuelPrice = new FuelPrice
             {
-                currentPrice.PricePerLiter =
-                    model.PricePerLiter;
+                FuelType = model.FuelType,
+                PricePerLiter = model.PricePerLiter,
+                EffectiveDate = model.EffectiveDate,
+                CreatedAt = DateTime.Now,
+                CreatedByUserId = identityAdmin.BusinessUserId
+            };
 
-                currentPrice.UpdatedAt =
-                    DateTime.Now;
-            }
+            _context.FuelPrices.Add(fuelPrice);
 
             await _context.SaveChangesAsync();
 

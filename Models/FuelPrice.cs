@@ -4,12 +4,17 @@ namespace BUA_project.Models
     {
         public int FuelPriceId { get; set; }
 
+        // Example: Petrol 92, Petrol 95, Diesel
+        public string FuelType { get; set; }
+
         public decimal PricePerLiter { get; set; }
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime EffectiveDate { get; set; }
 
-        public int? UpdatedByUserId { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        public User? UpdatedByUser { get; set; }
+        public int? CreatedByUserId { get; set; }
+
+        public User? CreatedByUser { get; set; }
     }
 }

@@ -1,88 +1,180 @@
-﻿@{
-    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
-}
-@model IEnumerable<Vehicle>
+﻿@model IEnumerable<BUA_project.Models.Vehicle>
 
     @{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Vehicles";
     }
 
-    <h1>Vehicles</h1>
+    <div class="container mt-4">
 
-    <p>
-        <a asp-action="Create" class="btn btn-primary">
-            Add New Vehicle
-        </a>
-    </p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <table class="table table-bordered table-striped">
+            <div>
+                <h2>Vehicles</h2>
+                <p class="text-muted mb-0">
+                    Manage the university fleet vehicles.
+                </p>
+            </div>
 
-        <thead>
-            <tr>
-                <th>Plate Number</th>
-                <th>Brand</th>
-                <th>Model</th>
-                <th>Type</th>
-                <th>Seats</th>
-                <th>Fuel Type</th>
-                <th>Status</th>
-                <th>Year</th>
-                <th>Specification</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+            <a asp-action="Create"
+               class="btn btn-primary">
+                Add New Vehicle
+            </a>
 
-        <tbody>
+        </div>
 
-            @foreach (var vehicle in Model)
-        {
-            <tr>
+        @if (TempData["DeleteError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["DeleteError"]
+        </div>
+    }
 
-                <td>@vehicle.PlateNumber</td>
+        <div class="card shadow-sm">
 
-                <td>@vehicle.Brand</td>
+            <div class="card-body">
 
-                <td>@vehicle.Model</td>
+                <div class="table-responsive">
 
-                <td>@vehicle.Type</td>
+                    <table class="table table-bordered table-striped align-middle">
 
-                <td>@vehicle.Seats</td>
+                        <thead>
+                            <tr>
+                                <th>Plate Number</th>
+                                <th>Brand</th>
+                                <th>Model</th>
+                                <th>Type</th>
+                                <th>Seats</th>
+                                <th>Fuel</th>
+                                <th>Status</th>
+                                <th>Year</th>
+                                <th>Specification</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-                <td>@vehicle.FuelType</td>
+                        <tbody>
 
-                <td>@vehicle.Status</td>
+                            @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="10"
+                                    class="text-center text-muted">
+                                    No vehicles found.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var vehicle in Model)
+                            {
+                            <tr>
 
-                <td>@vehicle.Year</td>
+                                <td>
+                                    @vehicle.PlateNumber
+                                </td>
 
-                <td>
-                    @vehicle.VehicleSpecificationId
-                </td>
+                                <td>
+                                    @vehicle.Brand
+                                </td>
 
-                <td>
+                                <td>
+                                    @vehicle.Model
+                                </td>
 
-                    <a asp-action="Details"
-                       asp-route-id="@vehicle.VehicleId"
-                       class="btn btn-info btn-sm">
-                        Details
-                    </a>
+                                <td>
+                                    @vehicle.Type
+                                </td>
 
-                    <a asp-action="Edit"
-                       asp-route-id="@vehicle.VehicleId"
-                       class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
+                                <td>
+                                    @vehicle.Seats
+                                </td>
 
-                    <a asp-action="Delete"
-                       asp-route-id="@vehicle.VehicleId"
-                       class="btn btn-danger btn-sm">
-                        Delete
-                    </a>
+                                <td>
+                                    @vehicle.FuelType
+                                </td>
 
-                </td>
+                                <td>
 
-            </tr>
-        }
+                                    @if (vehicle.Status == "Available")
+                                        {
+                                    <span class="badge bg-success">
+                                        Available
+                                    </span>
+                                        }
+                                        else if (vehicle.Status == "Maintenance")
+                                        {
+                                    <span class="badge bg-warning text-dark">
+                                        Maintenance
+                                    </span>
+                                        }
+                                        else
+                                        {
+                                    <span class="badge bg-secondary">
+                                        @vehicle.Status
+                                    </span>
+                                        }
 
-        </tbody>
+                                </td>
 
-    </table>
+                                <td>
+                                    @vehicle.Year
+                                </td>
+
+                                <td>
+
+                                    @if (vehicle.VehicleSpecification != null)
+                                        {
+                                    <span>
+                                        @vehicle.VehicleSpecification.NominalLPer100Km
+                                        L/100Km
+                                    </span>
+                                        }
+                                        else
+                                        {
+                                    <span class="text-muted">
+                                        No Specification
+                                    </span>
+                                        }
+
+                                </td>
+
+                                <td>
+                                    <div class="d-flex gap-1">
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@vehicle.VehicleId"
+                                           class="btn btn-info btn-sm">
+                                            Details
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@vehicle.VehicleId"
+                                           class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@vehicle.VehicleId"
+                                           class="btn btn-danger btn-sm">
+                                            Delete
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                            }
+                        }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>

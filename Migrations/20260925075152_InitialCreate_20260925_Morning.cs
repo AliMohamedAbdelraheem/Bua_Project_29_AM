@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BUA_project.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreate_20260925_Morning : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,7 +35,8 @@ namespace BUA_project.Migrations
                     Destination = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Distance = table.Column<double>(type: "float", nullable: false),
                     Duration = table.Column<TimeSpan>(type: "time", nullable: false),
-                    ProviderSnapshot = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ProviderSnapshot = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CalculatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,18 +158,21 @@ namespace BUA_project.Migrations
                 {
                     FuelPriceId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PricePerLiter = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedByUserId = table.Column<int>(type: "int", nullable: true)
+                    FuelType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PricePerLiter = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    EffectiveDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FuelPrices", x => x.FuelPriceId);
                     table.ForeignKey(
-                        name: "FK_FuelPrices_Users_UpdatedByUserId",
-                        column: x => x.UpdatedByUserId,
+                        name: "FK_FuelPrices_Users_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -324,14 +328,46 @@ namespace BUA_project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VehicleMaintenance",
+                columns: table => new
+                {
+                    VehicleMaintenanceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    MaintenanceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NextServiceDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Cost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleMaintenance", x => x.VehicleMaintenanceId);
+                    table.ForeignKey(
+                        name: "FK_VehicleMaintenance_Users_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                    table.ForeignKey(
+                        name: "FK_VehicleMaintenance_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicles",
+                        principalColumn: "VehicleId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FuelEstimates",
                 columns: table => new
                 {
                     FuelEstimateId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PredictedFuel = table.Column<double>(type: "float", nullable: false),
-                    FuelPricePerLiter = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    EstimatedCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    FuelPricePerLiter = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    EstimatedCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Features = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReservationId = table.Column<int>(type: "int", nullable: false)
@@ -357,7 +393,7 @@ namespace BUA_project.Migrations
                     CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ActualDistanceKm = table.Column<double>(type: "float", nullable: false),
                     ActualFuelLiters = table.Column<double>(type: "float", nullable: false),
-                    ActualFuelCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ActualFuelCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     StartOdometer = table.Column<double>(type: "float", nullable: false),
                     EndOdometer = table.Column<double>(type: "float", nullable: false),
                     IncidentNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -462,9 +498,9 @@ namespace BUA_project.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FuelPrices_UpdatedByUserId",
+                name: "IX_FuelPrices_CreatedByUserId",
                 table: "FuelPrices",
-                column: "UpdatedByUserId");
+                column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationPings_TripId",
@@ -500,6 +536,16 @@ namespace BUA_project.Migrations
                 filter: "[RouteEstimateId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_VehicleMaintenance_CreatedByUserId",
+                table: "VehicleMaintenance",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VehicleMaintenance_VehicleId",
+                table: "VehicleMaintenance",
+                column: "VehicleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vehicles_VehicleSpecificationId",
                 table: "Vehicles",
                 column: "VehicleSpecificationId");
@@ -531,6 +577,9 @@ namespace BUA_project.Migrations
 
             migrationBuilder.DropTable(
                 name: "LocationPings");
+
+            migrationBuilder.DropTable(
+                name: "VehicleMaintenance");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

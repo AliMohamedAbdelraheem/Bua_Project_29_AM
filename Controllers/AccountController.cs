@@ -62,8 +62,10 @@ namespace BUA_project.Controllers
                 if (roles.Contains("User"))
                     return RedirectToAction("Index", "UserDashboard");
 
-                if (roles.Contains("Dispatcher"))
-                    return RedirectToAction("Index", "DispatcherDashboard");
+                if (await _userManager.IsInRoleAsync(user, "Dispatcher"))
+                {
+                    return RedirectToAction("Dashboard", "Dispatcher");
+                }
 
                 if (roles.Contains("Driver"))
                     return RedirectToAction("Index", "DriverDashboard");
@@ -171,7 +173,7 @@ namespace BUA_project.Controllers
 					Email = model.Email,
 
 					// Legacy field - authentication is handled by ASP.NET Identity
-					PasswordHash = string.Empty,
+
 
 					Role = model.AccountType == "Driver"
 		? "Driver"

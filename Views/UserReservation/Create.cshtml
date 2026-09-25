@@ -1,3 +1,6 @@
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
 
 @model BUA_project.Models.ViewModels.UserReservationViewModel
 
@@ -9,23 +12,23 @@
 
 @if (ViewBag.Vehicle != null)
 {
-    <div>
-        <h3>
-            @ViewBag.Vehicle.Brand @ViewBag.Vehicle.Model
-        </h3>
+<div>
+    <h3>
+        @ViewBag.Vehicle.Brand @ViewBag.Vehicle.Model
+    </h3>
 
-        <p>
-            Type: @ViewBag.Vehicle.Type
-        </p>
+    <p>
+        Type: @ViewBag.Vehicle.Type
+    </p>
 
-        <p>
-            Seats: @ViewBag.Vehicle.Seats
-        </p>
+    <p>
+        Seats: @ViewBag.Vehicle.Seats
+    </p>
 
-        <p>
-            Fuel: @ViewBag.Vehicle.FuelType
-        </p>
-    </div>
+    <p>
+        Fuel: @ViewBag.Vehicle.FuelType
+    </p>
+</div>
 }
 
 <form asp-action="Create" method="post">

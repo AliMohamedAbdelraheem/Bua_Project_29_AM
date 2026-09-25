@@ -1,0 +1,105 @@
+@model BUA_project.Models.FuelPrice
+
+@{
+    ViewData["Title"] = "Add Fuel Price";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Add Fuel Price</h2>
+            <p class="text-muted mb-0">
+                Add a new fuel price while preserving previous price history.
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Back to Fuel Prices
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FuelType" class="form-label fw-semibold">
+                        Fuel Type
+                    </label>
+
+                    <select asp-for="FuelType" class="form-select">
+                        <option value="">-- Select Fuel Type --</option>
+                        <option value="Petrol 92">Petrol 92</option>
+                        <option value="Petrol 95">Petrol 95</option>
+                        <option value="Diesel">Diesel</option>
+                    </select>
+
+                    <span asp-validation-for="FuelType"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PricePerLiter" class="form-label fw-semibold">
+                        Price Per Liter
+                    </label>
+
+                    <div class="input-group">
+                        <input asp-for="PricePerLiter"
+                               class="form-control"
+                               type="number"
+                               step="0.01"
+                               min="0" />
+
+                        <span class="input-group-text">EGP/L</span>
+                    </div>
+
+                    <span asp-validation-for="PricePerLiter"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="EffectiveDate" class="form-label fw-semibold">
+                        Effective Date
+                    </label>
+
+                    <input asp-for="EffectiveDate"
+                           class="form-control"
+                           type="datetime-local" />
+
+                    <span asp-validation-for="EffectiveDate"
+                          class="text-danger"></span>
+
+                    <small class="text-muted">
+                        This price will be used for estimates starting from
+                        this date, unless a newer effective price exists.
+                    </small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Add Fuel Price
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

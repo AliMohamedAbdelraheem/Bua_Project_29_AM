@@ -1,136 +1,248 @@
-﻿@model Vehicle
+﻿@model BUA_project.Models.Vehicle
 
 @{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Create Vehicle";
 }
 
-<h1>Create Vehicle</h1>
+<div class="container mt-4">
 
-<form asp-action="Create" method="post">
-
-    <div asp-validation-summary="ModelOnly"
-         class="text-danger">
+    <div class="mb-4">
+        <h2>Add New Vehicle</h2>
+        <p class="text-muted">
+            Add a new vehicle to the university fleet.
+        </p>
     </div>
 
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <div class="mb-3">
-        <label asp-for="Type" class="form-label"></label>
-        <input asp-for="Type" class="form-control" />
-        <span asp-validation-for="Type"
-              class="text-danger"></span>
+            <form asp-action="Create" method="post">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger">
+                </div>
+
+                <div class="row">
+
+                    <!-- Type -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Type" class="form-label">
+                            Vehicle Type
+                        </label>
+
+                        <select asp-for="Type"
+                                class="form-select">
+                            <option value="">
+                                -- Select Vehicle Type --
+                            </option>
+                            <option value="Car">Car</option>
+                            <option value="Bus">Bus</option>
+                            <option value="Van">Van</option>
+                        </select>
+
+                        <span asp-validation-for="Type"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Brand -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Brand"
+                               class="form-label">
+                            Brand
+                        </label>
+
+                        <input asp-for="Brand"
+                               class="form-control"
+                               placeholder="Enter vehicle brand" />
+
+                        <span asp-validation-for="Brand"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Model -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Model"
+                               class="form-label">
+                            Model
+                        </label>
+
+                        <input asp-for="Model"
+                               class="form-control"
+                               placeholder="Enter vehicle model" />
+
+                        <span asp-validation-for="Model"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Seats -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Seats"
+                               class="form-label">
+                            Seats
+                        </label>
+
+                        <input asp-for="Seats"
+                               type="number"
+                               min="1"
+                               class="form-control" />
+
+                        <span asp-validation-for="Seats"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Fuel Type -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FuelType"
+                               class="form-label">
+                            Fuel Type
+                        </label>
+
+                        <select asp-for="FuelType"
+                                class="form-select">
+                            <option value="">
+                                -- Select Fuel Type --
+                            </option>
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                        </select>
+
+                        <span asp-validation-for="FuelType"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Plate Number -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="PlateNumber"
+                               class="form-label">
+                            Plate Number
+                        </label>
+
+                        <input asp-for="PlateNumber"
+                               class="form-control"
+                               placeholder="Enter plate number" />
+
+                        <span asp-validation-for="PlateNumber"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Status"
+                               class="form-label">
+                            Status
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select">
+                            <option value="">
+                                -- Select Status --
+                            </option>
+                            <option value="Available">
+                                Available
+                            </option>
+                            <option value="Maintenance">
+                                Maintenance
+                            </option>
+                            <option value="Unavailable">
+                                Unavailable
+                            </option>
+                        </select>
+
+                        <span asp-validation-for="Status"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Year -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Year"
+                               class="form-label">
+                            Year
+                        </label>
+
+                        <input asp-for="Year"
+                               type="number"
+                               min="1900"
+                               max="2100"
+                               class="form-control" />
+
+                        <span asp-validation-for="Year"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- Specification -->
+                    <div class="col-md-12 mb-3">
+
+                        <label asp-for="VehicleSpecificationId"
+                               class="form-label">
+                            Vehicle Specification
+                        </label>
+
+                        <select asp-for="VehicleSpecificationId"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Specification --
+                            </option>
+
+                            @foreach (var specification
+                                in ViewBag.VehicleSpecifications)
+                            {
+                            <option value="@specification.VehicleSpecificationId">
+                                Specification #@specification.VehicleSpecificationId
+                                -
+                                @specification.NominalLPer100Km L/100Km
+                                -
+                                @specification.Transmission
+                                -
+                                @specification.Accessibility
+                            </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="VehicleSpecificationId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Create Vehicle
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
     </div>
 
-
-    <div class="mb-3">
-        <label asp-for="Brand" class="form-label"></label>
-        <input asp-for="Brand" class="form-control" />
-        <span asp-validation-for="Brand"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-        <label asp-for="Model" class="form-label"></label>
-        <input asp-for="Model" class="form-control" />
-        <span asp-validation-for="Model"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-        <label asp-for="Seats" class="form-label"></label>
-        <input asp-for="Seats"
-               type="number"
-               class="form-control" />
-
-        <span asp-validation-for="Seats"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-        <label asp-for="FuelType" class="form-label"></label>
-        <input asp-for="FuelType" class="form-control" />
-
-        <span asp-validation-for="FuelType"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-        <label asp-for="PlateNumber" class="form-label"></label>
-        <input asp-for="PlateNumber"
-               class="form-control" />
-
-        <span asp-validation-for="PlateNumber"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-        <label asp-for="Status" class="form-label"></label>
-        <input asp-for="Status" class="form-control" />
-
-        <span asp-validation-for="Status"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-        <label asp-for="Year" class="form-label"></label>
-        <input asp-for="Year"
-               type="number"
-               class="form-control" />
-
-        <span asp-validation-for="Year"
-              class="text-danger"></span>
-    </div>
-
-
-    <div class="mb-3">
-
-        <label asp-for="VehicleSpecificationId"
-               class="form-label">
-            Vehicle Specification
-        </label>
-
-        <select asp-for="VehicleSpecificationId"
-                class="form-select">
-
-            <option value="">
-                -- Select Specification --
-            </option>
-
-            @foreach (var specification in ViewBag.VehicleSpecifications)
-            {
-                <option value="@specification.VehicleSpecificationId">
-                    @specification.VehicleSpecificationId
-                </option>
-            }
-
-        </select>
-
-        <span asp-validation-for="VehicleSpecificationId"
-              class="text-danger"></span>
-
-    </div>
-
-
-    <button type="submit"
-            class="btn btn-primary">
-        Create
-    </button>
-
-    <a asp-action="Index"
-           class="btn btn-secondary">
-        Back
-    </a>
-
-</form>
-
+</div>
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
 }

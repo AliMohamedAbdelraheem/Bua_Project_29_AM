@@ -1,14 +1,19 @@
 using BUA_project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BUA_project.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class VehicleSpecificationController : Controller
     {
-        private readonly Entity _context = new Entity();
+        private readonly Entity _context;
+
+        public VehicleSpecificationController(Entity context)
+        {
+            _context = context;
+        }
 
         // GET: VehicleSpecification
         public async Task<IActionResult> Index()
@@ -50,6 +55,41 @@ namespace BUA_project.Controllers
         public async Task<IActionResult> Create(
             VehicleSpecification specification)
         {
+            Console.WriteLine("========== CREATE VEHICLE SPECIFICATION ==========");
+
+            Console.WriteLine(
+                $"NominalLPer100Km: {specification.NominalLPer100Km}");
+
+            Console.WriteLine(
+                $"TankCapacity: {specification.TankCapacity}");
+
+            Console.WriteLine(
+                $"Accessibility: {specification.Accessibility}");
+
+            Console.WriteLine(
+                $"Transmission: {specification.Transmission}");
+
+            Console.WriteLine(
+                $"AllowedLoad: {specification.AllowedLoad}");
+
+            Console.WriteLine(
+                $"ModelState Valid: {ModelState.IsValid}");
+
+            foreach (var state in ModelState)
+            {
+                foreach (var error in state.Value.Errors)
+                {
+                    Console.WriteLine(
+                        $"MODEL ERROR [{state.Key}]: {error.ErrorMessage}");
+
+                    if (error.Exception != null)
+                    {
+                        Console.WriteLine(
+                            $"EXCEPTION: {error.Exception.Message}");
+                    }
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(specification);
@@ -57,7 +97,12 @@ namespace BUA_project.Controllers
 
             _context.VehicleSpecifications.Add(specification);
 
+            Console.WriteLine("Calling SaveChangesAsync...");
+
             await _context.SaveChangesAsync();
+
+            Console.WriteLine(
+                "Vehicle Specification Created Successfully!");
 
             return RedirectToAction(nameof(Index));
         }
@@ -78,37 +123,49 @@ namespace BUA_project.Controllers
             return View(specification);
         }
 
-        // POST: VehicleSpecification/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
-            int id,
-            VehicleSpecification specification)
+    int id,
+    VehicleSpecification specification)
         {
+            // Make sure the ID from the URL matches the ID from the form
             if (id != specification.VehicleSpecificationId)
                 return NotFound();
 
+            // Validate the submitted form data
             if (!ModelState.IsValid)
-            {
                 return View(specification);
-            }
 
-            try
-            {
-                _context.VehicleSpecifications.Update(specification);
+            // Get the existing entity from the database
+            // EF Core will track this entity
+            var existingSpecification =
+                await _context.VehicleSpecifications
+                    .FirstOrDefaultAsync(
+                        vs => vs.VehicleSpecificationId == id);
 
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VehicleSpecificationExists(
-                    specification.VehicleSpecificationId))
-                {
-                    return NotFound();
-                }
+            if (existingSpecification == null)
+                return NotFound();
 
-                throw;
-            }
+            // Update only the properties that the Admin is allowed to edit
+            existingSpecification.NominalLPer100Km =
+                specification.NominalLPer100Km;
+
+            existingSpecification.TankCapacity =
+                specification.TankCapacity;
+
+            existingSpecification.Accessibility =
+                specification.Accessibility;
+
+            existingSpecification.Transmission =
+                specification.Transmission;
+
+            existingSpecification.AllowedLoad =
+                specification.AllowedLoad;
+
+            // EF Core already tracks existingSpecification,
+            // so no Update() call is needed
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -131,14 +188,16 @@ namespace BUA_project.Controllers
         }
 
         // POST: VehicleSpecification/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var specification = await _context.VehicleSpecifications
-                .Include(vs => vs.Vehicles)
-                .FirstOrDefaultAsync(
-                    vs => vs.VehicleSpecificationId == id);
+            var specification =
+                await _context.VehicleSpecifications
+                    .Include(vs => vs.Vehicles)
+                    .FirstOrDefaultAsync(
+                        vs => vs.VehicleSpecificationId == id);
 
             if (specification == null)
                 return NotFound();
@@ -159,10 +218,10 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VehicleSpecificationExists(int id)
+        private async Task<bool> VehicleSpecificationExists(int id)
         {
-            return _context.VehicleSpecifications
-                .Any(vs =>
+            return await _context.VehicleSpecifications
+                .AnyAsync(vs =>
                     vs.VehicleSpecificationId == id);
         }
     }

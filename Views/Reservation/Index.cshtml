@@ -5,122 +5,286 @@
     ViewData["Title"] = "Reservations";
     }
 
-    <h1>Reservations</h1>
+    <div class="container-fluid">
 
-    <p>
-        <a asp-action="Create"
-           class="btn btn-primary">
-            Create New Reservation
-        </a>
-    </p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1>Reservations</h1>
+                <p class="text-muted mb-0">
+                    View and monitor fleet reservations.
+                </p>
+            </div>
+        </div>
 
-    <table class="table table-bordered table-striped">
+        <!-- Filters -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
 
-        <thead>
-            <tr>
+                <form asp-action="Index"
+                      method="get"
+                      class="row g-3">
 
-                <th>Start</th>
+                    <!-- Search -->
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Search
+                        </label>
 
-                <th>End</th>
+                        <input type="text"
+                               name="search"
+                               value="@ViewBag.Search"
+                               class="form-control"
+                               placeholder="Search by requester, origin, destination, purpose or ID..." />
+                    </div>
 
-                <th>Origin</th>
+                    <!-- Status -->
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Status
+                        </label>
 
-                <th>Destination</th>
+                        <select name="status"
+                                class="form-select">
 
-                <th>Passengers</th>
+                            <option value="">
+                                All Statuses
+                            </option>
 
-                <th>Load</th>
+                            @foreach (var item in ViewBag.Statuses)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.SelectedStatus == item)">
+                                @item
+                            </option>
+                        }
 
-                <th>Purpose</th>
+                        </select>
+                    </div>
 
-                <th>Status</th>
+                    <!-- Buttons -->
+                    <div class="col-md-2 d-flex align-items-end">
 
-                <th>Vehicle</th>
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Filter
+                        </button>
 
-                <th>User</th>
+                    </div>
 
-                <th>Driver</th>
+                </form>
 
-                <th>Actions</th>
+            </div>
+        </div>
 
-            </tr>
-        </thead>
 
-        <tbody>
+        <!-- Reservations Table -->
+        <div class="card shadow-sm">
 
-            @foreach (var reservation in Model)
-        {
-            <tr>
+            <div class="card-body">
 
-                <td>
-                    @reservation.StartDateTime
-                </td>
+                <div class="table-responsive">
 
-                <td>
-                    @reservation.EndDateTime
-                </td>
+                    <table class="table table-bordered table-striped align-middle">
 
-                <td>
-                    @reservation.Origin
-                </td>
+                        <thead>
+                            <tr>
 
-                <td>
-                    @reservation.Destination
-                </td>
+                                <th>ID</th>
 
-                <td>
-                    @reservation.Passengers
-                </td>
+                                <th>Start</th>
 
-                <td>
-                    @reservation.Load
-                </td>
+                                <th>End</th>
 
-                <td>
-                    @reservation.Purpose
-                </td>
+                                <th>Origin</th>
 
-                <td>
-                    @reservation.Status
-                </td>
+                                <th>Destination</th>
 
-                <td>
-                    @reservation.VehicleId
-                </td>
+                                <th>Passengers</th>
 
-                <td>
-                    @reservation.UserId
-                </td>
+                                <th>Load</th>
 
-                <td>
-                    @reservation.DriverId
-                </td>
+                                <th>Purpose</th>
 
-                <td>
+                                <th>Status</th>
 
-                    <a asp-action="Details"
-                       asp-route-id="@reservation.ReservationId"
-                       class="btn btn-info btn-sm">
-                        Details
-                    </a>
+                                <th>Vehicle</th>
 
-                    <a asp-action="Edit"
-                       asp-route-id="@reservation.ReservationId"
-                       class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
+                                <th>Requester</th>
 
-                    <a asp-action="Delete"
-                       asp-route-id="@reservation.ReservationId"
-                       class="btn btn-danger btn-sm">
-                        Delete
-                    </a>
+                                <th>Driver</th>
 
-                </td>
+                                <th>Actions</th>
 
-            </tr>
-        }
+                            </tr>
+                        </thead>
 
-        </tbody>
+                        <tbody>
 
-    </table>
+                            @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="13"
+                                    class="text-center text-muted py-4">
+
+                                    No reservations found.
+
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var reservation in Model)
+                            {
+                            <tr>
+
+                                <td>
+                                    #@reservation.ReservationId
+                                </td>
+
+                                <td>
+                                    @reservation.StartDateTime.ToString(
+                                        "dd/MM/yyyy hh:mm tt")
+                                </td>
+
+                                <td>
+                                    @reservation.EndDateTime.ToString(
+                                        "dd/MM/yyyy hh:mm tt")
+                                </td>
+
+                                <td>
+                                    @reservation.Origin
+                                </td>
+
+                                <td>
+                                    @reservation.Destination
+                                </td>
+
+                                <td>
+                                    @reservation.Passengers
+                                </td>
+
+                                <td>
+                                    @reservation.Load
+                                </td>
+
+                                <td>
+                                    @reservation.Purpose
+                                </td>
+
+                                <td>
+                                    @switch (reservation.Status)
+                                        {
+                                            case "Pending":
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+                                                break;
+
+                                            case "Approved":
+                                    <span class="badge bg-success">
+                                        Approved
+                                    </span>
+                                                break;
+
+                                            case "Rejected":
+                                    <span class="badge bg-danger">
+                                        Rejected
+                                    </span>
+                                                break;
+
+                                            case "Cancelled":
+                                    <span class="badge bg-secondary">
+                                        Cancelled
+                                    </span>
+                                                break;
+
+                                            case "Dispatched":
+                                    <span class="badge bg-primary">
+                                        Dispatched
+                                    </span>
+                                                break;
+
+                                            case "Active":
+                                    <span class="badge bg-info text-dark">
+                                        Active
+                                    </span>
+                                                break;
+
+                                            case "Completed":
+                                    <span class="badge bg-dark">
+                                        Completed
+                                    </span>
+                                                break;
+
+                                            default:
+                                    <span class="badge bg-secondary">
+                                        @reservation.Status
+                                    </span>
+                                                break;
+                                        }
+                                </td>
+
+                                <td>
+                                    @if (reservation.Vehicle != null)
+                                        {
+                                    @($"{reservation.Vehicle.Brand} {reservation.Vehicle.Model}")
+                                        }
+                                        else
+                                        {
+                                    <span class="text-muted">
+                                        Not assigned
+                                    </span>
+                                        }
+                                </td>
+
+                                <td>
+                                    @if (reservation.User != null)
+                                        {
+                                    @reservation.User.Name
+                                        }
+                                        else
+                                        {
+                                    <span class="text-muted">
+                                        Unknown
+                                    </span>
+                                        }
+                                </td>
+
+                                <td>
+                                    @if (reservation.Driver != null)
+                                        {
+                                    @reservation.Driver.Name
+                                        }
+                                        else
+                                        {
+                                    <span class="text-muted">
+                                        Not assigned
+                                    </span>
+                                        }
+                                </td>
+
+                                <td>
+                                    <a asp-action="Details"
+                                       asp-route-id="@reservation.ReservationId"
+                                       class="btn btn-info btn-sm">
+
+                                        Details
+
+                                    </a>
+                                </td>
+
+                            </tr>
+                            }
+                        }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>

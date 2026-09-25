@@ -1,5 +1,6 @@
 using BUA_project.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BUA_project.Services
 {
@@ -12,6 +13,9 @@ namespace BUA_project.Services
 
             var userManager =
                 services.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var context =
+                services.GetRequiredService<Entity>();
 
 
             // =========================================
@@ -66,12 +70,10 @@ namespace BUA_project.Services
                     EmailConfirmed = true
                 };
 
-
                 var createResult =
                     await userManager.CreateAsync(
                         admin,
                         adminPassword);
-
 
                 if (!createResult.Succeeded)
                 {
@@ -106,6 +108,49 @@ namespace BUA_project.Services
 
                     throw new Exception(
                         $"Failed to assign Admin role: {errors}");
+                }
+            }
+
+
+            // =========================================
+            // 6. Link Admin to Business User
+            // =========================================
+
+            if (admin.BusinessUserId == null)
+            {
+                var businessAdmin =
+                    await context.Users
+                        .FirstOrDefaultAsync(
+                            u => u.Email == adminEmail);
+
+                if (businessAdmin == null)
+                {
+                    businessAdmin = new User
+                    {
+                        Name = "Admin",
+                        Email = adminEmail,
+                        Role = "Admin"
+                    };
+
+                    context.Users.Add(businessAdmin);
+
+                    await context.SaveChangesAsync();
+                }
+
+                admin.BusinessUserId =
+                    businessAdmin.UserId;
+
+                var updateResult =
+                    await userManager.UpdateAsync(admin);
+
+                if (!updateResult.Succeeded)
+                {
+                    var errors = string.Join(
+                        ", ",
+                        updateResult.Errors.Select(e => e.Description));
+
+                    throw new Exception(
+                        $"Failed to link Admin to Business User: {errors}");
                 }
             }
         }

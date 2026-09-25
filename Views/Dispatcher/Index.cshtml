@@ -1,108 +1,144 @@
 ﻿@model IEnumerable<BUA_project.Models.Reservation>
 
-@{
-    ViewData["Title"] = "Dispatcher";
-}
+    @{
+    Layout = "~/Views/Dispatcher/Shared/_DispatcherLayout.cshtml";
+    ViewData["Title"] = "Pending Requests";
+    }
 
-<h1>Pending Reservations</h1>
+    <div class="container-fluid mt-4">
 
-<table class="table table-bordered table-striped">
+        <div class="mb-4">
+            <h1 class="fw-bold">Pending Requests</h1>
+            <p class="text-muted mb-0">
+                Review reservation requests and decide whether to approve or reject them.
+            </p>
+        </div>
 
-    <thead>
-        <tr>
-            <th>Requester</th>
-            <th>Vehicle</th>
-            <th>Origin</th>
-            <th>Destination</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Passengers</th>
-            <th>Load</th>
-            <th>Purpose</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+        @if (Model.Any())
+    {
+        <div class="card shadow-sm border-0">
 
-    <tbody>
+            <div class="card-body">
 
-        @foreach (var reservation in Model)
-        {
-            <tr>
+                <div class="table-responsive">
 
-                <td>
-                    @reservation.User?.Name
-                </td>
+                    <table class="table table-hover align-middle">
 
-                <td>
-                    @reservation.Vehicle?.PlateNumber
-                </td>
+                        <thead>
+                            <tr>
+                                <th>Requester</th>
+                                <th>Vehicle</th>
+                                <th>Route</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Passengers</th>
+                                <th>Load</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-                <td>
-                    @reservation.Origin
-                </td>
+                        <tbody>
 
-                <td>
-                    @reservation.Destination
-                </td>
+                            @foreach (var reservation in Model)
+                            {
+                            <tr>
 
-                <td>
-                    @reservation.StartDateTime
-                </td>
+                                <td>
+                                    @reservation.User?.Name
+                                </td>
 
-                <td>
-                    @reservation.EndDateTime
-                </td>
+                                <td>
+                                    @reservation.Vehicle?.PlateNumber
+                                </td>
 
-                <td>
-                    @reservation.Passengers
-                </td>
+                                <td>
+                                    <div>
+                                        <strong>@reservation.Origin</strong>
+                                        <span class="text-muted"> → </span>
+                                        <strong>@reservation.Destination</strong>
+                                    </div>
+                                </td>
 
-                <td>
-                    @reservation.Load
-                </td>
+                                <td>
+                                    @reservation.StartDateTime.ToString("dd/MM/yyyy HH:mm")
+                                </td>
 
-                <td>
-                    @reservation.Purpose
-                </td>
+                                <td>
+                                    @reservation.EndDateTime.ToString("dd/MM/yyyy HH:mm")
+                                </td>
 
-                <td>
+                                <td>
+                                    @reservation.Passengers
+                                </td>
 
-                    <a asp-action="Details"
-                       asp-route-id="@reservation.ReservationId"
-                       class="btn btn-info btn-sm">
-                        Details
-                    </a>
+                                <td>
+                                    @reservation.Load
+                                </td>
 
-                    <a asp-action="Approve"
-                       asp-route-id="@reservation.ReservationId"
-                       class="btn btn-success btn-sm">
-                        Approve
-                    </a>
+                                <td>
+                                    @reservation.Purpose
+                                </td>
 
-                    <a asp-action="Reject"
-                       asp-route-id="@reservation.ReservationId"
-                       class="btn btn-danger btn-sm">
-                        Reject
-                    </a>
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        @reservation.Status
+                                    </span>
+                                </td>
 
-                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
 
-            </tr>
+                                        <a asp-action="Details"
+                                           asp-route-id="@reservation.ReservationId"
+                                           class="btn btn-info btn-sm">
+                                            Details
+                                        </a>
 
-            <tr>
-                @if (reservation.Status == "Approved"
-        && reservation.DriverId == null)
-                {
-                    <a asp-action="AssignDriver"
-                           asp-route-id="@reservation.ReservationId"
-                           class="btn btn-primary btn-sm">
-                        Assign Driver
-                    </a>
-                }
-            </tr>
-        }
+                                        <a asp-action="Approve"
+                                           asp-route-id="@reservation.ReservationId"
+                                           class="btn btn-success btn-sm">
+                                            Accept
+                                        </a>
 
-    </tbody>
+                                        <a asp-action="Reject"
+                                           asp-route-id="@reservation.ReservationId"
+                                           class="btn btn-danger btn-sm">
+                                            Reject
+                                        </a>
 
-</table>
+                                    </div>
+                                </td>
 
+                            </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+
+                <h5 class="fw-bold">
+                    No Pending Requests
+                </h5>
+
+                <p class="text-muted mb-0">
+                    There are currently no reservation requests waiting for approval.
+                </p>
+
+            </div>
+        </div>
+    }
+
+    </div>

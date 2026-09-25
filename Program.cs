@@ -19,6 +19,10 @@ namespace BUA_project
                 .AddEntityFrameworkStores<Entity>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddScoped<AuditLogService>();
+
             builder.Services.AddHttpClient<FuelPredictionService>(client =>
             {
                 client.BaseAddress = new Uri(
@@ -62,13 +66,6 @@ namespace BUA_project
 
             app.Run();
 
-
-
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
             app.UseRouting();
 
             app.UseAuthentication();
@@ -76,6 +73,7 @@ namespace BUA_project
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Account}/{action=Login}/{id?}")

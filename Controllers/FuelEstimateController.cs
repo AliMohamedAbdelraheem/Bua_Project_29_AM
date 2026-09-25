@@ -150,21 +150,15 @@ namespace BUA_project.Controllers
             }
 
 
-            // 6. Get current fuel price
+            // 6. Get applicable fuel price
+            // Select the latest price for the vehicle's fuel type
+            // that was effective on or before the reservation start date.
             var fuelPrice = await _context.FuelPrices
-                .OrderByDescending(f => f.UpdatedAt)
+                .Where(f =>
+                    f.FuelType == reservation.Vehicle.FuelType &&
+                    f.EffectiveDate <= reservation.StartDateTime)
+                .OrderByDescending(f => f.EffectiveDate)
                 .FirstOrDefaultAsync();
-
-            if (fuelPrice == null)
-            {
-                TempData["Error"] =
-                    "Fuel price has not been configured by the admin.";
-
-                return RedirectToAction(
-                    "Details",
-                    "Reservation",
-                    new { id = reservationId });
-            }
 
 
             // 7. Prepare request for ML API

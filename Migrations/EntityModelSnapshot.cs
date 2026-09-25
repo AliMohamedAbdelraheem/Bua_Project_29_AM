@@ -94,6 +94,47 @@ namespace BUA_project.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("BUA_project.Models.AuditLog", b =>
+                {
+                    b.Property<int>("AuditLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuditLogId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserRole")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AuditLogId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("BUA_project.Models.Driver", b =>
                 {
                     b.Property<int>("DriverId")
@@ -137,12 +178,14 @@ namespace BUA_project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FuelEstimateId"));
 
                     b.Property<decimal>("EstimatedCost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Features")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("FuelPricePerLiter")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Model")
@@ -170,18 +213,27 @@ namespace BUA_project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FuelPriceId"));
 
-                    b.Property<decimal>("PricePerLiter")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UpdatedByUserId")
+                    b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FuelType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("PricePerLiter")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("FuelPriceId");
 
-                    b.HasIndex("UpdatedByUserId");
+                    b.HasIndex("CreatedByUserId");
 
                     b.ToTable("FuelPrices");
                 });
@@ -315,6 +367,7 @@ namespace BUA_project.Migrations
                         .HasColumnType("float");
 
                     b.Property<decimal>("ActualFuelCost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<double>("ActualFuelLiters")
@@ -370,10 +423,6 @@ namespace BUA_project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -443,6 +492,7 @@ namespace BUA_project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleMaintenanceId"));
 
                     b.Property<decimal>("Cost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -652,6 +702,15 @@ namespace BUA_project.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("BUA_project.Models.AuditLog", b =>
+                {
+                    b.HasOne("BUA_project.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BUA_project.Models.Driver", b =>
                 {
                     b.HasOne("BUA_project.Models.User", "User")
@@ -676,11 +735,12 @@ namespace BUA_project.Migrations
 
             modelBuilder.Entity("BUA_project.Models.FuelPrice", b =>
                 {
-                    b.HasOne("BUA_project.Models.User", "UpdatedByUser")
+                    b.HasOne("BUA_project.Models.User", "CreatedByUser")
                         .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("UpdatedByUser");
+                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("BUA_project.Models.LocationPing", b =>

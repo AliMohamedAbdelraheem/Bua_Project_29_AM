@@ -36,6 +36,9 @@ namespace BUA_project.Models
         public DbSet<Trip> Trips { get; set; }
         public DbSet<LocationPing> LocationPings { get; set; }
 
+        // Audit
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -58,6 +61,38 @@ namespace BUA_project.Models
             modelBuilder.Entity<ApplicationUser>()
                 .HasIndex(u => u.BusinessUserId)
                 .IsUnique();
+
+            // FuelPrice Configuration
+            modelBuilder.Entity<FuelPrice>()
+                .Property(f => f.FuelType)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            modelBuilder.Entity<FuelPrice>()
+                .Property(f => f.PricePerLiter)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<FuelEstimate>()
+            .Property(f => f.EstimatedCost)
+            .HasPrecision(18, 2);
+
+            modelBuilder.Entity<FuelEstimate>()
+                .Property(f => f.FuelPricePerLiter)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Trip>()
+                .Property(t => t.ActualFuelCost)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<VehicleMaintenance>()
+                .Property(v => v.Cost)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<FuelPrice>()
+                .HasOne(f => f.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(f => f.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
