@@ -48,7 +48,8 @@ namespace BUA_project.Controllers
             var user = await _context.Users
                 .Include(u => u.Reservations)
                 .Include(u => u.Driver)
-                .FirstOrDefaultAsync(u => u.UserId == id);
+                .FirstOrDefaultAsync(
+                    u => u.UserId == id);
 
             if (user == null)
                 return NotFound();
@@ -68,7 +69,8 @@ namespace BUA_project.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Driver)
-                .FirstOrDefaultAsync(u => u.UserId == id);
+                .FirstOrDefaultAsync(
+                    u => u.UserId == id);
 
             if (user == null)
                 return NotFound();
@@ -103,8 +105,12 @@ namespace BUA_project.Controllers
 
             if (!allowedRoles.Contains(NewRole))
             {
-                TempData["ManageError"] = "Invalid role selected.";
-                return RedirectToAction(nameof(Manage), new { id = UserId });
+                TempData["ManageError"] =
+                    "Invalid role selected.";
+
+                return RedirectToAction(
+                    nameof(Manage),
+                    new { id = UserId });
             }
 
             // -----------------------------------------------------
@@ -113,7 +119,8 @@ namespace BUA_project.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Driver)
-                .FirstOrDefaultAsync(u => u.UserId == UserId);
+                .FirstOrDefaultAsync(
+                    u => u.UserId == UserId);
 
             if (user == null)
                 return NotFound();
@@ -123,14 +130,17 @@ namespace BUA_project.Controllers
             // -----------------------------------------------------
 
             var identityUser = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.BusinessUserId == UserId);
+                .FirstOrDefaultAsync(
+                    u => u.BusinessUserId == UserId);
 
             if (identityUser == null)
             {
                 TempData["ManageError"] =
                     "This user does not have a linked login account.";
 
-                return RedirectToAction(nameof(Manage), new { id = UserId });
+                return RedirectToAction(
+                    nameof(Manage),
+                    new { id = UserId });
             }
 
             // -----------------------------------------------------
@@ -144,7 +154,9 @@ namespace BUA_project.Controllers
                     TempData["ManageError"] =
                         "License Number is required for a Driver.";
 
-                    return RedirectToAction(nameof(Manage), new { id = UserId });
+                    return RedirectToAction(
+                        nameof(Manage),
+                        new { id = UserId });
                 }
 
                 if (string.IsNullOrWhiteSpace(QualificationStatus))
@@ -152,7 +164,9 @@ namespace BUA_project.Controllers
                     TempData["ManageError"] =
                         "Qualification Status is required for a Driver.";
 
-                    return RedirectToAction(nameof(Manage), new { id = UserId });
+                    return RedirectToAction(
+                        nameof(Manage),
+                        new { id = UserId });
                 }
 
                 if (!QualificationValidUntil.HasValue)
@@ -160,7 +174,9 @@ namespace BUA_project.Controllers
                     TempData["ManageError"] =
                         "Qualification Valid Until is required for a Driver.";
 
-                    return RedirectToAction(nameof(Manage), new { id = UserId });
+                    return RedirectToAction(
+                        nameof(Manage),
+                        new { id = UserId });
                 }
             }
 
@@ -211,7 +227,9 @@ namespace BUA_project.Controllers
                     TempData["ManageError"] =
                         "Failed to create the selected system role.";
 
-                    return RedirectToAction(nameof(Manage), new { id = UserId });
+                    return RedirectToAction(
+                        nameof(Manage),
+                        new { id = UserId });
                 }
             }
 
@@ -386,6 +404,7 @@ namespace BUA_project.Controllers
             }
 
             _context.Users.Add(user);
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -401,7 +420,8 @@ namespace BUA_project.Controllers
                 return NotFound();
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == id);
+                .FirstOrDefaultAsync(
+                    u => u.UserId == id);
 
             if (user == null)
                 return NotFound();
@@ -415,7 +435,9 @@ namespace BUA_project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(
+            int id,
+            User user)
         {
             if (id != user.UserId)
                 return NotFound();
@@ -440,6 +462,7 @@ namespace BUA_project.Controllers
             try
             {
                 _context.Users.Update(user);
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -464,7 +487,8 @@ namespace BUA_project.Controllers
                 return NotFound();
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == id);
+                .FirstOrDefaultAsync(
+                    u => u.UserId == id);
 
             if (user == null)
                 return NotFound();
@@ -482,7 +506,8 @@ namespace BUA_project.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == id);
+                .FirstOrDefaultAsync(
+                    u => u.UserId == id);
 
             if (user == null)
                 return NotFound();
@@ -492,7 +517,8 @@ namespace BUA_project.Controllers
             // -----------------------------------------------------
 
             var identityUser = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.BusinessUserId == id);
+                .FirstOrDefaultAsync(
+                    u => u.BusinessUserId == id);
 
             await using var transaction =
                 await _context.Database.BeginTransactionAsync();
@@ -506,7 +532,8 @@ namespace BUA_project.Controllers
                 if (identityUser != null)
                 {
                     var identityDeleteResult =
-                        await _userManager.DeleteAsync(identityUser);
+                        await _userManager.DeleteAsync(
+                            identityUser);
 
                     if (!identityDeleteResult.Succeeded)
                     {
@@ -565,7 +592,8 @@ namespace BUA_project.Controllers
 
         private bool UserExists(int id)
         {
-            return _context.Users.Any(u => u.UserId == id);
+            return _context.Users
+                .Any(u => u.UserId == id);
         }
     }
 }

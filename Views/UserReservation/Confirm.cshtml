@@ -1,0 +1,379 @@
+﻿@model BUA_project.Models.ViewModels.UserReservationConfirmationViewModel
+
+@{
+    Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Confirm Your Reservation";
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="card shadow">
+
+        <!-- ============================================ -->
+        <!-- Header -->
+        <!-- ============================================ -->
+
+        <div class="card-header bg-primary text-white">
+
+            <h2 class="mb-0">
+                Confirm Your Reservation
+            </h2>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <!-- ============================================ -->
+            <!-- Vehicle Information -->
+            <!-- ============================================ -->
+
+            <div class="mb-4">
+
+                <h4 class="border-bottom pb-2">
+                    🚗 Vehicle
+                </h4>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Vehicle:</strong>
+                            @Model.Vehicle.Brand
+                            @Model.Vehicle.Model
+                        </p>
+
+                        <p>
+                            <strong>Type:</strong>
+                            @Model.Vehicle.Type
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Plate Number:</strong>
+                            @Model.Vehicle.PlateNumber
+                        </p>
+
+                        <p>
+                            <strong>Seats:</strong>
+                            @Model.Vehicle.Seats
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================ -->
+            <!-- Reservation Information -->
+            <!-- ============================================ -->
+
+            <div class="mb-4">
+
+                <h4 class="border-bottom pb-2">
+                    📋 Reservation Details
+                </h4>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>From:</strong>
+                            @Model.Origin
+                        </p>
+
+                        <p>
+                            <strong>To:</strong>
+                            @Model.Destination
+                        </p>
+
+                        <p>
+                            <strong>Passengers:</strong>
+                            @Model.Passengers
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Load:</strong>
+                            @Model.Load
+                        </p>
+
+                        <p>
+                            <strong>Purpose:</strong>
+                            @Model.Purpose
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Date / Time -->
+
+                <div class="mt-2">
+
+                    <p>
+                        <strong>Start:</strong>
+                        @Model.StartDateTime.ToString("MMM dd, yyyy - HH:mm")
+                    </p>
+
+                    <p>
+                        <strong>End:</strong>
+                        @Model.EndDateTime.ToString("MMM dd, yyyy - HH:mm")
+                    </p>
+
+                    <p>
+                        <strong>Duration:</strong>
+                        @((Model.EndDateTime - Model.StartDateTime).TotalHours.ToString("0.##")) hours
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================ -->
+            <!-- Route Estimate -->
+            <!-- ============================================ -->
+
+            <div class="mb-4">
+
+                <h4 class="border-bottom pb-2">
+                    🛣️ Route Estimate
+                </h4>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <p>
+                            <strong>Distance:</strong>
+                            @Model.Distance.ToString("0.##") km
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <p>
+                            <strong>Duration:</strong>
+                            @Model.Duration.TotalHours.ToString("0.##") hours
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <p>
+                            <strong>Provider:</strong>
+                            @Model.RouteProvider
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================ -->
+            <!-- Fuel Prediction -->
+            <!-- ============================================ -->
+
+            <div class="mb-4">
+
+                <h4 class="border-bottom pb-2">
+                    ⛽ Fuel Prediction
+                </h4>
+
+
+                <div class="row">
+
+                    <!-- Estimated Fuel -->
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Estimated Fuel:</strong>
+
+                            @Model.EstimatedFuel.ToString("0.##") L
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Fuel Range -->
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Fuel Range:</strong>
+
+                            @Model.FuelMin.ToString("0.##")
+                            -
+                            @Model.FuelMax.ToString("0.##") L
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Fuel Cost -->
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Estimated Cost:</strong>
+
+                            ≈
+                            @Model.FuelCost.ToString("0.##")
+                            EGP
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Fuel Cost Range -->
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Cost Range:</strong>
+
+                            @Model.FuelCostMin.ToString("0.##")
+                            -
+                            @Model.FuelCostMax.ToString("0.##")
+                            EGP
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Fuel Price -->
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Fuel Price:</strong>
+
+                            @Model.FuelPricePerLiter.ToString("0.##")
+                            EGP / Liter
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Method -->
+
+                    <div class="col-md-6">
+
+                        <p>
+                            <strong>Method:</strong>
+
+                            @Model.FuelMethod
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ======================================== -->
+                <!-- Assumptions -->
+                <!-- ======================================== -->
+
+                <div class="mt-2">
+
+                    <p>
+                        <strong>Assumptions:</strong>
+                    </p>
+
+                    <div class="alert alert-secondary">
+
+                        @Model.FuelAssumptions
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================ -->
+            <!-- Confirmation Message -->
+            <!-- ============================================ -->
+
+            <div class="alert alert-warning">
+
+                <strong>Please review your reservation.</strong>
+
+                <br />
+
+                Once you confirm, the reservation will be submitted
+                with <strong>Pending</strong> status for approval.
+
+            </div>
+
+
+            <!-- ============================================ -->
+            <!-- Confirm / Cancel -->
+            <!-- ============================================ -->
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+
+                <!-- Cancel -->
+
+                <a asp-controller="UserReservation"
+                   asp-action="Cancel"
+                   class="btn btn-secondary">
+
+                    Cancel
+
+                </a>
+
+
+                <!-- Confirm -->
+
+                <form asp-controller="UserReservation"
+                      asp-action="ConfirmReservation"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        Confirm Reservation
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

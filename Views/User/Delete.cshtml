@@ -1,3 +1,8 @@
+
+@{
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
 @model BUA_project.Models.User
 
 @{
@@ -15,7 +20,6 @@
     and driver information.
 </div>
 
-
 <dl class="row">
 
     <dt class="col-sm-3">
@@ -26,7 +30,6 @@
         @Model.UserId
     </dd>
 
-
     <dt class="col-sm-3">
         Name
     </dt>
@@ -35,7 +38,6 @@
         @Model.Name
     </dd>
 
-
     <dt class="col-sm-3">
         Email
     </dt>
@@ -43,7 +45,6 @@
     <dd class="col-sm-9">
         @Model.Email
     </dd>
-
 
     <dt class="col-sm-3">
         Role
@@ -54,7 +55,6 @@
     </dd>
 
 </dl>
-
 
 <form asp-action="Delete"
       method="post">

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BUA_project.Migrations
 {
     [DbContext(typeof(Entity))]
-    [Migration("20260925092810_AddAuditLogs")]
-    partial class AddAuditLogs
+    [Migration("20260926061050_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -382,6 +382,10 @@ namespace BUA_project.Migrations
                     b.Property<double>("EndOdometer")
                         .HasColumnType("float");
 
+                    b.Property<decimal>("FuelPricePerLiter")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("IncidentNotes")
                         .HasColumnType("nvarchar(max)");
 
@@ -452,6 +456,9 @@ namespace BUA_project.Migrations
 
                     b.Property<string>("FuelType")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Model")

@@ -65,21 +65,6 @@ namespace BUA_project
                 .WithStaticAssets();
 
             app.Run();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Account}/{action=Login}/{id?}")
-                .WithStaticAssets();
-
-            app.Run();
         }
     }
 }

@@ -1,3 +1,4 @@
+
 using BUA_project.DTOs;
 using BUA_project.Models;
 using BUA_project.Services;
@@ -19,7 +20,10 @@ namespace BUA_project.Controllers
             _fuelPredictionService = fuelPredictionService;
         }
 
+        // =========================================================
         // GET: /FuelEstimate
+        // =========================================================
+
         public async Task<IActionResult> Index()
         {
             var fuelEstimates = await _context.FuelEstimates
@@ -30,7 +34,10 @@ namespace BUA_project.Controllers
             return View(fuelEstimates);
         }
 
+        // =========================================================
         // GET: /FuelEstimate/Details/5
+        // =========================================================
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,7 +55,10 @@ namespace BUA_project.Controllers
             return View(fuelEstimate);
         }
 
+        // =========================================================
         // GET: /FuelEstimate/Predict?reservationId=5
+        // =========================================================
+
         [HttpGet]
         public async Task<IActionResult> Predict(int reservationId)
         {
@@ -68,12 +78,18 @@ namespace BUA_project.Controllers
             return View(reservation);
         }
 
+        // =========================================================
         // POST: /FuelEstimate/PredictFuel
+        // =========================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PredictFuel(int reservationId)
         {
-            // 1. Get Reservation + required data
+            // =====================================================
+            // 1. Get Reservation + Required Data
+            // =====================================================
+
             var reservation = await _context.Reservations
                 .Include(r => r.Vehicle)
                     .ThenInclude(v => v.VehicleSpecification)
@@ -87,18 +103,29 @@ namespace BUA_project.Controllers
             if (reservation == null)
                 return NotFound();
 
-            var existingEstimate = await _context.FuelEstimates
-            .FirstOrDefaultAsync(f =>
-            f.ReservationId == reservationId);
+            // =====================================================
+            // Check Existing Estimate
+            // =====================================================
+
+            var existingEstimate =
+                await _context.FuelEstimates
+                    .FirstOrDefaultAsync(
+                        f => f.ReservationId == reservationId);
 
             if (existingEstimate != null)
             {
                 return RedirectToAction(
                     nameof(Details),
-                    new { id = existingEstimate.FuelEstimateId });
+                    new
+                    {
+                        id = existingEstimate.FuelEstimateId
+                    });
             }
 
+            // =====================================================
             // 2. Check Vehicle
+            // =====================================================
+
             if (reservation.Vehicle == null)
             {
                 TempData["Error"] =
@@ -107,11 +134,16 @@ namespace BUA_project.Controllers
                 return RedirectToAction(
                     "Details",
                     "Reservation",
-                    new { id = reservationId });
+                    new
+                    {
+                        id = reservationId
+                    });
             }
 
-
+            // =====================================================
             // 3. Check Vehicle Specification
+            // =====================================================
+
             if (reservation.Vehicle.VehicleSpecification == null)
             {
                 TempData["Error"] =
@@ -120,11 +152,16 @@ namespace BUA_project.Controllers
                 return RedirectToAction(
                     "Details",
                     "Reservation",
-                    new { id = reservationId });
+                    new
+                    {
+                        id = reservationId
+                    });
             }
 
-
+            // =====================================================
             // 4. Check Trip
+            // =====================================================
+
             if (reservation.Trip == null)
             {
                 TempData["Error"] =
@@ -133,11 +170,16 @@ namespace BUA_project.Controllers
                 return RedirectToAction(
                     "Details",
                     "Reservation",
-                    new { id = reservationId });
+                    new
+                    {
+                        id = reservationId
+                    });
             }
 
-
+            // =====================================================
             // 5. Check Route Estimate
+            // =====================================================
+
             if (reservation.Trip.RouteEstimate == null)
             {
                 TempData["Error"] =
@@ -146,22 +188,47 @@ namespace BUA_project.Controllers
                 return RedirectToAction(
                     "Details",
                     "Reservation",
-                    new { id = reservationId });
+                    new
+                    {
+                        id = reservationId
+                    });
             }
 
+            // =====================================================
+            // 6. Get Applicable Fuel Price
+            // =====================================================
+            // Select the latest fuel price for the vehicle's
+            // fuel type that was effective on or before
+            // the reservation start date.
 
-            // 6. Get applicable fuel price
-            // Select the latest price for the vehicle's fuel type
-            // that was effective on or before the reservation start date.
             var fuelPrice = await _context.FuelPrices
                 .Where(f =>
-                    f.FuelType == reservation.Vehicle.FuelType &&
-                    f.EffectiveDate <= reservation.StartDateTime)
-                .OrderByDescending(f => f.EffectiveDate)
+                    f.FuelType ==
+                        reservation.Vehicle.FuelType &&
+                    f.EffectiveDate <=
+                        reservation.StartDateTime)
+                .OrderByDescending(
+                    f => f.EffectiveDate)
                 .FirstOrDefaultAsync();
 
+            if (fuelPrice == null)
+            {
+                TempData["Error"] =
+                    "Fuel price has not been configured for this vehicle's fuel type.";
 
-            // 7. Prepare request for ML API
+                return RedirectToAction(
+                    "Details",
+                    "Reservation",
+                    new
+                    {
+                        id = reservationId
+                    });
+            }
+
+            // =====================================================
+            // 7. Prepare Request for ML API
+            // =====================================================
+
             var request = new FuelPredictionRequest
             {
                 Distance_km =
@@ -185,8 +252,10 @@ namespace BUA_project.Controllers
                         .TotalMinutes
             };
 
-
+            // =====================================================
             // 8. Call ML API
+            // =====================================================
+
             var result = await _fuelPredictionService
                 .PredictAsync(request);
 
@@ -198,17 +267,24 @@ namespace BUA_project.Controllers
                 return RedirectToAction(
                     "Details",
                     "Reservation",
-                    new { id = reservationId });
+                    new
+                    {
+                        id = reservationId
+                    });
             }
 
+            // =====================================================
+            // 9. Calculate Estimated Cost
+            // =====================================================
 
-            // 9. Calculate estimated cost
             decimal estimatedCost =
                 (decimal)result.predicted_fuel
                 * fuelPrice.PricePerLiter;
 
+            // =====================================================
+            // 10. Create Fuel Estimate
+            // =====================================================
 
-            // 10. Create FuelEstimate
             var fuelEstimate = new FuelEstimate
             {
                 PredictedFuel =
@@ -231,17 +307,24 @@ namespace BUA_project.Controllers
                     reservation.ReservationId
             };
 
+            // =====================================================
+            // 11. Save to Database
+            // =====================================================
 
-            // 11. Save to database
             _context.FuelEstimates.Add(fuelEstimate);
 
             await _context.SaveChangesAsync();
 
+            // =====================================================
+            // 12. Show Result
+            // =====================================================
 
-            // 12. Show result
             return RedirectToAction(
                 nameof(Details),
-                new { id = fuelEstimate.FuelEstimateId });
+                new
+                {
+                    id = fuelEstimate.FuelEstimateId
+                });
         }
     }
 }

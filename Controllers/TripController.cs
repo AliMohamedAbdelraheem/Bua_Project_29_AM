@@ -1,4 +1,4 @@
-﻿using global::BUA_project.Models;
+﻿using BUA_project.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,8 +6,12 @@ namespace BUA_project.Controllers
 {
     public class TripController : Controller
     {
-        private readonly Entity _context = new Entity();
+        private readonly Entity _context;
 
+        public TripController(Entity context)
+        {
+            _context = context;
+        }
 
         // GET: Trip
         public async Task<IActionResult> Index()
@@ -19,7 +23,6 @@ namespace BUA_project.Controllers
 
             return View(trips);
         }
-
 
         // GET: Trip/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -34,14 +37,14 @@ namespace BUA_project.Controllers
                     .ThenInclude(r => r.User)
                 .Include(t => t.RouteEstimate)
                 .Include(t => t.LocationPings)
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
 
             return View(trip);
         }
-
 
         // GET: Trip/Create
         public async Task<IActionResult> Create()
@@ -51,11 +54,11 @@ namespace BUA_project.Controllers
             return View();
         }
 
-
         // POST: Trip/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Trip trip)
+        public async Task<IActionResult> Create(
+            Trip trip)
         {
             if (!ModelState.IsValid)
             {
@@ -71,7 +74,6 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // GET: Trip/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -79,7 +81,8 @@ namespace BUA_project.Controllers
                 return NotFound();
 
             var trip = await _context.Trips
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
@@ -88,7 +91,6 @@ namespace BUA_project.Controllers
 
             return View(trip);
         }
-
 
         // POST: Trip/Edit/5
         [HttpPost]
@@ -124,7 +126,6 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // GET: Trip/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -133,7 +134,8 @@ namespace BUA_project.Controllers
 
             var trip = await _context.Trips
                 .Include(t => t.Reservation)
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
@@ -141,14 +143,15 @@ namespace BUA_project.Controllers
             return View(trip);
         }
 
-
         // POST: Trip/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(
+            int id)
         {
             var trip = await _context.Trips
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
@@ -160,7 +163,6 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // GET: Trip/Start/5
         public async Task<IActionResult> Start(int? id)
         {
@@ -169,7 +171,8 @@ namespace BUA_project.Controllers
 
             var trip = await _context.Trips
                 .Include(t => t.Reservation)
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
@@ -177,14 +180,14 @@ namespace BUA_project.Controllers
             return View(trip);
         }
 
-
         // POST: Trip/Start
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Start(int id)
         {
             var trip = await _context.Trips
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
@@ -197,7 +200,6 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // GET: Trip/Complete/5
         public async Task<IActionResult> Complete(int? id)
         {
@@ -206,14 +208,14 @@ namespace BUA_project.Controllers
 
             var trip = await _context.Trips
                 .Include(t => t.Reservation)
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
 
             return View(trip);
         }
-
 
         // POST: Trip/Complete
         [HttpPost]
@@ -227,7 +229,8 @@ namespace BUA_project.Controllers
             string? incidentNotes)
         {
             var trip = await _context.Trips
-                .FirstOrDefaultAsync(t => t.TripId == id);
+                .FirstOrDefaultAsync(
+                    t => t.TripId == id);
 
             if (trip == null)
                 return NotFound();
@@ -246,19 +249,19 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         private async Task LoadDropdowns()
         {
-            ViewBag.Reservations = await _context.Reservations
-                .Where(r =>
-                    r.Status == "Approved" &&
-                    r.DriverId != null)
-                .ToListAsync();
+            ViewBag.Reservations =
+                await _context.Reservations
+                    .Where(r =>
+                        r.Status == "Approved" &&
+                        r.DriverId != null)
+                    .ToListAsync();
 
-            ViewBag.RouteEstimates = await _context.RouteEstimates
-                .ToListAsync();
+            ViewBag.RouteEstimates =
+                await _context.RouteEstimates
+                    .ToListAsync();
         }
-
 
         private bool TripExists(int id)
         {

@@ -1,0 +1,32 @@
+@{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "Active Trip";
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center p-5">
+
+            <h2>
+                No Active Trip
+            </h2>
+
+            <p class="text-muted mt-3">
+                You currently don't have an active trip.
+            </p>
+
+            <a asp-controller="DriverDashboard"
+               asp-action="MyTrips"
+               class="btn btn-primary mt-2">
+
+                View My Trips
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

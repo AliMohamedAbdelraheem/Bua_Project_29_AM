@@ -1,4 +1,5 @@
 ﻿using BUA_project.Models;
+using BUA_project.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,11 @@ namespace BUA_project.Controllers
             _context = context;
         }
 
+
+        // ============================================================
         // GET: Vehicle
+        // ============================================================
+
         public async Task<IActionResult> Index()
         {
             var vehicles = await _context.Vehicles
@@ -26,7 +31,11 @@ namespace BUA_project.Controllers
             return View(vehicles);
         }
 
+
+        // ============================================================
         // GET: Vehicle/Details/5
+        // ============================================================
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,7 +43,8 @@ namespace BUA_project.Controllers
 
             var vehicle = await _context.Vehicles
                 .Include(v => v.VehicleSpecification)
-                .FirstOrDefaultAsync(v => v.VehicleId == id);
+                .FirstOrDefaultAsync(v =>
+                    v.VehicleId == id);
 
             if (vehicle == null)
                 return NotFound();
@@ -42,32 +52,44 @@ namespace BUA_project.Controllers
             return View(vehicle);
         }
 
+
+        // ============================================================
         // GET: Vehicle/Create
+        // ============================================================
+
         public async Task<IActionResult> Create()
         {
             await LoadVehicleSpecifications();
 
             return View();
         }
-        
+
+
+        // ============================================================
+        // POST: Vehicle/Create
+        // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Vehicle vehicle)
+        public async Task<IActionResult> Create(
+            VehicleCreateViewModel model)
         {
-            Console.WriteLine("========== CREATE VEHICLE ==========");
+            Console.WriteLine(
+                "========== CREATE VEHICLE ==========");
 
-            Console.WriteLine($"Type: {vehicle.Type}");
-            Console.WriteLine($"Brand: {vehicle.Brand}");
-            Console.WriteLine($"Model: {vehicle.Model}");
-            Console.WriteLine($"Seats: {vehicle.Seats}");
-            Console.WriteLine($"FuelType: {vehicle.FuelType}");
-            Console.WriteLine($"PlateNumber: {vehicle.PlateNumber}");
-            Console.WriteLine($"Status: {vehicle.Status}");
-            Console.WriteLine($"Year: {vehicle.Year}");
-            Console.WriteLine($"SpecificationId: {vehicle.VehicleSpecificationId}");
+            Console.WriteLine($"Type: {model.Type}");
+            Console.WriteLine($"Brand: {model.Brand}");
+            Console.WriteLine($"Model: {model.Model}");
+            Console.WriteLine($"Seats: {model.Seats}");
+            Console.WriteLine($"FuelType: {model.FuelType}");
+            Console.WriteLine($"PlateNumber: {model.PlateNumber}");
+            Console.WriteLine($"Status: {model.Status}");
+            Console.WriteLine($"Year: {model.Year}");
+            Console.WriteLine(
+                $"SpecificationId: {model.VehicleSpecificationId}");
 
-            Console.WriteLine($"ModelState Valid: {ModelState.IsValid}");
+            Console.WriteLine(
+                $"ModelState Valid: {ModelState.IsValid}");
 
             foreach (var state in ModelState)
             {
@@ -87,14 +109,15 @@ namespace BUA_project.Controllers
             if (!ModelState.IsValid)
             {
                 await LoadVehicleSpecifications();
-                return View(vehicle);
+
+                return View(model);
             }
 
             var specificationExists =
                 await _context.VehicleSpecifications
                     .AnyAsync(vs =>
                         vs.VehicleSpecificationId ==
-                        vehicle.VehicleSpecificationId);
+                        model.VehicleSpecificationId);
 
             Console.WriteLine(
                 $"Specification Exists: {specificationExists}");
@@ -107,57 +130,212 @@ namespace BUA_project.Controllers
 
                 await LoadVehicleSpecifications();
 
-                return View(vehicle);
+                return View(model);
             }
+
+
+            // ========================================================
+            // Create Vehicle
+            // ========================================================
+
+            var vehicle = new Vehicle
+            {
+                Type =
+                    model.Type,
+
+                Brand =
+                    model.Brand,
+
+                Model =
+                    model.Model,
+
+                Seats =
+                    model.Seats,
+
+                FuelType =
+                    model.FuelType,
+
+                PlateNumber =
+                    model.PlateNumber,
+
+                Status =
+                    model.Status,
+
+                Year =
+                    model.Year,
+
+                VehicleSpecificationId =
+                    model.VehicleSpecificationId
+            };
+
+
+            // ========================================================
+            // Upload Vehicle Image
+            // ========================================================
+
+            if (model.Image != null &&
+                model.Image.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "images",
+                    "vehicles"
+                );
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(
+                        uploadsFolder);
+                }
+
+                var fileName =
+                    Guid.NewGuid().ToString()
+                    + Path.GetExtension(
+                        model.Image.FileName);
+
+                var filePath =
+                    Path.Combine(
+                        uploadsFolder,
+                        fileName);
+
+                using (var stream =
+                    new FileStream(
+                        filePath,
+                        FileMode.Create))
+                {
+                    await model.Image.CopyToAsync(stream);
+                }
+
+                vehicle.ImageUrl =
+                    "/images/vehicles/" + fileName;
+            }
+
+
+            // ========================================================
+            // Save Vehicle
+            // ========================================================
 
             _context.Vehicles.Add(vehicle);
 
-            Console.WriteLine("Calling SaveChangesAsync...");
+            Console.WriteLine(
+                "Calling SaveChangesAsync...");
 
             await _context.SaveChangesAsync();
 
-            Console.WriteLine("Vehicle Created Successfully!");
+            Console.WriteLine(
+                "Vehicle Created Successfully!");
 
             return RedirectToAction(nameof(Index));
         }
 
 
+        // ============================================================
         // GET: Vehicle/Edit/5
+        // ============================================================
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 return NotFound();
 
             var vehicle = await _context.Vehicles
-                .FirstOrDefaultAsync(v => v.VehicleId == id);
+                .FirstOrDefaultAsync(v =>
+                    v.VehicleId == id);
 
             if (vehicle == null)
                 return NotFound();
 
+            var model = new VehicleEditViewModel
+            {
+                VehicleId =
+                    vehicle.VehicleId,
+
+                Type =
+                    vehicle.Type,
+
+                Brand =
+                    vehicle.Brand,
+
+                Model =
+                    vehicle.Model,
+
+                Seats =
+                    vehicle.Seats,
+
+                FuelType =
+                    vehicle.FuelType,
+
+                PlateNumber =
+                    vehicle.PlateNumber,
+
+                Status =
+                    vehicle.Status,
+
+                Year =
+                    vehicle.Year,
+
+                VehicleSpecificationId =
+                    vehicle.VehicleSpecificationId,
+
+                ExistingImageUrl =
+                    vehicle.ImageUrl
+            };
+
             await LoadVehicleSpecifications();
 
-            return View(vehicle);
+            return View(model);
         }
+
+
+        // ============================================================
+        // POST: Vehicle/Edit/5
+        // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Vehicle vehicle)
+        public async Task<IActionResult> Edit(
+            int id,
+            VehicleEditViewModel model)
         {
-            Console.WriteLine("========== EDIT VEHICLE ==========");
+            Console.WriteLine(
+                "========== EDIT VEHICLE ==========");
 
-            Console.WriteLine($"Route ID: {id}");
-            Console.WriteLine($"Vehicle ID: {vehicle.VehicleId}");
-            Console.WriteLine($"Type: {vehicle.Type}");
-            Console.WriteLine($"Brand: {vehicle.Brand}");
-            Console.WriteLine($"Model: {vehicle.Model}");
-            Console.WriteLine($"Seats: {vehicle.Seats}");
-            Console.WriteLine($"FuelType: {vehicle.FuelType}");
-            Console.WriteLine($"PlateNumber: {vehicle.PlateNumber}");
-            Console.WriteLine($"Status: {vehicle.Status}");
-            Console.WriteLine($"Year: {vehicle.Year}");
-            Console.WriteLine($"SpecificationId: {vehicle.VehicleSpecificationId}");
+            Console.WriteLine(
+                $"Route ID: {id}");
 
-            Console.WriteLine($"ModelState Valid: {ModelState.IsValid}");
+            Console.WriteLine(
+                $"Vehicle ID: {model.VehicleId}");
+
+            Console.WriteLine(
+                $"Type: {model.Type}");
+
+            Console.WriteLine(
+                $"Brand: {model.Brand}");
+
+            Console.WriteLine(
+                $"Model: {model.Model}");
+
+            Console.WriteLine(
+                $"Seats: {model.Seats}");
+
+            Console.WriteLine(
+                $"FuelType: {model.FuelType}");
+
+            Console.WriteLine(
+                $"PlateNumber: {model.PlateNumber}");
+
+            Console.WriteLine(
+                $"Status: {model.Status}");
+
+            Console.WriteLine(
+                $"Year: {model.Year}");
+
+            Console.WriteLine(
+                $"SpecificationId: {model.VehicleSpecificationId}");
+
+            Console.WriteLine(
+                $"ModelState Valid: {ModelState.IsValid}");
 
             foreach (var state in ModelState)
             {
@@ -174,20 +352,21 @@ namespace BUA_project.Controllers
                 }
             }
 
-            if (id != vehicle.VehicleId)
+            if (id != model.VehicleId)
                 return NotFound();
 
             if (!ModelState.IsValid)
             {
                 await LoadVehicleSpecifications();
-                return View(vehicle);
+
+                return View(model);
             }
 
             var specificationExists =
                 await _context.VehicleSpecifications
                     .AnyAsync(vs =>
                         vs.VehicleSpecificationId ==
-                        vehicle.VehicleSpecificationId);
+                        model.VehicleSpecificationId);
 
             Console.WriteLine(
                 $"Specification Exists: {specificationExists}");
@@ -200,37 +379,147 @@ namespace BUA_project.Controllers
 
                 await LoadVehicleSpecifications();
 
-                return View(vehicle);
+                return View(model);
             }
 
-            var existingVehicle = await _context.Vehicles
-                .FirstOrDefaultAsync(v => v.VehicleId == id);
+            var vehicle = await _context.Vehicles
+                .FirstOrDefaultAsync(v =>
+                    v.VehicleId == id);
 
-            if (existingVehicle == null)
+            if (vehicle == null)
                 return NotFound();
 
-            existingVehicle.Type = vehicle.Type;
-            existingVehicle.Brand = vehicle.Brand;
-            existingVehicle.Model = vehicle.Model;
-            existingVehicle.Seats = vehicle.Seats;
-            existingVehicle.FuelType = vehicle.FuelType;
-            existingVehicle.PlateNumber = vehicle.PlateNumber;
-            existingVehicle.Status = vehicle.Status;
-            existingVehicle.Year = vehicle.Year;
-            existingVehicle.VehicleSpecificationId =
-                vehicle.VehicleSpecificationId;
 
-            Console.WriteLine("Calling SaveChangesAsync...");
+            // ========================================================
+            // Update Vehicle Information
+            // ========================================================
+
+            vehicle.Type =
+                model.Type;
+
+            vehicle.Brand =
+                model.Brand;
+
+            vehicle.Model =
+                model.Model;
+
+            vehicle.Seats =
+                model.Seats;
+
+            vehicle.FuelType =
+                model.FuelType;
+
+            vehicle.PlateNumber =
+                model.PlateNumber;
+
+            vehicle.Status =
+                model.Status;
+
+            vehicle.Year =
+                model.Year;
+
+            vehicle.VehicleSpecificationId =
+                model.VehicleSpecificationId;
+
+
+            // ========================================================
+            // Upload New Image
+            // ========================================================
+
+            if (model.Image != null &&
+                model.Image.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "images",
+                    "vehicles"
+                );
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(
+                        uploadsFolder);
+                }
+
+
+                // ====================================================
+                // Delete Old Image
+                // ====================================================
+
+                if (!string.IsNullOrEmpty(
+                    vehicle.ImageUrl))
+                {
+                    var oldImagePath =
+                        Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot",
+                            vehicle.ImageUrl
+                                .TrimStart('/')
+                                .Replace(
+                                    "/",
+                                    Path.DirectorySeparatorChar
+                                        .ToString()
+                                )
+                        );
+
+                    if (System.IO.File.Exists(
+                        oldImagePath))
+                    {
+                        System.IO.File.Delete(
+                            oldImagePath);
+                    }
+                }
+
+
+                // ====================================================
+                // Save New Image
+                // ====================================================
+
+                var fileName =
+                    Guid.NewGuid().ToString()
+                    + Path.GetExtension(
+                        model.Image.FileName);
+
+                var filePath =
+                    Path.Combine(
+                        uploadsFolder,
+                        fileName);
+
+                using (var stream =
+                    new FileStream(
+                        filePath,
+                        FileMode.Create))
+                {
+                    await model.Image.CopyToAsync(
+                        stream);
+                }
+
+                vehicle.ImageUrl =
+                    "/images/vehicles/" + fileName;
+            }
+
+
+            // ========================================================
+            // Save Changes
+            // ========================================================
+
+            Console.WriteLine(
+                "Calling SaveChangesAsync...");
 
             await _context.SaveChangesAsync();
 
-            Console.WriteLine("Vehicle Updated Successfully!");
+            Console.WriteLine(
+                "Vehicle Updated Successfully!");
 
             return RedirectToAction(nameof(Index));
         }
 
 
+        // ============================================================
         // GET: Vehicle/Delete/5
+        // ============================================================
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -238,7 +527,8 @@ namespace BUA_project.Controllers
 
             var vehicle = await _context.Vehicles
                 .Include(v => v.VehicleSpecification)
-                .FirstOrDefaultAsync(v => v.VehicleId == id);
+                .FirstOrDefaultAsync(v =>
+                    v.VehicleId == id);
 
             if (vehicle == null)
                 return NotFound();
@@ -246,16 +536,56 @@ namespace BUA_project.Controllers
             return View(vehicle);
         }
 
+
+        // ============================================================
         // POST: Vehicle/Delete/5
+        // ============================================================
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(
+            int id)
         {
             var vehicle = await _context.Vehicles
-                .FirstOrDefaultAsync(v => v.VehicleId == id);
+                .FirstOrDefaultAsync(v =>
+                    v.VehicleId == id);
 
             if (vehicle == null)
                 return NotFound();
+
+
+            // ========================================================
+            // Delete Vehicle Image
+            // ========================================================
+
+            if (!string.IsNullOrEmpty(
+                vehicle.ImageUrl))
+            {
+                var imagePath =
+                    Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        vehicle.ImageUrl
+                            .TrimStart('/')
+                            .Replace(
+                                "/",
+                                Path.DirectorySeparatorChar
+                                    .ToString()
+                            )
+                    );
+
+                if (System.IO.File.Exists(
+                    imagePath))
+                {
+                    System.IO.File.Delete(
+                        imagePath);
+                }
+            }
+
+
+            // ========================================================
+            // Delete Vehicle From Database
+            // ========================================================
 
             _context.Vehicles.Remove(vehicle);
 
@@ -268,24 +598,38 @@ namespace BUA_project.Controllers
                 TempData["DeleteError"] =
                     "This vehicle cannot be deleted because it is used in other records.";
 
-                return RedirectToAction(nameof(Delete), new { id });
+                return RedirectToAction(
+                    nameof(Delete),
+                    new { id });
             }
 
             return RedirectToAction(nameof(Index));
         }
 
+
+        // ============================================================
+        // Load Vehicle Specifications
+        // ============================================================
+
         private async Task LoadVehicleSpecifications()
         {
             ViewBag.VehicleSpecifications =
                 await _context.VehicleSpecifications
-                    .OrderBy(vs => vs.VehicleSpecificationId)
+                    .OrderBy(vs =>
+                        vs.VehicleSpecificationId)
                     .ToListAsync();
         }
+
+
+        // ============================================================
+        // Vehicle Exists
+        // ============================================================
 
         private async Task<bool> VehicleExists(int id)
         {
             return await _context.Vehicles
-                .AnyAsync(v => v.VehicleId == id);
+                .AnyAsync(v =>
+                    v.VehicleId == id);
         }
     }
 }

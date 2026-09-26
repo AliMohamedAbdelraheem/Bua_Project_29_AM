@@ -1,403 +1,251 @@
-﻿@model BUA_project.Models.Reservation
+﻿```cshtml
+@model BUA_project.Models.Reservation
 
 @{
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Reservation Details";
 }
 
-<div class="container-fluid">
+<div class="container mt-4">
 
-    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="mb-1">Reservation Details</h1>
-            <p class="text-muted mb-0">
-                Reservation #@Model.ReservationId
-            </p>
-        </div>
+        <h1>Reservation Details</h1>
 
         <a asp-action="Index" class="btn btn-secondary">
-            Back to Reservations
+            Back to List
         </a>
     </div>
 
-
-    <!-- Reservation Status -->
     <div class="card shadow-sm mb-4">
-        <div class="card-body">
-
-            <div class="row align-items-center">
-
-                <div class="col-md-8">
-                    <h5 class="text-muted mb-1">
-                        Reservation ID
-                    </h5>
-
-                    <h3 class="mb-0">
-                        #@Model.ReservationId
-                    </h3>
-                </div>
-
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
-
-                    <span class="text-muted d-block mb-2">
-                        Status
-                    </span>
-
-                    @switch (Model.Status)
-                    {
-                        case "Pending":
-                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
-                        Pending
-                    </span>
-                            break;
-
-                        case "Approved":
-                    <span class="badge bg-success fs-6 px-3 py-2">
-                        Approved
-                    </span>
-                            break;
-
-                        case "Rejected":
-                    <span class="badge bg-danger fs-6 px-3 py-2">
-                        Rejected
-                    </span>
-                            break;
-
-                        case "Cancelled":
-                    <span class="badge bg-secondary fs-6 px-3 py-2">
-                        Cancelled
-                    </span>
-                            break;
-
-                        case "Dispatched":
-                    <span class="badge bg-primary fs-6 px-3 py-2">
-                        Dispatched
-                    </span>
-                            break;
-
-                        case "Active":
-                    <span class="badge bg-info text-dark fs-6 px-3 py-2">
-                        Active
-                    </span>
-                            break;
-
-                        case "Completed":
-                    <span class="badge bg-dark fs-6 px-3 py-2">
-                        Completed
-                    </span>
-                            break;
-
-                        default:
-                    <span class="badge bg-secondary fs-6 px-3 py-2">
-                        @Model.Status
-                    </span>
-                            break;
-                    }
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-
-    <!-- Trip Information -->
-    <div class="card shadow-sm mb-4">
-
         <div class="card-header">
-            <h5 class="mb-0">
-                Trip Information
-            </h5>
+            <h4 class="mb-0">Reservation Information</h4>
         </div>
 
         <div class="card-body">
-
-            <div class="row g-4">
-
-                <!-- Start Date -->
-                <div class="col-md-6">
-                    <div class="border rounded p-3 h-100">
-
-                        <span class="text-muted small d-block">
-                            Start Date & Time
-                        </span>
-
-                        <h5 class="mb-0 mt-2">
-                            @Model.StartDateTime.ToString("dd MMMM yyyy")
-                        </h5>
-
-                        <span class="text-muted">
-                            @Model.StartDateTime.ToString("hh:mm tt")
-                        </span>
-
-                    </div>
-                </div>
-
-
-                <!-- End Date -->
-                <div class="col-md-6">
-                    <div class="border rounded p-3 h-100">
-
-                        <span class="text-muted small d-block">
-                            End Date & Time
-                        </span>
-
-                        <h5 class="mb-0 mt-2">
-                            @Model.EndDateTime.ToString("dd MMMM yyyy")
-                        </h5>
-
-                        <span class="text-muted">
-                            @Model.EndDateTime.ToString("hh:mm tt")
-                        </span>
-
-                    </div>
-                </div>
-
-
-                <!-- Origin -->
-                <div class="col-md-6">
-                    <div class="border rounded p-3 h-100">
-
-                        <span class="text-muted small d-block">
-                            Origin
-                        </span>
-
-                        <h5 class="mb-0 mt-2">
-                            @Model.Origin
-                        </h5>
-
-                    </div>
-                </div>
-
-
-                <!-- Destination -->
-                <div class="col-md-6">
-                    <div class="border rounded p-3 h-100">
-
-                        <span class="text-muted small d-block">
-                            Destination
-                        </span>
-
-                        <h5 class="mb-0 mt-2">
-                            @Model.Destination
-                        </h5>
-
-                    </div>
-                </div>
-
-
-                <!-- Passengers -->
-                <div class="col-md-4">
-                    <div class="border rounded p-3 text-center h-100">
-
-                        <span class="text-muted small d-block">
-                            Passengers
-                        </span>
-
-                        <h3 class="mb-0 mt-2">
-                            @Model.Passengers
-                        </h3>
-
-                    </div>
-                </div>
-
-
-                <!-- Load -->
-                <div class="col-md-4">
-                    <div class="border rounded p-3 text-center h-100">
-
-                        <span class="text-muted small d-block">
-                            Load
-                        </span>
-
-                        <h3 class="mb-0 mt-2">
-                            @Model.Load
-                        </h3>
-
-                    </div>
-                </div>
-
-
-                <!-- Purpose -->
-                <div class="col-md-4">
-                    <div class="border rounded p-3 h-100">
-
-                        <span class="text-muted small d-block">
-                            Purpose
-                        </span>
-
-                        <h5 class="mb-0 mt-2">
-                            @Model.Purpose
-                        </h5>
-
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-
-    <!-- Assignment Information -->
-    <div class="row g-4 mb-4">
-
-        <!-- Vehicle -->
-        <div class="col-md-6">
-
-            <div class="card shadow-sm h-100">
-
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        Vehicle
-                    </h5>
-                </div>
-
-                <div class="card-body">
-
-                    @if (Model.Vehicle != null)
-                    {
-                    <div class="mb-3">
-
-                        <span class="text-muted small d-block">
-                            Vehicle
-                        </span>
-
-                        <h4 class="mb-0">
-                            @Model.Vehicle.Brand @Model.Vehicle.Model
-                        </h4>
-
-                    </div>
-
-                    <div>
-
-                        <span class="text-muted small d-block">
-                            Plate Number
-                        </span>
-
-                        <strong>
-                            @Model.Vehicle.PlateNumber
-                        </strong>
-
-                    </div>
-                    }
-                    else
-                    {
-                    <div class="text-muted text-center py-3">
-                        No Vehicle Assigned
-                    </div>
-                    }
-
-                </div>
-            </div>
-
-        </div>
-
-
-        <!-- Driver -->
-        <div class="col-md-6">
-
-            <div class="card shadow-sm h-100">
-
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        Driver
-                    </h5>
-                </div>
-
-                <div class="card-body">
-
-                    @if (Model.Driver != null)
-                    {
-                    <div>
-
-                        <span class="text-muted small d-block">
-                            Driver Name
-                        </span>
-
-                        <h4 class="mb-0">
-                            @Model.Driver.Name
-                        </h4>
-
-                    </div>
-                    }
-                    else
-                    {
-                    <div class="text-muted text-center py-3">
-                        No Driver Assigned
-                    </div>
-                    }
-
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Requester Information -->
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-header">
-            <h5 class="mb-0">
-                Requester Information
-            </h5>
-        </div>
-
-        <div class="card-body">
-
-            @if (Model.User != null)
-            {
             <div class="row">
 
-                <div class="col-md-6">
-
-                    <span class="text-muted small d-block">
-                        Requester Name
-                    </span>
-
-                    <h5 class="mb-0 mt-1">
-                        @Model.User.Name
-                    </h5>
-
+                <div class="col-md-6 mb-3">
+                    <strong>Reservation ID:</strong>
+                    <div>@Model.ReservationId</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 mb-3">
+                    <strong>Status:</strong>
+                    <div>
+                        @switch (Model.Status)
+                        {
+                            case "Pending":
+                        <span class="badge bg-warning text-dark">Pending</span>
+                                break;
 
-                    <span class="text-muted small d-block">
-                        User ID
-                    </span>
+                            case "Approved":
+                        <span class="badge bg-success">Approved</span>
+                                break;
 
-                    <h5 class="mb-0 mt-1">
-                        #@Model.User.UserId
-                    </h5>
+                            case "Rejected":
+                        <span class="badge bg-danger">Rejected</span>
+                                break;
 
+                            case "Cancelled":
+                        <span class="badge bg-secondary">Cancelled</span>
+                                break;
+
+                            case "Dispatched":
+                        <span class="badge bg-info text-dark">Dispatched</span>
+                                break;
+
+                            case "Active":
+                        <span class="badge bg-primary">Active</span>
+                                break;
+
+                            case "Completed":
+                        <span class="badge bg-success">Completed</span>
+                                break;
+
+                            default:
+                        <span class="badge bg-secondary">@Model.Status</span>
+                                break;
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Start:</strong>
+                    <div>@Model.StartDateTime</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>End:</strong>
+                    <div>@Model.EndDateTime</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Origin:</strong>
+                    <div>@Model.Origin</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Destination:</strong>
+                    <div>@Model.Destination</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Passengers:</strong>
+                    <div>@Model.Passengers</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Load:</strong>
+                    <div>@Model.Load</div>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <strong>Purpose:</strong>
+                    <div>@Model.Purpose</div>
                 </div>
 
             </div>
-            }
-            else
-            {
-            <span class="text-muted">
-                No Requester Information
-            </span>
-            }
-
         </div>
     </div>
 
+    @if (Model.Vehicle != null)
+    {
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Vehicle</h4>
+        </div>
 
-    <!-- Bottom Actions -->
-    <div class="d-flex justify-content-end mb-4">
+        <div class="card-body">
+            <div class="row">
 
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Back to Reservations
-        </a>
+                <div class="col-md-4">
+                    <strong>Brand:</strong>
+                    <div>@Model.Vehicle.Brand</div>
+                </div>
 
+                <div class="col-md-4">
+                    <strong>Model:</strong>
+                    <div>@Model.Vehicle.Model</div>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Plate Number:</strong>
+                    <div>@Model.Vehicle.PlateNumber</div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <strong>Type:</strong>
+                    <div>@Model.Vehicle.Type</div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <strong>Fuel Type:</strong>
+                    <div>@Model.Vehicle.FuelType</div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <strong>Seats:</strong>
+                    <div>@Model.Vehicle.Seats</div>
+                </div>
+
+            </div>
+        </div>
     </div>
+    }
+
+    @if (Model.Driver != null)
+    {
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Driver</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>Name:</strong>
+                    <div>@Model.Driver.Name</div>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>License Number:</strong>
+                    <div>@Model.Driver.LicenseNumber</div>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Qualification:</strong>
+                    <div>@Model.Driver.QualificationStatus</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (Model.User != null)
+    {
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Requester</h4>
+        </div>
+
+        <div class="card-body">
+            <strong>Name:</strong>
+            <div>@Model.User.Name</div>
+
+            <strong class="d-block mt-3">Email:</strong>
+            <div>@Model.User.Email</div>
+        </div>
+    </div>
+    }
+
+    @if (Model.Trip != null)
+    {
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Trip Information</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>Trip Status:</strong>
+                    <div>@Model.Trip.Status</div>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Started At:</strong>
+                    <div>@Model.Trip.StartedAt</div>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Completed At:</strong>
+                    <div>
+                        @(Model.Trip.CompletedAt?.ToString() ?? "Not Completed")
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <strong>Actual Distance:</strong>
+                    <div>@Model.Trip.ActualDistanceKm km</div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <strong>Actual Fuel:</strong>
+                    <div>@Model.Trip.ActualFuelLiters L</div>
+                </div>
+
+                <div class="col-md-4 mt-3">
+                    <strong>Actual Fuel Cost:</strong>
+                    <div>@Model.Trip.ActualFuelCost</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
 
 </div>
+```

@@ -1,8 +1,8 @@
-@{
-    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
-}
-
 @model BUA_project.Models.ViewModels.UserReservationViewModel
+
+@{
+    Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+}
 
 @{
     ViewData["Title"] = "Create Reservation";
@@ -10,82 +10,309 @@
 
 <h1>Create Reservation</h1>
 
-@if (ViewBag.Vehicle != null)
-{
-<div>
-    <h3>
-        @ViewBag.Vehicle.Brand @ViewBag.Vehicle.Model
-    </h3>
+<!-- ============================================ -->
+<!-- Validation Summary -->
+<!-- ============================================ -->
 
-    <p>
-        Type: @ViewBag.Vehicle.Type
-    </p>
+<div asp-validation-summary="All" class="text-danger"></div>
 
-    <p>
-        Seats: @ViewBag.Vehicle.Seats
-    </p>
 
-    <p>
-        Fuel: @ViewBag.Vehicle.FuelType
-    </p>
-</div>
-}
+<!-- ============================================ -->
+<!-- Reservation Form -->
+<!-- ============================================ -->
 
-<form asp-action="Create" method="post">
+<form asp-controller="UserReservation"
+      asp-action="Create"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Vehicle ID -->
 
     <input type="hidden"
            asp-for="VehicleId" />
 
+
+    <!-- ======================================== -->
+    <!-- Start Date -->
+    <!-- ======================================== -->
+
     <div>
         <label asp-for="StartDateTime"></label>
+
         <input asp-for="StartDateTime"
-               type="datetime-local" />
-        <span asp-validation-for="StartDateTime"></span>
+               type="datetime-local"
+               class="form-control" />
+
+        <span asp-validation-for="StartDateTime"
+              class="text-danger"></span>
     </div>
+
+
+    <!-- ======================================== -->
+    <!-- End Date -->
+    <!-- ======================================== -->
 
     <div>
         <label asp-for="EndDateTime"></label>
+
         <input asp-for="EndDateTime"
-               type="datetime-local" />
-        <span asp-validation-for="EndDateTime"></span>
+               type="datetime-local"
+               class="form-control" />
+
+        <span asp-validation-for="EndDateTime"
+              class="text-danger"></span>
     </div>
+
+
+    <!-- ======================================== -->
+    <!-- Origin -->
+    <!-- ======================================== -->
 
     <div>
-        <label asp-for="Origin"></label>
-        <input asp-for="Origin" />
-        <span asp-validation-for="Origin"></span>
+        <label asp-for="Origin">
+            Origin
+        </label>
+
+        <select asp-for="Origin"
+                id="origin"
+                class="form-select">
+
+            <option value="">
+                Select Origin
+            </option>
+
+            @if (ViewBag.Origins != null)
+            {
+                foreach (var origin in ViewBag.Origins)
+                {
+            <option value="@origin">
+                @origin
+            </option>
+                }
+            }
+
+        </select>
+
+        <span asp-validation-for="Origin"
+              class="text-danger"></span>
     </div>
+
+
+    <!-- ======================================== -->
+    <!-- Destination -->
+    <!-- ======================================== -->
 
     <div>
-        <label asp-for="Destination"></label>
-        <input asp-for="Destination" />
-        <span asp-validation-for="Destination"></span>
+        <label asp-for="Destination">
+            Destination
+        </label>
+
+        <select asp-for="Destination"
+                id="destination"
+                class="form-select">
+
+            <option value="">
+                Select Destination
+            </option>
+
+            @if (ViewBag.Routes != null)
+            {
+                foreach (var route in ViewBag.Routes)
+                {
+            <option value="@route.Destination"
+                    data-origin="@route.Origin">
+
+                @route.Destination
+
+            </option>
+                }
+            }
+
+        </select>
+
+        <span asp-validation-for="Destination"
+              class="text-danger"></span>
     </div>
+
+
+    <!-- ======================================== -->
+    <!-- Passengers -->
+    <!-- ======================================== -->
 
     <div>
-        <label asp-for="Passengers"></label>
-        <input asp-for="Passengers" />
-        <span asp-validation-for="Passengers"></span>
+        <label asp-for="Passengers">
+            Passengers
+        </label>
+
+        <input asp-for="Passengers"
+               type="number"
+               min="1"
+               max="@(ViewBag.Vehicle?.Seats ?? 1)"
+               step="1"
+               class="form-control" />
+
+        <span asp-validation-for="Passengers"
+              class="text-danger"></span>
+
+        @if (ViewBag.Vehicle != null)
+        {
+        <small>
+            Maximum passengers:
+            @ViewBag.Vehicle.Seats
+        </small>
+        }
     </div>
+
+
+    <!-- ======================================== -->
+    <!-- Load -->
+    <!-- ======================================== -->
 
     <div>
-        <label asp-for="Load"></label>
-        <input asp-for="Load" />
-        <span asp-validation-for="Load"></span>
+        <label asp-for="Load">
+            Load
+        </label>
+
+        <input asp-for="Load"
+               type="number"
+               min="0"
+               max="@(ViewBag.Vehicle?.VehicleSpecification?.AllowedLoad ?? 0)"
+               step="0.01"
+               class="form-control" />
+
+        <span asp-validation-for="Load"
+              class="text-danger"></span>
+
+        @if (ViewBag.Vehicle?.VehicleSpecification != null)
+        {
+        <small>
+            Maximum allowed load:
+            @ViewBag.Vehicle.VehicleSpecification.AllowedLoad
+        </small>
+        }
     </div>
+
+
+    <!-- ======================================== -->
+    <!-- Purpose -->
+    <!-- ======================================== -->
 
     <div>
-        <label asp-for="Purpose"></label>
-        <textarea asp-for="Purpose"></textarea>
-        <span asp-validation-for="Purpose"></span>
+        <label asp-for="Purpose">
+            Purpose
+        </label>
+
+        <textarea asp-for="Purpose"
+                  class="form-control"></textarea>
+
+        <span asp-validation-for="Purpose"
+              class="text-danger"></span>
     </div>
 
-    <button type="submit">
-        Submit Reservation
+
+    <!-- ======================================== -->
+    <!-- Continue -->
+    <!-- ======================================== -->
+
+    <button type="submit"
+            class="btn btn-primary">
+
+        Continue
+
     </button>
 
 </form>
 
+<div class="mt-3 mb-4">
+
+    <a asp-controller="UserDashboard"
+       asp-action="Index"
+       class="btn btn-secondary">
+
+        Back
+
+    </a>
+
+</div>
+
+
+
+<!-- ============================================ -->
+<!-- Validation Scripts -->
+<!-- ============================================ -->
+
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const originSelect =
+            document.getElementById("origin");
+
+        const destinationSelect =
+            document.getElementById("destination");
+
+
+        // Save all routes from the original select
+        const allDestinationOptions =
+            Array.from(
+                destinationSelect.options
+            );
+
+
+        // ========================================
+        // Filter destinations when origin changes
+        // ========================================
+
+        originSelect.addEventListener(
+            "change",
+            function ()
+            {
+                const selectedOrigin =
+                    this.value;
+
+
+                // Clear destinations
+                destinationSelect.innerHTML = "";
+
+
+                // Default option
+                const defaultOption =
+                    document.createElement("option");
+
+                defaultOption.value = "";
+
+                defaultOption.textContent =
+                    "Select Destination";
+
+                destinationSelect.appendChild(
+                    defaultOption
+                );
+
+
+                // Add matching destinations
+                allDestinationOptions.forEach(
+                    function (option)
+                    {
+                        if (!option.dataset.origin)
+                            return;
+
+
+                        if (
+                            option.dataset.origin
+                            === selectedOrigin
+                        )
+                        {
+                            destinationSelect.appendChild(
+                                option.cloneNode(true)
+                            );
+                        }
+                    }
+                );
+            }
+        );
+
+    </script>
 }

@@ -1,0 +1,305 @@
+﻿@model IEnumerable<BUA_project.Models.Trip>
+
+    @{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "Trip History";
+    }
+
+    <div class="container-fluid">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h1 class="mb-1">
+                    Trip History
+                </h1>
+
+                <p class="text-muted mb-0">
+                    View your completed trips and trip details.
+                </p>
+            </div>
+
+            <a asp-controller="DriverDashboard"
+               asp-action="MyTrips"
+               class="btn btn-outline-primary">
+
+                My Trips
+
+            </a>
+
+        </div>
+
+
+        <!-- Success Message -->
+        @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+
+        <!-- Error Message -->
+        @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+
+        @if (!Model.Any())
+    {
+        <!-- Empty State -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body text-center py-5">
+
+                <div class="mb-3">
+
+                    <i class="bi bi-clock-history"
+                       style="font-size: 3rem;">
+                    </i>
+
+                </div>
+
+                <h4>
+                    No Completed Trips
+                </h4>
+
+                <p class="text-muted">
+                    You have not completed any trips yet.
+                </p>
+
+                <a asp-controller="DriverDashboard"
+                   asp-action="MyTrips"
+                   class="btn btn-primary">
+
+                    View My Trips
+
+                </a>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+ <!-- Trip History Table -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Trip #
+                                </th>
+
+                                <th>
+                                    Route
+                                </th>
+
+                                <th>
+                                    Vehicle
+                                </th>
+
+                                <th>
+                                    Started
+                                </th>
+
+                                <th>
+                                    Completed
+                                </th>
+
+                                <th>
+                                    Distance
+                                </th>
+
+                                <th>
+                                    Fuel Used
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var trip in Model)
+                            {
+                            <tr>
+
+                                <!-- Trip ID -->
+
+                                <td>
+                                    <strong>
+                                        #@trip.TripId
+                                    </strong>
+                                </td>
+
+
+                                <!-- Route -->
+
+                                <td>
+
+                                    <div>
+                                        <strong>
+                                            @trip.Reservation.Origin
+                                        </strong>
+                                    </div>
+
+                                    <div class="text-muted small">
+                                        ↓
+                                    </div>
+
+                                    <div>
+                                        @trip.Reservation.Destination
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Vehicle -->
+
+                                <td>
+
+                                    @trip.Reservation.Vehicle.Brand
+                                    @trip.Reservation.Vehicle.Model
+
+                                    <div class="text-muted small">
+
+                                        @trip.Reservation.Vehicle.PlateNumber
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Started -->
+
+                                <td>
+
+                                    @trip.StartedAt.ToString(
+                                        "dd MMM yyyy"
+                                    )
+
+                                    <div class="text-muted small">
+
+                                        @trip.StartedAt.ToString(
+                                            "hh:mm tt"
+                                        )
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Completed -->
+
+                                <td>
+
+                                    @if (trip.CompletedAt.HasValue)
+                                        {
+                                    @trip.CompletedAt.Value.ToString(
+                                        "dd MMM yyyy"
+                                    )
+
+                                    <div class="text-muted small">
+
+                                        @trip.CompletedAt.Value.ToString(
+                                            "hh:mm tt"
+                                        )
+
+                                    </div>
+                                        }
+                                        else
+                                        {
+                                    <span class="text-muted">
+                                        —
+                                    </span>
+                                        }
+
+                                </td>
+
+
+                                <!-- Distance -->
+
+                                <td>
+
+                                    @trip.ActualDistanceKm.ToString("0.0")
+                                    KM
+
+                                </td>
+
+
+                                <!-- Fuel -->
+
+                                <td>
+
+                                    @trip.ActualFuelLiters.ToString("0.00")
+                                    L
+
+                                </td>
+
+
+                                <!-- Status -->
+
+                                <td>
+
+                                    <span class="badge bg-success">
+
+                                        Completed
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Details -->
+
+                                <td>
+
+                                    <a asp-controller="DriverDashboard"
+                                       asp-action="TripDetails"
+                                       asp-route-id="@trip.TripId"
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        Details
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+    </div>

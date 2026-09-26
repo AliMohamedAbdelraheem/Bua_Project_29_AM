@@ -1,0 +1,119 @@
+@model BUA_project.Models.Driver
+
+@{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "Driver Dashboard";
+}
+
+<div class="container">
+
+    <div class="mb-4">
+
+        <h1>
+            Welcome, @Model.Name
+        </h1>
+
+        <p class="text-muted">
+            Driver Dashboard
+        </p>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- My Trips -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h4 class="card-title">
+                        My Trips
+                    </h4>
+
+                    <p class="card-text text-muted">
+                        View trips assigned to you.
+                    </p>
+
+                    <a asp-controller="DriverDashboard"
+                       asp-action="MyTrips"
+                       class="btn btn-primary">
+
+                        View My Trips
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Active Trip -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h4 class="card-title">
+                        Active Trip
+                    </h4>
+
+                    <p class="card-text text-muted">
+                        Manage your currently active trip.
+                    </p>
+
+                    <a asp-controller="DriverDashboard"
+                       asp-action="ActiveTrip"
+                       class="btn btn-primary">
+
+                        Open Active Trip
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Trip History -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h4 class="card-title">
+                        Trip History
+                    </h4>
+
+                    <p class="card-text text-muted">
+                        View your completed trips.
+                    </p>
+
+                    <a asp-controller="DriverDashboard"
+                       asp-action="History"
+                       class="btn btn-primary">
+
+                        View History
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

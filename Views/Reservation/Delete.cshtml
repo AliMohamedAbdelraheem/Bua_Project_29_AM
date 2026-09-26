@@ -1,4 +1,5 @@
-﻿@model BUA_project.Models.Reservation
+﻿```cshtml
+@model BUA_project.Models.Reservation
 
 @{
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
@@ -7,95 +8,39 @@
 
 <h1>Delete Reservation</h1>
 
-<h3>
-    Are you sure you want to delete this reservation?
-</h3>
+<h3>Are you sure you want to delete this reservation?</h3>
 
 <div>
+    <hr />
 
     <dl class="row">
+        <dt class="col-sm-2">Start</dt>
+        <dd class="col-sm-10">@Model.StartDateTime</dd>
 
-        <dt class="col-sm-3">
-            Start
-        </dt>
+        <dt class="col-sm-2">End</dt>
+        <dd class="col-sm-10">@Model.EndDateTime</dd>
 
-        <dd class="col-sm-9">
-            @Model.StartDateTime
-        </dd>
+        <dt class="col-sm-2">Origin</dt>
+        <dd class="col-sm-10">@Model.Origin</dd>
 
+        <dt class="col-sm-2">Destination</dt>
+        <dd class="col-sm-10">@Model.Destination</dd>
 
-        <dt class="col-sm-3">
-            End
-        </dt>
+        <dt class="col-sm-2">Passengers</dt>
+        <dd class="col-sm-10">@Model.Passengers</dd>
 
-        <dd class="col-sm-9">
-            @Model.EndDateTime
-        </dd>
+        <dt class="col-sm-2">Purpose</dt>
+        <dd class="col-sm-10">@Model.Purpose</dd>
 
-
-        <dt class="col-sm-3">
-            Origin
-        </dt>
-
-        <dd class="col-sm-9">
-            @Model.Origin
-        </dd>
-
-
-        <dt class="col-sm-3">
-            Destination
-        </dt>
-
-        <dd class="col-sm-9">
-            @Model.Destination
-        </dd>
-
-
-        <dt class="col-sm-3">
-            Passengers
-        </dt>
-
-        <dd class="col-sm-9">
-            @Model.Passengers
-        </dd>
-
-
-        <dt class="col-sm-3">
-            Purpose
-        </dt>
-
-        <dd class="col-sm-9">
-            @Model.Purpose
-        </dd>
-
-
-        <dt class="col-sm-3">
-            Status
-        </dt>
-
-        <dd class="col-sm-9">
-            @Model.Status
-        </dd>
-
+        <dt class="col-sm-2">Status</dt>
+        <dd class="col-sm-10">@Model.Status</dd>
     </dl>
 
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ReservationId" />
 
-    <form asp-action="Delete"
-          method="post">
-
-        <input type="hidden"
-               asp-for="ReservationId" />
-
-        <button type="submit"
-                class="btn btn-danger">
-            Delete
-        </button>
-
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
-
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </form>
-
 </div>
+```

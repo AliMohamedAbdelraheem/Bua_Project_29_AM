@@ -1,16 +1,26 @@
 ﻿using BUA_project.Models;
+using BUA_project.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BUA_project.Models.ViewModels;
 
 namespace BUA_project.Controllers
 {
+    [Authorize(Roles = "Dispatcher")]
     public class DispatcherController : Controller
     {
-        private readonly Entity _context = new Entity();
+        private readonly Entity _context;
 
+        public DispatcherController(Entity context)
+        {
+            _context = context;
+        }
 
+        // =========================================================
         // GET: Dispatcher/Dashboard
+        // Dispatcher Dashboard
+        // =========================================================
+
         public async Task<IActionResult> Dashboard()
         {
             var viewModel = new DispatcherDashboardViewModel
@@ -43,8 +53,10 @@ namespace BUA_project.Controllers
             return View("Dashboard/Index", viewModel);
         }
 
-
+        // =========================================================
         // GET: Dispatcher/ActiveTrips
+        // =========================================================
+
         public async Task<IActionResult> ActiveTrips()
         {
             var activeTrips = await _context.Trips
@@ -63,24 +75,30 @@ namespace BUA_project.Controllers
             return View(activeTrips);
         }
 
-
+        // =========================================================
         // GET: Dispatcher
-        // عرض الطلبات التي تحتاج إلى معالجة
+        // Pending Requests / Reservations waiting for Driver
+        // =========================================================
+
         public async Task<IActionResult> Index()
         {
             var reservations = await _context.Reservations
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
                 .Include(r => r.Driver)
-                .Where(r => r.Status == "Pending")
+                .Where(r =>
+                    r.Status == "Pending" ||
+                    (r.Status == "Approved" && r.DriverId == null))
                 .OrderBy(r => r.StartDateTime)
                 .ToListAsync();
 
             return View(reservations);
         }
 
-
+        // =========================================================
         // GET: Dispatcher/Details/5
+        // =========================================================
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -99,8 +117,10 @@ namespace BUA_project.Controllers
             return View(reservation);
         }
 
-
+        // =========================================================
         // GET: Dispatcher/Approve/5
+        // =========================================================
+
         public async Task<IActionResult> Approve(int? id)
         {
             if (id == null)
@@ -119,34 +139,49 @@ namespace BUA_project.Controllers
                 return BadRequest(
                     "Only pending reservations can be approved.");
 
-            // Get reservations that can cause a time conflict
-            var conflictingReservations = await _context.Reservations
-                .Where(r =>
-                    r.ReservationId != reservation.ReservationId &&
-                    (
-                        r.Status == "Approved" ||
-                        r.Status == "Dispatched" ||
-                        r.Status == "Active"
-                    ) &&
-                    r.StartDateTime < reservation.EndDateTime &&
-                    r.EndDateTime > reservation.StartDateTime
-                )
-                .ToListAsync();
+            // -----------------------------------------------------
+            // Find reservations that overlap with this reservation
+            // -----------------------------------------------------
 
-            // Vehicle IDs already used during this time
-            var conflictingVehicleIds = conflictingReservations
-                .Select(r => r.VehicleId)
-                .Distinct()
-                .ToList();
+            var conflictingReservations =
+                await _context.Reservations
+                    .Where(r =>
+                        r.ReservationId != reservation.ReservationId &&
+                        (
+                            r.Status == "Approved" ||
+                            r.Status == "Dispatched" ||
+                            r.Status == "Active"
+                        ) &&
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    )
+                    .ToListAsync();
 
-            // Driver IDs already used during this time
-            var conflictingDriverIds = conflictingReservations
-                .Where(r => r.DriverId.HasValue)
-                .Select(r => r.DriverId!.Value)
-                .Distinct()
-                .ToList();
+            // -----------------------------------------------------
+            // Vehicles already used during this period
+            // -----------------------------------------------------
 
-            // Available vehicles
+            var conflictingVehicleIds =
+                conflictingReservations
+                    .Select(r => r.VehicleId)
+                    .Distinct()
+                    .ToList();
+
+            // -----------------------------------------------------
+            // Drivers already used during this period
+            // -----------------------------------------------------
+
+            var conflictingDriverIds =
+                conflictingReservations
+                    .Where(r => r.DriverId.HasValue)
+                    .Select(r => r.DriverId!.Value)
+                    .Distinct()
+                    .ToList();
+
+            // -----------------------------------------------------
+            // Available Vehicles
+            // -----------------------------------------------------
+
             var vehicles = await _context.Vehicles
                 .Where(v =>
                     v.Status == "Available" &&
@@ -155,7 +190,10 @@ namespace BUA_project.Controllers
                 .ThenBy(v => v.Model)
                 .ToListAsync();
 
-            // Available qualified drivers
+            // -----------------------------------------------------
+            // Available Qualified Drivers
+            // -----------------------------------------------------
+
             var drivers = await _context.Drivers
                 .Where(d =>
                     d.QualificationStatus == "Qualified" &&
@@ -170,8 +208,10 @@ namespace BUA_project.Controllers
             return View(reservation);
         }
 
-
+        // =========================================================
         // POST: Dispatcher/Approve
+        // =========================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(
@@ -179,7 +219,10 @@ namespace BUA_project.Controllers
             int vehicleId,
             int driverId)
         {
-            // Get reservation
+            // -----------------------------------------------------
+            // Get Reservation
+            // -----------------------------------------------------
+
             var reservation = await _context.Reservations
                 .FirstOrDefaultAsync(
                     r => r.ReservationId == id);
@@ -187,12 +230,18 @@ namespace BUA_project.Controllers
             if (reservation == null)
                 return NotFound();
 
-            // Reservation must still be pending
+            // -----------------------------------------------------
+            // Reservation must still be Pending
+            // -----------------------------------------------------
+
             if (reservation.Status != "Pending")
                 return BadRequest(
                     "Only pending reservations can be approved.");
 
-            // Get selected vehicle
+            // -----------------------------------------------------
+            // Get Selected Vehicle
+            // -----------------------------------------------------
+
             var vehicle = await _context.Vehicles
                 .FirstOrDefaultAsync(
                     v => v.VehicleId == vehicleId);
@@ -200,7 +249,10 @@ namespace BUA_project.Controllers
             if (vehicle == null)
                 return NotFound("Vehicle not found.");
 
-            // Vehicle must be available
+            // -----------------------------------------------------
+            // Vehicle must be Available
+            // -----------------------------------------------------
+
             if (vehicle.Status != "Available")
             {
                 ModelState.AddModelError(
@@ -210,7 +262,10 @@ namespace BUA_project.Controllers
                 return await ReturnApproveView(reservation);
             }
 
-            // Get selected driver
+            // -----------------------------------------------------
+            // Get Selected Driver
+            // -----------------------------------------------------
+
             var driver = await _context.Drivers
                 .FirstOrDefaultAsync(
                     d => d.DriverId == driverId);
@@ -218,7 +273,10 @@ namespace BUA_project.Controllers
             if (driver == null)
                 return NotFound("Driver not found.");
 
-            // Driver must be qualified
+            // -----------------------------------------------------
+            // Driver must be Qualified
+            // -----------------------------------------------------
+
             if (driver.QualificationStatus != "Qualified")
             {
                 ModelState.AddModelError(
@@ -228,8 +286,12 @@ namespace BUA_project.Controllers
                 return await ReturnApproveView(reservation);
             }
 
+            // -----------------------------------------------------
             // Driver qualification must still be valid
-            if (driver.QualificationValidUntil < reservation.EndDateTime)
+            // -----------------------------------------------------
+
+            if (driver.QualificationValidUntil <
+                reservation.EndDateTime)
             {
                 ModelState.AddModelError(
                     "",
@@ -238,23 +300,31 @@ namespace BUA_project.Controllers
                 return await ReturnApproveView(reservation);
             }
 
-            // Find overlapping reservations
-            var overlappingReservations = await _context.Reservations
-                .Where(r =>
-                    r.ReservationId != reservation.ReservationId &&
-                    (
-                        r.Status == "Approved" ||
-                        r.Status == "Dispatched" ||
-                        r.Status == "Active"
-                    ) &&
-                    r.StartDateTime < reservation.EndDateTime &&
-                    r.EndDateTime > reservation.StartDateTime
-                )
-                .ToListAsync();
+            // -----------------------------------------------------
+            // Find Overlapping Reservations
+            // -----------------------------------------------------
 
-            // Check vehicle conflict
-            var vehicleConflict = overlappingReservations
-                .Any(r => r.VehicleId == vehicleId);
+            var overlappingReservations =
+                await _context.Reservations
+                    .Where(r =>
+                        r.ReservationId != reservation.ReservationId &&
+                        (
+                            r.Status == "Approved" ||
+                            r.Status == "Dispatched" ||
+                            r.Status == "Active"
+                        ) &&
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    )
+                    .ToListAsync();
+
+            // -----------------------------------------------------
+            // Check Vehicle Conflict
+            // -----------------------------------------------------
+
+            var vehicleConflict =
+                overlappingReservations
+                    .Any(r => r.VehicleId == vehicleId);
 
             if (vehicleConflict)
             {
@@ -265,9 +335,13 @@ namespace BUA_project.Controllers
                 return await ReturnApproveView(reservation);
             }
 
-            // Check driver conflict
-            var driverConflict = overlappingReservations
-                .Any(r => r.DriverId == driverId);
+            // -----------------------------------------------------
+            // Check Driver Conflict
+            // -----------------------------------------------------
+
+            var driverConflict =
+                overlappingReservations
+                    .Any(r => r.DriverId == driverId);
 
             if (driverConflict)
             {
@@ -278,13 +352,22 @@ namespace BUA_project.Controllers
                 return await ReturnApproveView(reservation);
             }
 
-            // Assign vehicle
+            // -----------------------------------------------------
+            // Assign Vehicle
+            // -----------------------------------------------------
+
             reservation.VehicleId = vehicleId;
 
-            // Assign driver
+            // -----------------------------------------------------
+            // Assign Driver
+            // -----------------------------------------------------
+
             reservation.DriverId = driverId;
 
-            // Approve reservation
+            // -----------------------------------------------------
+            // Approve Reservation
+            // -----------------------------------------------------
+
             reservation.Status = "Approved";
 
             await _context.SaveChangesAsync();
@@ -292,34 +375,39 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================================================
+        // Reload Approve View After Validation Error
+        // =========================================================
 
-        // Reload Approve page after validation error
         private async Task<IActionResult> ReturnApproveView(
             Reservation reservation)
         {
-            var conflictingReservations = await _context.Reservations
-                .Where(r =>
-                    r.ReservationId != reservation.ReservationId &&
-                    (
-                        r.Status == "Approved" ||
-                        r.Status == "Dispatched" ||
-                        r.Status == "Active"
-                    ) &&
-                    r.StartDateTime < reservation.EndDateTime &&
-                    r.EndDateTime > reservation.StartDateTime
-                )
-                .ToListAsync();
+            var conflictingReservations =
+                await _context.Reservations
+                    .Where(r =>
+                        r.ReservationId != reservation.ReservationId &&
+                        (
+                            r.Status == "Approved" ||
+                            r.Status == "Dispatched" ||
+                            r.Status == "Active"
+                        ) &&
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    )
+                    .ToListAsync();
 
-            var conflictingVehicleIds = conflictingReservations
-                .Select(r => r.VehicleId)
-                .Distinct()
-                .ToList();
+            var conflictingVehicleIds =
+                conflictingReservations
+                    .Select(r => r.VehicleId)
+                    .Distinct()
+                    .ToList();
 
-            var conflictingDriverIds = conflictingReservations
-                .Where(r => r.DriverId.HasValue)
-                .Select(r => r.DriverId!.Value)
-                .Distinct()
-                .ToList();
+            var conflictingDriverIds =
+                conflictingReservations
+                    .Where(r => r.DriverId.HasValue)
+                    .Select(r => r.DriverId!.Value)
+                    .Distinct()
+                    .ToList();
 
             var vehicles = await _context.Vehicles
                 .Where(v =>
@@ -343,8 +431,10 @@ namespace BUA_project.Controllers
             return View("Approve", reservation);
         }
 
-
+        // =========================================================
         // GET: Dispatcher/Reject/5
+        // =========================================================
+
         public async Task<IActionResult> Reject(int? id)
         {
             if (id == null)
@@ -353,6 +443,7 @@ namespace BUA_project.Controllers
             var reservation = await _context.Reservations
                 .Include(r => r.Vehicle)
                 .Include(r => r.User)
+                .Include(r => r.Driver)
                 .FirstOrDefaultAsync(
                     r => r.ReservationId == id);
 
@@ -362,8 +453,10 @@ namespace BUA_project.Controllers
             return View(reservation);
         }
 
-
+        // =========================================================
         // POST: Dispatcher/Reject
+        // =========================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(int id)
@@ -382,8 +475,10 @@ namespace BUA_project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        // =========================================================
         // GET: Dispatcher/AssignDriver/5
+        // =========================================================
+
         public async Task<IActionResult> AssignDriver(int? id)
         {
             if (id == null)
@@ -409,8 +504,10 @@ namespace BUA_project.Controllers
             return View(reservation);
         }
 
-
+        // =========================================================
         // POST: Dispatcher/AssignDriver
+        // =========================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDriver(

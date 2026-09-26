@@ -1,0 +1,573 @@
+@model BUA_project.Models.ViewModels.ActiveTripViewModel?
+
+@{
+    ViewData["Title"] = "Active Trip";
+}
+
+@{
+
+    Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+
+}
+
+<div class="container">
+
+    <!-- ============================================ -->
+    <!-- Header -->
+    <!-- ============================================ -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1>Active Trip</h1>
+
+            <p class="text-muted">
+                Track your current fleet trip.
+            </p>
+
+        </div>
+
+        <a asp-controller="UserDashboard"
+           asp-action="Index"
+           class="btn btn-secondary">
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- ============================================ -->
+    <!-- No Active Trip -->
+    <!-- ============================================ -->
+
+    @if (Model == null)
+    {
+    <div class="alert alert-info">
+
+        <h5>No Active Trip</h5>
+
+        <p class="mb-0">
+            You currently don't have an active trip.
+        </p>
+
+    </div>
+    }
+    else
+    {
+
+ <!-- ============================================ -->
+ <!-- Trip Status -->
+ <!-- ============================================ -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h3 class="mb-1">
+                        Trip #@Model.TripId
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Reservation #@Model.ReservationId
+                    </p>
+
+                </div>
+
+
+                <span class="badge bg-success fs-6">
+                    @Model.Status
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+
+        <!-- ======================================== -->
+        <!-- Route -->
+        <!-- ======================================== -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Route
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <strong>Origin</strong>
+
+                        <p class="mb-0">
+                            @Model.Origin
+                        </p>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <strong>Destination</strong>
+
+                        <p class="mb-0">
+                            @Model.Destination
+                        </p>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <strong>Scheduled Start</strong>
+
+                        <p class="mb-0">
+
+                            @Model.StartDateTime.ToString(
+                                "dd MMM yyyy hh:mm tt")
+
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>Scheduled End</strong>
+
+                        <p class="mb-0">
+
+                            @Model.EndDateTime.ToString(
+                                "dd MMM yyyy hh:mm tt")
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- Vehicle -->
+        <!-- ======================================== -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Vehicle
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <h5>
+                        @Model.VehicleBrand
+                        @Model.VehicleModel
+                    </h5>
+
+                    <p class="mb-2">
+
+                        <strong>Type:</strong>
+
+                        @Model.VehicleType
+
+                    </p>
+
+
+                    <p class="mb-2">
+
+                        <strong>Plate Number:</strong>
+
+                        @Model.PlateNumber
+
+                    </p>
+
+
+                    <p class="mb-0">
+
+                        <strong>Vehicle ID:</strong>
+
+                        @Model.VehicleId
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- Driver -->
+        <!-- ======================================== -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Driver
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    @if (!string.IsNullOrEmpty(Model.DriverName))
+                        {
+                    <h5>
+                        @Model.DriverName
+                    </h5>
+
+
+                    @if (!string.IsNullOrEmpty(
+                                Model.DriverLicenseNumber))
+                            {
+                    <p class="mb-0">
+
+                        <strong>
+                            License Number:
+                        </strong>
+
+                        @Model.DriverLicenseNumber
+
+                    </p>
+                            }
+                        }
+                        else
+                        {
+                    <p class="text-muted mb-0">
+
+                        No driver assigned yet.
+
+                    </p>
+                        }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- Trip Details -->
+        <!-- ======================================== -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Trip Details
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p class="mb-2">
+
+                        <strong>Passengers:</strong>
+
+                        @Model.Passengers
+
+                    </p>
+
+
+                    <p class="mb-2">
+
+                        <strong>Load:</strong>
+
+                        @Model.Load.ToString("0.##")
+
+                    </p>
+
+
+                    <p class="mb-2">
+
+                        <strong>Purpose:</strong>
+
+                        @Model.Purpose
+
+                    </p>
+
+
+                    @if (Model.StartedAt.HasValue)
+                        {
+                    <p class="mb-0">
+
+                        <strong>Trip Started:</strong>
+
+                        @Model.StartedAt.Value.ToString(
+                            "dd MMM yyyy hh:mm tt")
+
+                    </p>
+                        }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- Current Location -->
+        <!-- ======================================== -->
+
+        <div class="col-12 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Current Location
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    @if (Model.CurrentLatitude.HasValue &&
+                             Model.CurrentLongitude.HasValue)
+                        {
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <strong>Latitude</strong>
+
+                            <p>
+                                @Model.CurrentLatitude.Value
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-md-4">
+
+                            <strong>Longitude</strong>
+
+                            <p>
+                                @Model.CurrentLongitude.Value
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-md-4">
+
+                            <strong>Last Updated</strong>
+
+                            <p>
+
+                                @if (Model.LastLocationTime.HasValue)
+                                        {
+                                @Model.LastLocationTime.Value.ToString(
+                                    "dd MMM yyyy hh:mm:ss tt")
+                                        }
+                                        else
+                                        {
+                                <span>
+                                    Unknown
+                                </span>
+                                        }
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+ <!-- Map placeholder -->
+
+                    <div class="alert alert-secondary mb-0">
+
+                        <strong>Location:</strong>
+
+                        @Model.CurrentLatitude,
+                        @Model.CurrentLongitude
+
+                    </div>
+                        }
+                        else
+                        {
+                    <div class="alert alert-info mb-0">
+
+                        No location data is available yet.
+
+                    </div>
+                        }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- Trip Statistics -->
+        <!-- ======================================== -->
+
+        <div class="col-12 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Trip Statistics
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+
+                            <strong>
+                                Actual Distance
+                            </strong>
+
+                            <p class="mb-0">
+
+                                @if (Model.ActualDistance.HasValue)
+                                    {
+                                @Model.ActualDistance.Value.ToString("0.00")
+                                <span>km</span>
+                                    }
+                                    else
+                                    {
+                                <span class="text-muted">
+                                    Not available
+                                </span>
+                                    }
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-md-4 mb-3">
+
+                            <strong>
+                                Actual Fuel
+                            </strong>
+
+                            <p class="mb-0">
+
+                                @if (Model.ActualFuel.HasValue)
+                                    {
+                                @Model.ActualFuel.Value.ToString("0.00")
+                                <span>L</span>
+                                    }
+                                    else
+                                    {
+                                <span class="text-muted">
+                                    Not available
+                                </span>
+                                    }
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-md-4 mb-3">
+
+                            <strong>
+                                Actual Cost
+                            </strong>
+
+                            <p class="mb-0">
+
+                                @if (Model.ActualCost.HasValue)
+                                    {
+                                @Model.ActualCost.Value.ToString("0.00")
+                                <span>EGP</span>
+                                    }
+                                    else
+                                    {
+                                <span class="text-muted">
+                                    Not available
+                                </span>
+                                    }
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================== -->
+        <!-- Incident Notes -->
+        <!-- ======================================== -->
+
+        @if (!string.IsNullOrWhiteSpace(Model.IncidentNotes))
+            {
+        <div class="col-12 mb-4">
+
+            <div class="alert alert-warning">
+
+                <strong>
+                    Incident Notes
+                </strong>
+
+                <p class="mb-0 mt-2">
+                    @Model.IncidentNotes
+                </p>
+
+            </div>
+
+        </div>
+            }
+
+    </div>
+
+    }
+
+</div>

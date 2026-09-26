@@ -1,92 +1,151 @@
-﻿@model BUA_project.Models.Vehicle
+﻿```cshtml
+@model BUA_project.Models.Vehicle
 
 @{
-    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Vehicle Details";
 }
+
+@{
+    if (User.IsInRole("User"))
+    {
+        Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+    }
+}
+
 
 <div class="container mt-4">
 
     <div class="mb-4">
+
         <h2>Vehicle Details</h2>
+
         <p class="text-muted">
             View vehicle information and specifications.
         </p>
+
     </div>
+
 
     <div class="card shadow-sm">
 
         <div class="card-body">
 
+
+            <!-- Vehicle Image -->
+
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+            <div class="mb-4">
+
+                <img src="@Model.ImageUrl"
+                     alt="@Model.Brand @Model.Model"
+                     style="
+                             width:400px;
+                             height:250px;
+                             object-fit:cover;
+                             border-radius:10px;
+                         " />
+
+            </div>
+            }
+
+
+            <!-- Vehicle Information -->
+
             <h5 class="card-title mb-4">
                 Vehicle Information
             </h5>
+
 
             <dl class="row">
 
                 <dt class="col-sm-3">
                     Plate Number
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.PlateNumber
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Brand
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.Brand
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Model
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.Model
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Type
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.Type
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Seats
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.Seats
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Fuel Type
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.FuelType
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Status
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.Status
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Year
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.Year
                 </dd>
 
             </dl>
 
+
             <hr />
+
+
+            <!-- Vehicle Specification -->
 
             <h5 class="mb-4">
                 Vehicle Specification
             </h5>
+
 
             @if (Model.VehicleSpecification != null)
             {
@@ -95,36 +154,45 @@
                 <dt class="col-sm-3">
                     Nominal Consumption
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.VehicleSpecification.NominalLPer100Km
                     L/100Km
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Tank Capacity
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.VehicleSpecification.TankCapacity
                     Liters
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Accessibility
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.VehicleSpecification.Accessibility
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Transmission
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.VehicleSpecification.Transmission
                 </dd>
 
+
                 <dt class="col-sm-3">
                     Allowed Load
                 </dt>
+
                 <dd class="col-sm-9">
                     @Model.VehicleSpecification.AllowedLoad
                 </dd>
@@ -138,20 +206,53 @@
             </div>
             }
 
+
             <hr />
+
+
+            <!-- Actions -->
 
             <div class="d-flex gap-2">
 
-                <a asp-action="Edit"
+                @if (User.IsInRole("Admin"))
+                {
+                <a asp-controller="Vehicle"
+                   asp-action="Edit"
                    asp-route-id="@Model.VehicleId"
                    class="btn btn-primary">
+
                     Edit
+
                 </a>
 
-                <a asp-action="Index"
+                <a asp-controller="Vehicle"
+                   asp-action="Index"
                    class="btn btn-secondary">
+
                     Back
+
                 </a>
+                }
+                else if (User.IsInRole("User"))
+                {
+                <a asp-controller="UserDashboard"
+                   asp-action="Index"
+                   class="btn btn-secondary">
+
+                    Back
+
+                </a>
+                }
+                else
+                {
+                <a asp-controller="Vehicle"
+                   asp-action="Index"
+                   class="btn btn-secondary">
+
+                    Back
+
+                </a>
+                }
 
             </div>
 
@@ -160,3 +261,4 @@
     </div>
 
 </div>
+```

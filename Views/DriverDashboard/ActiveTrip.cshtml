@@ -1,0 +1,512 @@
+﻿@model BUA_project.Models.Trip
+
+@{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "Active Trip";
+}
+
+<div class="container">
+
+    @if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+    @if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-4">
+
+        <div>
+
+            <h1>
+                Active Trip
+            </h1>
+
+            <p class="text-muted mb-0">
+                Trip #@Model.TripId
+            </p>
+
+        </div>
+
+        <span class="badge bg-success fs-6">
+            @Model.Status
+        </span>
+
+    </div>
+
+
+    <!-- Route -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Current Route
+            </h4>
+
+            <div class="row">
+
+                <div class="col-md-5">
+
+                    <p class="text-muted mb-1">
+                        From
+                    </p>
+
+                    <h5>
+                        @Model.Reservation.Origin
+                    </h5>
+
+                </div>
+
+
+                <div class="col-md-2 text-center
+                            d-flex align-items-center
+                            justify-content-center">
+
+                    <span style="font-size: 28px;">
+                        →
+                    </span>
+
+                </div>
+
+
+                <div class="col-md-5">
+
+                    <p class="text-muted mb-1">
+                        To
+                    </p>
+
+                    <h5>
+                        @Model.Reservation.Destination
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Trip Information -->
+
+    <div class="row g-4">
+
+        <!-- Start Information -->
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h5 class="card-title mb-4">
+                        Trip Information
+                    </h5>
+
+
+                    <p>
+
+                        <strong>
+                            Started At:
+                        </strong>
+
+                        @Model.StartedAt.ToString(
+                            "dd MMM yyyy - hh:mm tt")
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Start Odometer:
+                        </strong>
+
+                        @Model.StartOdometer.ToString("0.0")
+                        KM
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Passengers:
+                        </strong>
+
+                        @Model.Reservation.Passengers
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Load:
+                        </strong>
+
+                        @Model.Reservation.Load
+
+                    </p>
+
+
+                    <p class="mb-0">
+
+                        <strong>
+                            Purpose:
+                        </strong>
+
+                        @Model.Reservation.Purpose
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Vehicle -->
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h5 class="card-title mb-4">
+                        Vehicle
+                    </h5>
+
+
+                    <p>
+
+                        <strong>
+                            Brand:
+                        </strong>
+
+                        @Model.Reservation.Vehicle.Brand
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Model:
+                        </strong>
+
+                        @Model.Reservation.Vehicle.Model
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Plate Number:
+                        </strong>
+
+                        @Model.Reservation.Vehicle.PlateNumber
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Fuel Type:
+                        </strong>
+
+                        @Model.Reservation.Vehicle.FuelType
+
+                    </p>
+
+
+                    <p class="mb-0">
+
+                        <strong>
+                            Seats:
+                        </strong>
+
+                        @Model.Reservation.Vehicle.Seats
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Actions -->
+
+    <div class="card shadow-sm mt-4">
+
+        <div class="card-body">
+
+            <h5>
+                Trip Actions
+            </h5>
+
+            <p class="text-muted">
+                Manage your active trip.
+            </p>
+
+
+            <div class="d-flex gap-2">
+                <!--location-->
+                <form asp-controller="DriverDashboard"
+                      asp-action="UpdateLocation"
+                      method="post"
+                      id="locationForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="tripId"
+                           id="tripId"
+                           value="@Model.TripId" />
+
+                    <input type="hidden"
+                           name="latitude"
+                           id="latitude" />
+
+                    <input type="hidden"
+                           name="longitude"
+                           id="longitude" />
+
+                    <button type="button"
+                            class="btn btn-primary"
+                            onclick="updateLocation(true)">
+
+                        Update Location
+
+                    </button>
+
+                </form>
+
+                <div id="locationMessage"
+                     class="mt-3">
+                </div>
+
+
+                <a asp-controller="DriverDashboard"
+                   asp-action="CompleteTrip"
+                   asp-route-id="@Model.TripId"
+                   class="btn btn-success">
+
+                    Complete Trip
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+                updateLocation(false);
+            }
+        );
+
+        function getCurrentLocation() {
+
+            return new Promise((resolve, reject) => {
+
+                if (!navigator.geolocation) {
+
+                    reject(
+                        "Geolocation is not supported."
+                    );
+
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+
+                    function (position) {
+
+                        resolve({
+                            latitude:
+                                position.coords.latitude,
+
+                            longitude:
+                                position.coords.longitude
+                        });
+
+                    },
+
+                    function (error) {
+
+                        reject(error);
+
+                    },
+
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        }
+
+
+        async function updateLocation(manual = false) {
+
+            try {
+
+                const location =
+                    await getCurrentLocation();
+
+
+                const tripId =
+                    document.getElementById("tripId").value;
+
+                const token =
+                    document.querySelector(
+                        '#locationForm input[name="__RequestVerificationToken"]'
+                    ).value;
+
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    "tripId",
+                    tripId
+                );
+
+                formData.append(
+                    "latitude",
+                    location.latitude
+                );
+
+                formData.append(
+                    "longitude",
+                    location.longitude
+                );
+
+                formData.append(
+                    "__RequestVerificationToken",
+                    token
+                );
+
+
+                const response =
+                    await fetch(
+                        "/DriverDashboard/UpdateLocation",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to update location."
+                    );
+                }
+
+
+                if (manual) {
+
+                    showLocationMessage(
+                        "Location updated successfully.",
+                        "success"
+                    );
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Location update failed:",
+                    error
+                );
+
+
+                if (manual) {
+
+                    showLocationMessage(
+                        "Unable to update your location.",
+                        "danger"
+                    );
+
+                }
+            }
+        }
+
+
+        function showLocationMessage(
+            message,
+            type
+        ) {
+
+            const container =
+                document.getElementById(
+                    "locationMessage"
+                );
+
+
+            container.innerHTML = `
+                    <div class="alert alert-${type}">
+                        ${message}
+                    </div>
+                `;
+
+
+            setTimeout(
+                function () {
+
+                    container.innerHTML = "";
+
+                },
+                3000
+            );
+        }
+
+
+        // Automatic update every 10 minutes
+
+        setInterval(
+            function () {
+
+                updateLocation(false);
+
+            },
+            10 * 60 * 1000
+        );
+
+    </script>
+}

@@ -16,6 +16,7 @@ namespace BUA_project.Models
 
         public double AllowedLoad { get; set; }
 
+
         [ValidateNever]
         public ICollection<Vehicle> Vehicles { get; set; }
             = new List<Vehicle>();

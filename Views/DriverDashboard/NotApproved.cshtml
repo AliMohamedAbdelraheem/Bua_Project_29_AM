@@ -1,0 +1,36 @@
+@{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "Driver Access";
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center">
+
+            <h2 class="mb-3">
+                Driver Access
+            </h2>
+
+            <h4>
+                @ViewBag.DriverName
+            </h4>
+
+            <p class="text-muted mt-3">
+                @ViewBag.AccessMessage
+            </p>
+
+            <a asp-controller="Account"
+               asp-action="Logout"
+               class="btn btn-secondary">
+
+                Back to Login
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

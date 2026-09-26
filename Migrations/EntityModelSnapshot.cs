@@ -379,6 +379,10 @@ namespace BUA_project.Migrations
                     b.Property<double>("EndOdometer")
                         .HasColumnType("float");
 
+                    b.Property<decimal>("FuelPricePerLiter")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("IncidentNotes")
                         .HasColumnType("nvarchar(max)");
 
@@ -449,6 +453,9 @@ namespace BUA_project.Migrations
 
                     b.Property<string>("FuelType")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Model")

@@ -1,0 +1,606 @@
+@model BUA_project.Models.Trip
+
+@{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "Complete Trip";
+}
+
+<div class="container">
+
+    <div class="mb-4">
+
+        <h1>
+            Complete Trip
+        </h1>
+
+        <p class="text-muted">
+            Trip #@Model.TripId
+        </p>
+
+    </div>
+
+
+    <!-- Trip Summary -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h5 class="mb-4">
+                Trip Summary
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        From:
+                    </strong>
+
+                    <p>
+                        @Model.Reservation.Origin
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        To:
+                    </strong>
+
+                    <p>
+                        @Model.Reservation.Destination
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        Vehicle:
+                    </strong>
+
+                    <p>
+                        @Model.Reservation.Vehicle.Brand
+                        @Model.Reservation.Vehicle.Model
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        Plate Number:
+                    </strong>
+
+                    <p>
+                        @Model.Reservation.Vehicle.PlateNumber
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>
+                        Fuel Type:
+                    </strong>
+
+                    <p>
+                        @Model.Reservation.Vehicle.FuelType
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>
+                        Start Odometer:
+                    </strong>
+
+                    <p>
+                        @Model.StartOdometer.ToString("0.0") KM
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>
+                        Started At:
+                    </strong>
+
+                    <p>
+                        @Model.StartedAt.ToString("dd MMM yyyy - hh:mm tt")
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Complete Trip Form -->
+
+    <form asp-controller="DriverDashboard"
+          asp-action="CompleteTrip"
+          method="post"
+          id="completeTripForm">
+
+        @Html.AntiForgeryToken()
+
+
+        <!-- Trip ID -->
+
+        <input type="hidden"
+               name="id"
+               value="@Model.TripId" />
+
+
+        <!-- Final GPS Location -->
+
+        <input type="hidden"
+               name="latitude"
+               id="latitude" />
+
+        <input type="hidden"
+               name="longitude"
+               id="longitude" />
+
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <h5 class="mb-4">
+                    Trip Completion Data
+                </h5>
+
+
+                <!-- End Odometer -->
+
+                <div class="mb-3">
+
+                    <label asp-for="EndOdometer"
+                           class="form-label fw-semibold">
+
+                        End Odometer (KM)
+
+                    </label>
+
+                    <input asp-for="EndOdometer"
+                           type="number"
+                           class="form-control"
+                           min="@Model.StartOdometer"
+                           step="0.1"
+                           required />
+
+                    <small class="text-muted">
+                        Enter the vehicle's odometer reading at the end of the trip.
+                    </small>
+
+                    <span asp-validation-for="EndOdometer"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Actual Distance -->
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+
+                        Actual Distance (KM)
+
+                    </label>
+
+                    <input type="text"
+                           id="actualDistanceDisplay"
+                           class="form-control"
+                           value="0.0"
+                           readonly />
+
+                    <small class="text-muted">
+                        Automatically calculated:
+                        End Odometer - Start Odometer
+                    </small>
+
+                </div>
+
+
+                <!-- Actual Fuel -->
+
+                <div class="mb-3">
+
+                    <label asp-for="ActualFuelLiters"
+                           class="form-label fw-semibold">
+
+                        Actual Fuel Used (Liters)
+
+                    </label>
+
+                    <input asp-for="ActualFuelLiters"
+                           type="number"
+                           class="form-control"
+                           min="0"
+                           step="0.01"
+                           required />
+
+                    <small class="text-muted">
+                        Enter the actual amount of fuel consumed during the trip.
+                    </small>
+
+                    <span asp-validation-for="ActualFuelLiters"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Incident Notes -->
+
+                <div class="mb-3">
+
+                    <label asp-for="IncidentNotes"
+                           class="form-label fw-semibold">
+
+                        Incident Notes
+
+                    </label>
+
+                    <textarea asp-for="IncidentNotes"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Describe any incident or additional notes..."></textarea>
+
+                    <span asp-validation-for="IncidentNotes"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Location Status -->
+
+                <div id="locationStatus"
+                     class="mb-3">
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="d-flex gap-2">
+
+                    <a asp-action="ActiveTrip"
+                       asp-route-id="@Model.TripId"
+                       class="btn btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+
+                    <button type="button"
+                            id="completeTripButton"
+                            class="btn btn-success"
+                            onclick="getFinalLocationAndSubmit()">
+
+                        Complete Trip
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const startOdometer =
+            @Model.StartOdometer.ToString(
+                System.Globalization.CultureInfo.InvariantCulture
+            );
+
+
+        const endOdometerInput =
+            document.getElementById("EndOdometer");
+
+
+        const actualFuelInput =
+            document.getElementById("ActualFuelLiters");
+
+
+        const actualDistanceDisplay =
+            document.getElementById("actualDistanceDisplay");
+
+
+        /*
+         * Calculate Actual Distance
+         *
+         * Actual Distance =
+         * End Odometer - Start Odometer
+         */
+
+        function calculateActualDistance() {
+
+            const endOdometer =
+                parseFloat(endOdometerInput.value);
+
+
+            if (
+                isNaN(endOdometer) ||
+                endOdometer < startOdometer
+            ) {
+
+                actualDistanceDisplay.value =
+                    "0.0";
+
+                return 0;
+            }
+
+
+            const actualDistance =
+                endOdometer - startOdometer;
+
+
+            actualDistanceDisplay.value =
+                actualDistance.toFixed(1);
+
+
+            return actualDistance;
+        }
+
+
+        /*
+         * Update distance when End Odometer changes
+         */
+
+        endOdometerInput.addEventListener(
+            "input",
+            function () {
+
+                calculateActualDistance();
+
+            }
+        );
+
+
+        /*
+         * Complete Trip
+         */
+
+        function getFinalLocationAndSubmit() {
+
+            const form =
+                document.getElementById("completeTripForm");
+
+            const button =
+                document.getElementById("completeTripButton");
+
+            const status =
+                document.getElementById("locationStatus");
+
+
+            /*
+             * Browser validation
+             */
+
+            if (!form.checkValidity()) {
+
+                form.reportValidity();
+
+                return;
+            }
+
+
+            /*
+             * Validate End Odometer
+             */
+
+            const endOdometer =
+                parseFloat(endOdometerInput.value);
+
+
+            if (
+                isNaN(endOdometer) ||
+                endOdometer < startOdometer
+            ) {
+
+                status.innerHTML = `
+                    <div class="alert alert-danger">
+                        End Odometer cannot be less than Start Odometer.
+                    </div>
+                `;
+
+                endOdometerInput.focus();
+
+                return;
+            }
+
+
+            /*
+             * Validate Actual Fuel
+             */
+
+            const actualFuel =
+                parseFloat(actualFuelInput.value);
+
+
+            if (
+                isNaN(actualFuel) ||
+                actualFuel < 0
+            ) {
+
+                status.innerHTML = `
+                    <div class="alert alert-danger">
+                        Please enter a valid Actual Fuel Used value.
+                    </div>
+                `;
+
+                actualFuelInput.focus();
+
+                return;
+            }
+
+
+            /*
+             * Disable button
+             */
+
+            button.disabled = true;
+
+            button.innerText =
+                "Getting Location...";
+
+
+            status.innerHTML = `
+                <div class="alert alert-info">
+                    Getting your current location...
+                </div>
+            `;
+
+
+            /*
+             * Check Geolocation support
+             */
+
+            if (!navigator.geolocation) {
+
+                status.innerHTML = `
+                    <div class="alert alert-danger">
+                        Geolocation is not supported by your browser.
+                    </div>
+                `;
+
+                button.disabled = false;
+
+                button.innerText =
+                    "Complete Trip";
+
+                return;
+            }
+
+
+            /*
+             * Get Final Location
+             */
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    document.getElementById("latitude").value =
+                        position.coords.latitude;
+
+
+                    document.getElementById("longitude").value =
+                        position.coords.longitude;
+
+
+                    status.innerHTML = `
+                        <div class="alert alert-success">
+                            Location captured successfully.
+                        </div>
+                    `;
+
+
+                    /*
+                     * Submit form
+                     */
+
+                    form.submit();
+
+                },
+
+
+                function (error) {
+
+                    let message =
+                        "Unable to get your current location.";
+
+
+                    if (
+                        error.code ===
+                        error.PERMISSION_DENIED
+                    ) {
+
+                        message =
+                            "Please allow location access to complete the trip.";
+
+                    }
+                    else if (
+                        error.code ===
+                        error.POSITION_UNAVAILABLE
+                    ) {
+
+                        message =
+                            "Your current location is unavailable.";
+
+                    }
+                    else if (
+                        error.code ===
+                        error.TIMEOUT
+                    ) {
+
+                        message =
+                            "Location request timed out.";
+
+                    }
+
+
+                    status.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${message}
+                        </div>
+                    `;
+
+
+                    button.disabled = false;
+
+                    button.innerText =
+                        "Complete Trip";
+
+                },
+
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+
+            );
+
+        }
+
+
+        /*
+         * Initial calculation
+         */
+
+        calculateActualDistance();
+
+    </script>
+}

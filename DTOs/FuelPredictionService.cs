@@ -15,17 +15,38 @@ namespace BUA_project.Services
         public async Task<FuelPredictionResponse?> PredictAsync(
             FuelPredictionRequest request)
         {
-            var response = await _httpClient.PostAsJsonAsync(
-                "predict",
-                request);
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
+                var response = await _httpClient.PostAsJsonAsync(
+                    "predict",
+                    request);
+
+                var responseBody =
+                    await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("================================");
+                Console.WriteLine("Fuel API Status: " + response.StatusCode);
+                Console.WriteLine("Fuel API Response:");
+                Console.WriteLine(responseBody);
+                Console.WriteLine("================================");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+
+                return await response.Content
+                    .ReadFromJsonAsync<FuelPredictionResponse>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("================================");
+                Console.WriteLine("Fuel API ERROR:");
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine("================================");
+
                 return null;
             }
-
-            return await response.Content
-                .ReadFromJsonAsync<FuelPredictionResponse>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿@model BUA_project.Models.Vehicle
+﻿```cshtml
+@model BUA_project.Models.ViewModels.VehicleCreateViewModel
 
 @{
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
@@ -9,45 +10,115 @@
 
     <div class="mb-4">
         <h2>Add New Vehicle</h2>
+
         <p class="text-muted">
             Add a new vehicle to the university fleet.
         </p>
     </div>
 
+
     <div class="card shadow-sm">
+
         <div class="card-body">
 
-            <form asp-action="Create" method="post">
+            <form asp-action="Create"
+                  method="post"
+                  enctype="multipart/form-data">
 
                 <div asp-validation-summary="ModelOnly"
                      class="alert alert-danger">
                 </div>
 
+
                 <div class="row">
+
+                    <!-- Vehicle Image -->
+                    <div class="col-md-12 mb-3">
+
+                        <label asp-for="Image"
+                               class="form-label">
+                            Vehicle Image
+                        </label>
+
+                        <input asp-for="Image"
+                               type="file"
+                               class="form-control"
+                               accept="image/*" />
+
+                        <span asp-validation-for="Image"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
 
                     <!-- Type -->
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Type" class="form-label">
+
+                        <label asp-for="Type"
+                               class="form-label">
                             Vehicle Type
                         </label>
 
                         <select asp-for="Type"
                                 class="form-select">
+
                             <option value="">
                                 -- Select Vehicle Type --
                             </option>
-                            <option value="Car">Car</option>
-                            <option value="Bus">Bus</option>
-                            <option value="Van">Van</option>
+
+                            <option value="Car">
+                                Car
+                            </option>
+
+                            <option value="Bus">
+                                Bus
+                            </option>
+
+                            <option value="Van">
+                                Van
+                            </option>
+
+                            <option value="Passenger Van">
+                                Passenger Van
+                            </option>
+
+                            <option value="Cargo Van">
+                                Cargo Van
+                            </option>
+
+                            <option value="Sedan">
+                                Sedan
+                            </option>
+
+                            <option value="SUV">
+                                SUV
+                            </option>
+
+                            <option value="Minivan">
+                                Minivan
+                            </option>
+
+                            <option value="Campus Shuttle">
+                                Campus Shuttle
+                            </option>
+
+                            <option value="Electric">
+                                Electric
+                            </option>
+
                         </select>
 
                         <span asp-validation-for="Type"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Brand -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="Brand"
                                class="form-label">
                             Brand
@@ -60,10 +131,13 @@
                         <span asp-validation-for="Brand"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Model -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="Model"
                                class="form-label">
                             Model
@@ -76,10 +150,13 @@
                         <span asp-validation-for="Model"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Seats -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="Seats"
                                class="form-label">
                             Seats
@@ -93,10 +170,13 @@
                         <span asp-validation-for="Seats"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Fuel Type -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="FuelType"
                                class="form-label">
                             Fuel Type
@@ -104,20 +184,43 @@
 
                         <select asp-for="FuelType"
                                 class="form-select">
+
                             <option value="">
                                 -- Select Fuel Type --
                             </option>
-                            <option value="Petrol">Petrol</option>
-                            <option value="Diesel">Diesel</option>
+
+                            <option value="Petrol">
+                                Petrol
+                            </option>
+
+                            <option value="Gasoline">
+                                Gasoline
+                            </option>
+
+                            <option value="Diesel">
+                                Diesel
+                            </option>
+
+                            <option value="Hybrid">
+                                Hybrid
+                            </option>
+
+                            <option value="Electric">
+                                Electric
+                            </option>
+
                         </select>
 
                         <span asp-validation-for="FuelType"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Plate Number -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="PlateNumber"
                                class="form-label">
                             Plate Number
@@ -130,10 +233,13 @@
                         <span asp-validation-for="PlateNumber"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Status -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="Status"
                                class="form-label">
                             Status
@@ -141,27 +247,35 @@
 
                         <select asp-for="Status"
                                 class="form-select">
+
                             <option value="">
                                 -- Select Status --
                             </option>
+
                             <option value="Available">
                                 Available
                             </option>
+
                             <option value="Maintenance">
                                 Maintenance
                             </option>
+
                             <option value="Unavailable">
                                 Unavailable
                             </option>
+
                         </select>
 
                         <span asp-validation-for="Status"
                               class="text-danger">
                         </span>
+
                     </div>
+
 
                     <!-- Year -->
                     <div class="col-md-6 mb-3">
+
                         <label asp-for="Year"
                                class="form-label">
                             Year
@@ -176,14 +290,18 @@
                         <span asp-validation-for="Year"
                               class="text-danger">
                         </span>
+
                     </div>
 
-                    <!-- Specification -->
+
+                    <!-- Vehicle Specification -->
                     <div class="col-md-12 mb-3">
 
                         <label asp-for="VehicleSpecificationId"
                                class="form-label">
+
                             Vehicle Specification
+
                         </label>
 
                         <select asp-for="VehicleSpecificationId"
@@ -194,9 +312,10 @@
                             </option>
 
                             @foreach (var specification
-                                in ViewBag.VehicleSpecifications)
+                                     in ViewBag.VehicleSpecifications)
                             {
                             <option value="@specification.VehicleSpecificationId">
+
                                 Specification #@specification.VehicleSpecificationId
                                 -
                                 @specification.NominalLPer100Km L/100Km
@@ -204,6 +323,7 @@
                                 @specification.Transmission
                                 -
                                 @specification.Accessibility
+
                             </option>
                             }
 
@@ -217,18 +337,25 @@
 
                 </div>
 
+
                 <hr />
 
+
+                <!-- Buttons -->
                 <div class="d-flex gap-2">
 
                     <button type="submit"
                             class="btn btn-primary">
+
                         Create Vehicle
+
                     </button>
 
                     <a asp-action="Index"
                        class="btn btn-secondary">
+
                         Cancel
+
                     </a>
 
                 </div>
@@ -236,13 +363,18 @@
             </form>
 
         </div>
+
     </div>
 
 </div>
 
+
 @section Scripts {
+
     @{
         await Html.RenderPartialAsync(
             "_ValidationScriptsPartial");
     }
+
 }
+```

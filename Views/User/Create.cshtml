@@ -16,9 +16,7 @@
          class="text-danger">
     </div>
 
-
     <div class="mb-3">
-
         <label asp-for="Name"
                class="form-label">
             Name
@@ -30,12 +28,9 @@
         <span asp-validation-for="Name"
               class="text-danger">
         </span>
-
     </div>
 
-
     <div class="mb-3">
-
         <label asp-for="Email"
                class="form-label">
             Email
@@ -48,12 +43,9 @@
         <span asp-validation-for="Email"
               class="text-danger">
         </span>
-
     </div>
 
-
     <div class="mb-3">
-
         <label asp-for="Role"
                class="form-label">
             Role
@@ -82,14 +74,16 @@
                 Admin
             </option>
 
+            <option value="Auditor">
+                Auditor
+            </option>
+
         </select>
 
         <span asp-validation-for="Role"
               class="text-danger">
         </span>
-
     </div>
-
 
     <button type="submit"
             class="btn btn-primary">

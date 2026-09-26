@@ -1,0 +1,123 @@
+﻿@model IEnumerable<BUA_project.Models.ViewModels.DriverTripViewModel>
+
+    @{
+    Layout = "~/Views/DriverNAV/_DriverLayout.cshtml";
+    ViewData["Title"] = "My Trips";
+    }
+
+    <div class="container">
+
+        <div class="mb-4">
+
+            <h1>My Trips</h1>
+
+            <p class="text-muted">
+                Trips assigned to you
+            </p>
+
+        </div>
+
+
+        @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            <h5 class="alert-heading">
+                No Assigned Trips
+            </h5>
+
+            <p class="mb-0">
+                You currently have no trips assigned to you.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var trip in Model)
+            {
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between
+                                        align-items-center mb-3">
+
+                            <h5 class="card-title mb-0">
+                                Trip #@trip.TripId
+                            </h5>
+
+                            <span class="badge bg-warning text-dark">
+                                @trip.Status
+                            </span>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <strong>
+                                @trip.Origin
+                            </strong>
+
+                            <span class="mx-2">
+                                →
+                            </span>
+
+                            <strong>
+                                @trip.Destination
+                            </strong>
+
+                        </div>
+
+                        <hr />
+
+                        <p class="mb-2">
+                            <strong>Start:</strong>
+                            @trip.StartDateTime.ToString(
+                                "dd MMM yyyy - hh:mm tt")
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>End:</strong>
+                            @trip.EndDateTime.ToString(
+                                "dd MMM yyyy - hh:mm tt")
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Vehicle:</strong>
+                            @trip.VehicleName
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Passengers:</strong>
+                            @trip.Passengers
+                        </p>
+
+                        <p class="mb-3">
+                            <strong>Purpose:</strong>
+                            @trip.Purpose
+                        </p>
+
+                        <a asp-controller="DriverDashboard"
+                           asp-action="TripDetails"
+                           asp-route-id="@trip.TripId"
+                           class="btn btn-primary w-100">
+
+                            View Details
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+            }
+        </div>
+    }
+</div>

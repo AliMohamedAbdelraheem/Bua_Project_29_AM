@@ -1,5 +1,8 @@
-
 @model BUA_project.Models.ViewModels.UserDashboardViewModel
+
+@{
+    Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+}
 
 @{
     ViewData["Title"] = "Fleet Catalog";
@@ -314,49 +317,49 @@
 
                     @if (!string.IsNullOrEmpty(Context.Request.Query["type"]))
                     {
-                        <span class="chip">
-                            Type: @Context.Request.Query["type"]
-                        </span>
+                    <span class="chip">
+                        Type: @Context.Request.Query["type"]
+                    </span>
                     }
 
 
                     @if (!string.IsNullOrEmpty(Context.Request.Query["brand"]))
                     {
-                        <span class="chip">
-                            Brand: @Context.Request.Query["brand"]
-                        </span>
+                    <span class="chip">
+                        Brand: @Context.Request.Query["brand"]
+                    </span>
                     }
 
 
                     @if (!string.IsNullOrEmpty(Context.Request.Query["seats"]))
                     {
-                        <span class="chip">
-                            Seats: @Context.Request.Query["seats"]
-                        </span>
+                    <span class="chip">
+                        Seats: @Context.Request.Query["seats"]
+                    </span>
                     }
 
 
                     @if (!string.IsNullOrEmpty(Context.Request.Query["fuelType"]))
                     {
-                        <span class="chip">
-                            Fuel: @Context.Request.Query["fuelType"]
-                        </span>
+                    <span class="chip">
+                        Fuel: @Context.Request.Query["fuelType"]
+                    </span>
                     }
 
 
                     @if (!string.IsNullOrEmpty(Context.Request.Query["transmission"]))
                     {
-                        <span class="chip">
-                            Transmission: @Context.Request.Query["transmission"]
-                        </span>
+                    <span class="chip">
+                        Transmission: @Context.Request.Query["transmission"]
+                    </span>
                     }
 
 
                     @if (!string.IsNullOrEmpty(Context.Request.Query["accessibility"]))
                     {
-                        <span class="chip">
-                            Accessibility: @Context.Request.Query["accessibility"]
-                        </span>
+                    <span class="chip">
+                        Accessibility: @Context.Request.Query["accessibility"]
+                    </span>
                     }
 
 
@@ -391,154 +394,171 @@
         @if (Model.Vehicles != null && Model.Vehicles.Any())
         {
 
-            @foreach (var vehicle in Model.Vehicles)
+        @foreach (var vehicle in Model.Vehicles)
             {
 
-                <div class="veh-card">
+        <div class="veh-card">
 
-                    <!-- Vehicle Image / Icon -->
-                    <div class="veh-img"
-                         style="background:#ecfdf3">
+            <!-- Vehicle Image / Icon -->
 
-                        <span class="icon"
-                              style="
-                                  width:34px;
-                                  height:34px;
-                                  color:currentColor;
-                              ">
+            <div class="veh-img"
+                 style="background:#ecfdf3; overflow:hidden; position:relative;">
 
-                            <svg viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor"
-                                 stroke-width="1.8"
-                                 stroke-linecap="round"
-                                 stroke-linejoin="round">
+                @if (!string.IsNullOrEmpty(vehicle.ImageUrl))
+                            {
+                <img src="@vehicle.ImageUrl"
+                     alt="@vehicle.Brand @vehicle.Model"
+                     style="
+                                         width:100%;
+                                         height:100%;
+                                         object-fit:cover;
+                                         display:block;
+                                     " />
+                            }
+                            else
+                            {
+                <span class="icon"
+                      style="
+                                          width:34px;
+                                          height:34px;
+                                          color:currentColor;
+                                      ">
 
-                                <path d="M3 13l1.6-4.8A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.2L21 13">
-                                </path>
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
 
-                                <rect x="2.5"
-                                      y="13"
-                                      width="19"
-                                      height="5.5"
-                                      rx="1.5">
-                                </rect>
+                        <path d="M3 13l1.6-4.8A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.2L21 13">
+                        </path>
 
-                                <circle cx="7"
-                                        cy="18.5"
-                                        r="1.5">
-                                </circle>
+                        <rect x="2.5"
+                              y="13"
+                              width="19"
+                              height="5.5"
+                              rx="1.5">
+                        </rect>
 
-                                <circle cx="17"
-                                        cy="18.5"
-                                        r="1.5">
-                                </circle>
+                        <circle cx="7"
+                                cy="18.5"
+                                r="1.5">
+                        </circle>
 
-                            </svg>
+                        <circle cx="17"
+                                cy="18.5"
+                                r="1.5">
+                        </circle>
 
-                        </span>
+                    </svg>
 
-
-                        <!-- Available -->
-                        <span class="avail pill green">
-                            ● Available
-                        </span>
-
-                    </div>
-
-
-                    <!-- Vehicle Body -->
-                    <div class="veh-body">
-
-                        <!-- Type + Year -->
-                        <p class="meta">
-                            @vehicle.Type
-                            ·
-                            @vehicle.Year
-                        </p>
+                </span>
+                            }
 
 
-                        <!-- Brand + Model -->
-                        <h4>
-                            @vehicle.Brand @vehicle.Model
-                        </h4>
+                <!-- Available -->
+                <span class="avail pill green">
+                    ● Available
+                </span>
+
+            </div>
 
 
-                        <!-- Specifications -->
-                        <div class="spec-row">
-
-                            <span class="spec-tag">
-                                @vehicle.Seats Seats
-                            </span>
 
 
-                            <span class="spec-tag">
-                                @vehicle.FuelType
-                            </span>
+            <!-- Vehicle Body -->
+            <div class="veh-body">
+
+                <!-- Type + Year -->
+                <p class="meta">
+                    @vehicle.Type
+                    ·
+                    @vehicle.Year
+                </p>
 
 
-                            @if (vehicle.VehicleSpecification != null)
+                <!-- Brand + Model -->
+                <h4>
+                    @vehicle.Brand @vehicle.Model
+                </h4>
+
+
+                <!-- Specifications -->
+                <div class="spec-row">
+
+                    <span class="spec-tag">
+                        @vehicle.Seats Seats
+                    </span>
+
+
+                    <span class="spec-tag">
+                        @vehicle.FuelType
+                    </span>
+
+
+                    @if (vehicle.VehicleSpecification != null)
                             {
 
-                                <span class="spec-tag">
-                                    @vehicle.VehicleSpecification.Transmission
-                                </span>
+                    <span class="spec-tag">
+                        @vehicle.VehicleSpecification.Transmission
+                    </span>
 
                             }
 
 
-                            <span class="spec-tag">
-                                @vehicle.PlateNumber
-                            </span>
+                    <span class="spec-tag">
+                        @vehicle.PlateNumber
+                    </span>
 
-                        </div>
+                </div>
 
 
-                        <!-- Accessibility -->
-                        @if (vehicle.VehicleSpecification != null &&
+                <!-- Accessibility -->
+                @if (vehicle.VehicleSpecification != null &&
                              !string.IsNullOrEmpty(
                                  vehicle.VehicleSpecification.Accessibility))
                         {
 
-                            <div style="margin-top:8px">
+                <div style="margin-top:8px">
 
-                                <span class="text-caption">
+                    <span class="text-caption">
 
-                                    Accessibility:
-                                    @vehicle.VehicleSpecification.Accessibility
+                        Accessibility:
+                        @vehicle.VehicleSpecification.Accessibility
 
-                                </span>
+                    </span>
 
-                            </div>
+                </div>
 
                         }
 
 
-                        <!-- Actions -->
-                        <div class="veh-actions">
+                <!-- Actions -->
+                <div class="veh-actions">
 
-                            <a asp-controller="Vehicle"
-                               asp-action="Details"
-                               asp-route-id="@vehicle.VehicleId"
-                               class="btn btn-outline">
+                    <a asp-controller="Vehicle"
+                       asp-action="Details"
+                       asp-route-id="@vehicle.VehicleId"
+                       class="btn btn-outline">
 
-                                View Details
+                        View Details
 
-                            </a>
+                    </a>
 
 
-                            <a asp-controller="UserReservation"
-                               asp-action="Create"
-                               asp-route-vehicleId="@vehicle.VehicleId"
-                               class="btn btn-primary">
-                                Reserve ›
-                            </a>
-
-                        </div>
-
-                    </div>
+                    <a asp-controller="UserReservation"
+                       asp-action="Create"
+                       asp-route-vehicleId="@vehicle.VehicleId"
+                       class="btn btn-primary">
+                        Reserve ›
+                    </a>
 
                 </div>
+
+            </div>
+
+        </div>
 
             }
 
@@ -546,25 +566,25 @@
         else
         {
 
-            <!-- No Vehicles -->
-            <div class="panel"
-                 style="grid-column:1/-1">
+ <!-- No Vehicles -->
+        <div class="panel"
+             style="grid-column:1/-1">
 
-                <div class="panel-b"
-                     style="text-align:center;padding:40px">
+            <div class="panel-b"
+                 style="text-align:center;padding:40px">
 
-                    <h3>
-                        No Available Vehicles
-                    </h3>
+                <h3>
+                    No Available Vehicles
+                </h3>
 
-                    <p class="text-caption">
-                        There are currently no vehicles available
-                        for reservation.
-                    </p>
-
-                </div>
+                <p class="text-caption">
+                    There are currently no vehicles available
+                    for reservation.
+                </p>
 
             </div>
+
+        </div>
 
         }
 

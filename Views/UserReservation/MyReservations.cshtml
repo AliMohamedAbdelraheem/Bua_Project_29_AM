@@ -1,0 +1,343 @@
+﻿@model List<BUA_project.Models.ViewModels.MyReservationViewModel>
+
+    @{
+    ViewData["Title"] = "My Reservations";
+    }
+    @{
+
+    Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+
+    }
+
+    <div class="container">
+
+        <!-- ============================================ -->
+        <!-- Header -->
+        <!-- ============================================ -->
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h1>My Reservations</h1>
+
+                <p class="text-muted">
+                    View and track all your fleet reservations.
+                </p>
+
+            </div>
+
+            <a asp-controller="UserDashboard"
+               asp-action="Index"
+               class="btn btn-secondary">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+
+        <!-- ============================================ -->
+        <!-- No Reservations -->
+        <!-- ============================================ -->
+
+        @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+
+            <h5>No Reservations Found</h5>
+
+            <p class="mb-2">
+                You haven't created any reservations yet.
+            </p>
+
+            <a asp-controller="UserDashboard"
+               asp-action="Index"
+               class="btn btn-primary">
+
+                Create Reservation
+
+            </a>
+
+        </div>
+    }
+
+    else
+    {
+
+ <!-- ============================================ -->
+ <!-- Reservations -->
+ <!-- ============================================ -->
+
+        <div class="row">
+
+            @foreach (var reservation in Model)
+            {
+
+            <div class="col-md-6 col-lg-4 mb-4">
+
+                <div class="card h-100 shadow-sm">
+
+                    <!-- ================================= -->
+                    <!-- Card Header -->
+                    <!-- ================================= -->
+
+                    <div class="card-header d-flex justify-content-between align-items-center">
+
+                        <strong>
+                            Reservation #@reservation.ReservationId
+                        </strong>
+
+
+                        @if (reservation.Status == "Pending")
+                            {
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+                            }
+                            else if (reservation.Status == "Approved")
+                            {
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+                            }
+                            else if (reservation.Status == "Rejected")
+                            {
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+                            }
+                            else if (reservation.Status == "Active")
+                            {
+                        <span class="badge bg-primary">
+                            Active
+                        </span>
+                            }
+                            else if (reservation.Status == "Completed")
+                            {
+                        <span class="badge bg-secondary">
+                            Completed
+                        </span>
+                            }
+                            else
+                            {
+                        <span class="badge bg-secondary">
+                            @reservation.Status
+                        </span>
+                            }
+
+                    </div>
+
+
+                    <!-- ================================= -->
+                    <!-- Card Body -->
+                    <!-- ================================= -->
+
+                    <div class="card-body">
+
+
+                        <!-- Vehicle -->
+
+                        @if (reservation.Vehicle != null)
+                            {
+                        <h5 class="card-title">
+
+                            @reservation.Vehicle.Brand
+                            @reservation.Vehicle.Model
+
+                        </h5>
+
+                        <p class="text-muted mb-3">
+
+                            @reservation.Vehicle.Type
+
+                            <br />
+
+                            Plate:
+                            @reservation.Vehicle.PlateNumber
+
+                        </p>
+                            }
+
+
+                        <!-- Route -->
+
+                        <div class="mb-3">
+
+                            <strong>Route</strong>
+
+                            <p class="mb-0">
+
+                                @reservation.Origin
+
+                                <span class="mx-2">
+                                    →
+                                </span>
+
+                                @reservation.Destination
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- Date -->
+
+                        <div class="mb-3">
+
+                            <strong>Schedule</strong>
+
+                            <p class="mb-0">
+
+                                @reservation.StartDateTime.ToString("dd MMM yyyy")
+
+                                <br />
+
+                                @reservation.StartDateTime.ToString("hh:mm tt")
+                                -
+                                @reservation.EndDateTime.ToString("hh:mm tt")
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- Passengers -->
+
+                        <div class="mb-2">
+
+                            <strong>Passengers:</strong>
+
+                            @reservation.Passengers
+
+                        </div>
+
+
+                        <!-- Load -->
+
+                        <div class="mb-2">
+
+                            <strong>Load:</strong>
+
+                            @reservation.Load.ToString("0.##")
+
+                        </div>
+
+
+                        <!-- Purpose -->
+
+                        <div class="mb-3">
+
+                            <strong>Purpose:</strong>
+
+                            <p class="mb-0 text-muted">
+
+                                @reservation.Purpose
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- ================================= -->
+                        <!-- Fuel Information -->
+                        <!-- ================================= -->
+
+                        @if (reservation.PredictedFuel.HasValue)
+                            {
+                        <hr />
+
+                        <h6>
+                            Fuel Estimate
+                        </h6>
+
+                        <div class="small">
+
+                            <div class="mb-1">
+
+                                <strong>
+                                    Estimated Fuel:
+                                </strong>
+
+                                @reservation.PredictedFuel.Value.ToString("0.00")
+                                L
+
+                            </div>
+
+
+                            @if (reservation.FuelPricePerLiter.HasValue)
+                                    {
+                            <div class="mb-1">
+
+                                <strong>
+                                    Price/Liter:
+                                </strong>
+
+                                @reservation.FuelPricePerLiter.Value.ToString("0.00")
+                                EGP
+
+                            </div>
+                                    }
+
+
+                            @if (reservation.EstimatedCost.HasValue)
+                                    {
+                            <div>
+
+                                <strong>
+                                    Estimated Cost:
+                                </strong>
+
+                                @reservation.EstimatedCost.Value.ToString("0.00")
+                                EGP
+
+                            </div>
+                                    }
+
+                        </div>
+                            }
+
+                    </div>
+
+
+                    <!-- ================================= -->
+                    <!-- Card Footer -->
+                    <!-- ================================= -->
+
+                    <div class="card-footer bg-white">
+
+                        @if (reservation.Status == "Active")
+                            {
+                        <a asp-controller="UserTrip"
+                           asp-action="ActiveTrip"
+                           class="btn btn-primary w-100">
+
+                            View Active Trip
+
+                        </a>
+                            }
+                            else
+                            {
+                        <button type="button"
+                                class="btn btn-outline-secondary w-100"
+                                disabled>
+
+                            Reservation #@reservation.ReservationId
+
+                        </button>
+                            }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            }
+
+        </div>
+
+    }
+
+    </div>
