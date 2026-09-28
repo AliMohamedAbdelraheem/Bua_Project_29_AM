@@ -1,0 +1,64 @@
+.register-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.register-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.account-type-title {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.account-type-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    justify-content: center;
+}
+
+.register-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.register-btn-primary {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.register-btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.register-btn-success {
+    background-color: #198754;
+    color: white;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.register-form-group {
+    margin-bottom: 20px;
+}
+
+    .register-form-group label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+    }
+
+.form-title {
+    margin-bottom: 25px;
+}

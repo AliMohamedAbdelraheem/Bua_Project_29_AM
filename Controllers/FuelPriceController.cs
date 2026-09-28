@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BUA_project.Models.ViewModels;
 
 namespace BUA_project.Controllers
 {
@@ -33,9 +34,23 @@ namespace BUA_project.Controllers
         }
 
         // GET: FuelPrice/Create
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var fuelTypes = await _context.Vehicles
+                .Where(v => !string.IsNullOrEmpty(v.FuelType))
+                .Select(v => v.FuelType)
+                .Distinct()
+                .OrderBy(f => f)
+                .ToListAsync();
+
+            var model = new FuelPriceCreateViewModel
+            {
+                EffectiveDate = DateTime.Now,
+                FuelTypes = fuelTypes
+            };
+
+            return View(model);
         }
 
         // POST: FuelPrice/Create

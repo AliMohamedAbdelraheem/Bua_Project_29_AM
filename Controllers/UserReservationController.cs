@@ -191,24 +191,22 @@ namespace BUA_project.Controllers
             }
 
             // --------------------------------------------------------
-            // Get Fuel Price
+            // Get Fuel Price - TEMPORARY
             // --------------------------------------------------------
 
             var fuelPrice = await _context.FuelPrices
-                .Where(f =>
-                    f.EffectiveDate <= model.StartDateTime)
                 .OrderByDescending(f => f.EffectiveDate)
                 .FirstOrDefaultAsync();
 
+            // Temporary fallback
             if (fuelPrice == null)
             {
-                ModelState.AddModelError(
-                    "",
-                    "Fuel price has not been configured by the administrator.");
-
-                await LoadCreateData(model.VehicleId);
-
-                return View(model);
+                fuelPrice = new FuelPrice
+                {
+                    FuelType = selectedVehicle.FuelType,
+                    PricePerLiter = 22.00m,
+                    EffectiveDate = DateTime.Now
+                };
             }
 
             // ========================================================

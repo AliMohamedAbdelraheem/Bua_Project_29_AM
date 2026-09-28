@@ -1,10 +1,10 @@
 using BUA_project.Models;
+using BUA_project.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
-using BUA_project.Models.ViewModels;
 
 namespace BUA_project.Controllers
 {
@@ -62,7 +62,8 @@ namespace BUA_project.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            if (driver.QualificationStatus != "Approved")
+            // Driver must be Qualified
+            if (driver.QualificationStatus != "Qualified")
             {
                 ViewBag.AccessMessage =
                     "Your driver qualification has not been approved yet.";
@@ -72,6 +73,7 @@ namespace BUA_project.Controllers
                 return View("NotApproved");
             }
 
+            // Qualification must not be expired
             if (driver.QualificationValidUntil.Date < DateTime.Today)
             {
                 ViewBag.AccessMessage =
@@ -107,7 +109,7 @@ namespace BUA_project.Controllers
             if (driver == null)
                 return NotFound();
 
-            if (driver.QualificationStatus != "Approved" ||
+            if (driver.QualificationStatus != "Qualified" ||
                 driver.QualificationValidUntil.Date < DateTime.Today)
             {
                 return RedirectToAction(nameof(Index));
@@ -454,7 +456,6 @@ namespace BUA_project.Controllers
         }
 
 
-
         // =========================================================
         // COMPLETE TRIP - POST
         // =========================================================
@@ -481,11 +482,6 @@ namespace BUA_project.Controllers
             if (driver == null)
                 return NotFound();
 
-
-            // =========================================================
-            // GET TRIP
-            // =========================================================
-
             var trip = await _context.Trips
                 .Include(t => t.Reservation)
                     .ThenInclude(r => r.Vehicle)
@@ -497,11 +493,7 @@ namespace BUA_project.Controllers
             if (trip == null)
                 return NotFound();
 
-
-            // =========================================================
-            // VALIDATE END ODOMETER
-            // =========================================================
-
+            // Validate End Odometer
             if (endOdometer < trip.StartOdometer)
             {
                 ModelState.AddModelError(
@@ -511,11 +503,7 @@ namespace BUA_project.Controllers
                 return View(trip);
             }
 
-
-            // =========================================================
-            // VALIDATE ACTUAL FUEL
-            // =========================================================
-
+            // Validate Actual Fuel
             if (actualFuelLiters < 0)
             {
                 ModelState.AddModelError(
@@ -525,11 +513,7 @@ namespace BUA_project.Controllers
                 return View(trip);
             }
 
-
-            // =========================================================
-            // VALIDATE GPS
-            // =========================================================
-
+            // Validate GPS
             if (latitude < -90 || latitude > 90 ||
                 longitude < -180 || longitude > 180)
             {
@@ -540,19 +524,11 @@ namespace BUA_project.Controllers
                 return View(trip);
             }
 
-
-            // =========================================================
-            // CALCULATE ACTUAL DISTANCE
-            // =========================================================
-
+            // Calculate Actual Distance
             double actualDistanceKm =
                 endOdometer - trip.StartOdometer;
 
-
-            // =========================================================
-            // GET CURRENT FUEL PRICE
-            // =========================================================
-
+            // Get Current Fuel Price
             var vehicleFuelType =
                 trip.Reservation.Vehicle.FuelType;
 
@@ -565,11 +541,7 @@ namespace BUA_project.Controllers
                 .OrderByDescending(f => f.EffectiveDate)
                 .FirstOrDefaultAsync();
 
-
-            // =========================================================
-            // MAKE SURE FUEL PRICE EXISTS
-            // =========================================================
-
+            // Make sure Fuel Price exists
             if (fuelPrice == null)
             {
                 ModelState.AddModelError(
@@ -579,22 +551,12 @@ namespace BUA_project.Controllers
                 return View(trip);
             }
 
-
-            // =========================================================
-            // CALCULATE ACTUAL FUEL COST
-            // =========================================================
-            // This calculation is internal.
-            // It is NOT shown to the Driver.
-
+            // Calculate Actual Fuel Cost
             decimal actualFuelCost =
                 (decimal)actualFuelLiters *
                 fuelPrice.PricePerLiter;
 
-
-            // =========================================================
-            // SAVE FINAL GPS LOCATION
-            // =========================================================
-
+            // Save Final GPS Location
             var finalLocation = new LocationPing
             {
                 Latitude = latitude,
@@ -605,44 +567,19 @@ namespace BUA_project.Controllers
 
             _context.LocationPings.Add(finalLocation);
 
-
-            // =========================================================
-            // UPDATE TRIP
-            // =========================================================
-
+            // Update Trip
             trip.EndOdometer = endOdometer;
-
             trip.ActualDistanceKm = actualDistanceKm;
-
             trip.ActualFuelLiters = actualFuelLiters;
-
             trip.ActualFuelCost = actualFuelCost;
-
             trip.IncidentNotes = incidentNotes;
-
             trip.CompletedAt = completionTime;
-
             trip.Status = "Completed";
-
-
-            // =========================================================
-            // SAVE CHANGES
-            // =========================================================
 
             await _context.SaveChangesAsync();
 
-
-            // =========================================================
-            // SUCCESS MESSAGE
-            // =========================================================
-
             TempData["Success"] =
                 $"Trip completed successfully. Distance: {actualDistanceKm:0.0} KM.";
-
-
-            // =========================================================
-            // REDIRECT TO MY TRIPS
-            // =========================================================
 
             return RedirectToAction(nameof(MyTrips));
         }

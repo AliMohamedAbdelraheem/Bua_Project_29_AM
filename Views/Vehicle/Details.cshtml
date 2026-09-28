@@ -1,258 +1,218 @@
-﻿```cshtml
+﻿
 @model BUA_project.Models.Vehicle
 
 @{
     ViewData["Title"] = "Vehicle Details";
 }
 
-@{
-    if (User.IsInRole("User"))
-    {
-        Layout = "~/Views/UserNAV/_UserLayout.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
-    }
-}
+<link rel="stylesheet" href="~/css/vehicle-details.css" />
+
+<div class="vehicle-details-page">
+
+    <!-- Page Header -->
+    <div class="vehicle-details-header">
+
+        <div>
+
+            <p class="vehicle-details-subtitle">
+                Fleet Management
+            </p>
+
+            <h1>
+                Vehicle Details
+            </h1>
+
+            <p class="vehicle-details-description">
+                View vehicle information, specifications, and availability.
+            </p>
+
+        </div>
 
 
-<div class="container mt-4">
+        <!-- Back Button -->
 
-    <div class="mb-4">
+        @if (User.IsInRole("User"))
+        {
+            <a asp-controller="UserDashboard"
+               asp-action="Index"
+               class="vehicle-back-btn">
 
-        <h2>Vehicle Details</h2>
+                ← Back to Fleet
 
-        <p class="text-muted">
-            View vehicle information and specifications.
-        </p>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Vehicle"
+               asp-action="Index"
+               class="vehicle-back-btn">
+
+                ← Back to Vehicles
+
+            </a>
+        }
 
     </div>
 
 
-    <div class="card shadow-sm">
+    <!-- Main Vehicle Card -->
 
-        <div class="card-body">
+    <div class="vehicle-details-main-card">
 
 
-            <!-- Vehicle Image -->
+        <!-- Vehicle Image -->
+
+        <div class="vehicle-details-image-section">
 
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
-            <div class="mb-4">
-
                 <img src="@Model.ImageUrl"
                      alt="@Model.Brand @Model.Model"
-                     style="
-                             width:400px;
-                             height:250px;
-                             object-fit:cover;
-                             border-radius:10px;
-                         " />
-
-            </div>
-            }
-
-
-            <!-- Vehicle Information -->
-
-            <h5 class="card-title mb-4">
-                Vehicle Information
-            </h5>
-
-
-            <dl class="row">
-
-                <dt class="col-sm-3">
-                    Plate Number
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.PlateNumber
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Brand
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.Brand
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Model
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.Model
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Type
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.Type
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Seats
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.Seats
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Fuel Type
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.FuelType
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Status
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.Status
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Year
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.Year
-                </dd>
-
-            </dl>
-
-
-            <hr />
-
-
-            <!-- Vehicle Specification -->
-
-            <h5 class="mb-4">
-                Vehicle Specification
-            </h5>
-
-
-            @if (Model.VehicleSpecification != null)
-            {
-            <dl class="row">
-
-                <dt class="col-sm-3">
-                    Nominal Consumption
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.VehicleSpecification.NominalLPer100Km
-                    L/100Km
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Tank Capacity
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.VehicleSpecification.TankCapacity
-                    Liters
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Accessibility
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.VehicleSpecification.Accessibility
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Transmission
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.VehicleSpecification.Transmission
-                </dd>
-
-
-                <dt class="col-sm-3">
-                    Allowed Load
-                </dt>
-
-                <dd class="col-sm-9">
-                    @Model.VehicleSpecification.AllowedLoad
-                </dd>
-
-            </dl>
+                     class="vehicle-details-image" />
             }
             else
             {
-            <div class="alert alert-warning">
-                No vehicle specification is assigned.
-            </div>
+                <div class="vehicle-details-image-placeholder">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M3 13l1.6-4.8A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.2L21 13">
+                        </path>
+
+                        <rect x="2.5"
+                              y="13"
+                              width="19"
+                              height="5.5"
+                              rx="1.5">
+                        </rect>
+
+                        <circle cx="7"
+                                cy="18.5"
+                                r="1.5">
+                        </circle>
+
+                        <circle cx="17"
+                                cy="18.5"
+                                r="1.5">
+                        </circle>
+
+                    </svg>
+
+                    <span>
+                        No Vehicle Image
+                    </span>
+
+                </div>
             }
 
 
-            <hr />
+            <!-- Status -->
 
+            <div class="vehicle-details-status">
 
-            <!-- Actions -->
-
-            <div class="d-flex gap-2">
-
-                @if (User.IsInRole("Admin"))
+                @if (Model.Status == "Available")
                 {
-                <a asp-controller="Vehicle"
-                   asp-action="Edit"
-                   asp-route-id="@Model.VehicleId"
-                   class="btn btn-primary">
-
-                    Edit
-
-                </a>
-
-                <a asp-controller="Vehicle"
-                   asp-action="Index"
-                   class="btn btn-secondary">
-
-                    Back
-
-                </a>
+                    <span class="status-badge status-available">
+                        Available
+                    </span>
                 }
-                else if (User.IsInRole("User"))
+                else if (Model.Status == "Maintenance")
                 {
-                <a asp-controller="UserDashboard"
-                   asp-action="Index"
-                   class="btn btn-secondary">
-
-                    Back
-
-                </a>
+                    <span class="status-badge status-maintenance">
+                        Maintenance
+                    </span>
                 }
                 else
                 {
-                <a asp-controller="Vehicle"
-                   asp-action="Index"
-                   class="btn btn-secondary">
-
-                    Back
-
-                </a>
+                    <span class="status-badge status-default">
+                        @Model.Status
+                    </span>
                 }
+
+            </div>
+
+        </div>
+
+
+        <!-- Vehicle Summary -->
+
+        <div class="vehicle-details-summary">
+
+            <div class="vehicle-details-type">
+                @Model.Type · @Model.Year
+            </div>
+
+            <h2>
+                @Model.Brand @Model.Model
+            </h2>
+
+            <p class="vehicle-details-plate">
+                Plate Number:
+                <strong>
+                    @Model.PlateNumber
+                </strong>
+            </p>
+
+
+            <!-- Quick Specs -->
+
+            <div class="vehicle-quick-specs">
+
+                <div class="vehicle-quick-spec">
+
+                    <span class="quick-spec-label">
+                        Seats
+                    </span>
+
+                    <span class="quick-spec-value">
+                        @Model.Seats
+                    </span>
+
+                </div>
+
+
+                <div class="vehicle-quick-spec">
+
+                    <span class="quick-spec-label">
+                        Fuel
+                    </span>
+
+                    <span class="quick-spec-value">
+                        @Model.FuelType
+                    </span>
+
+                </div>
+
+
+                <div class="vehicle-quick-spec">
+
+                    <span class="quick-spec-label">
+                        Year
+                    </span>
+
+                    <span class="quick-spec-value">
+                        @Model.Year
+                    </span>
+
+                </div>
+
+
+                <div class="vehicle-quick-spec">
+
+                    <span class="quick-spec-label">
+                        Type
+                    </span>
+
+                    <span class="quick-spec-value">
+                        @Model.Type
+                    </span>
+
+                </div>
 
             </div>
 
@@ -260,5 +220,376 @@
 
     </div>
 
+
+    <!-- Vehicle Information -->
+
+    <div class="vehicle-details-section">
+
+        <div class="vehicle-section-header">
+
+            <div>
+
+                <p class="vehicle-section-label">
+                    Vehicle
+                </p>
+
+                <h2>
+                    Vehicle Information
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="vehicle-info-grid">
+
+
+            <!-- Plate Number -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Plate Number
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.PlateNumber
+                </span>
+
+            </div>
+
+
+            <!-- Brand -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Brand
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.Brand
+                </span>
+
+            </div>
+
+
+            <!-- Model -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Model
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.Model
+                </span>
+
+            </div>
+
+
+            <!-- Type -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Vehicle Type
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.Type
+                </span>
+
+            </div>
+
+
+            <!-- Seats -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Passenger Capacity
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.Seats Seats
+                </span>
+
+            </div>
+
+
+            <!-- Fuel -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Fuel Type
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.FuelType
+                </span>
+
+            </div>
+
+
+            <!-- Year -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Manufacturing Year
+                </span>
+
+                <span class="vehicle-info-value">
+                    @Model.Year
+                </span>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="vehicle-info-card">
+
+                <span class="vehicle-info-label">
+                    Current Status
+                </span>
+
+                <span class="vehicle-info-value">
+
+                    @if (Model.Status == "Available")
+                    {
+                        <span class="status-badge status-available">
+                            Available
+                        </span>
+                    }
+                    else if (Model.Status == "Maintenance")
+                    {
+                        <span class="status-badge status-maintenance">
+                            Maintenance
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="status-badge status-default">
+                            @Model.Status
+                        </span>
+                    }
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Vehicle Specification -->
+
+    <div class="vehicle-details-section">
+
+        <div class="vehicle-section-header">
+
+            <div>
+
+                <p class="vehicle-section-label">
+                    Specifications
+                </p>
+
+                <h2>
+                    Vehicle Specification
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.VehicleSpecification != null)
+        {
+
+            <div class="vehicle-spec-details-grid">
+
+
+                <!-- Consumption -->
+
+                <div class="vehicle-spec-details-card">
+
+                    <span class="vehicle-spec-details-label">
+                        Nominal Consumption
+                    </span>
+
+                    <strong>
+                        @Model.VehicleSpecification.NominalLPer100Km
+                    </strong>
+
+                    <span class="vehicle-spec-unit">
+                        L / 100 Km
+                    </span>
+
+                </div>
+
+
+                <!-- Tank -->
+
+                <div class="vehicle-spec-details-card">
+
+                    <span class="vehicle-spec-details-label">
+                        Tank Capacity
+                    </span>
+
+                    <strong>
+                        @Model.VehicleSpecification.TankCapacity
+                    </strong>
+
+                    <span class="vehicle-spec-unit">
+                        Liters
+                    </span>
+
+                </div>
+
+
+                <!-- Transmission -->
+
+                <div class="vehicle-spec-details-card">
+
+                    <span class="vehicle-spec-details-label">
+                        Transmission
+                    </span>
+
+                    <strong>
+                        @Model.VehicleSpecification.Transmission
+                    </strong>
+
+                </div>
+
+
+                <!-- Accessibility -->
+
+                <div class="vehicle-spec-details-card">
+
+                    <span class="vehicle-spec-details-label">
+                        Accessibility
+                    </span>
+
+                    <strong>
+                        @Model.VehicleSpecification.Accessibility
+                    </strong>
+
+                </div>
+
+
+                <!-- Allowed Load -->
+
+                <div class="vehicle-spec-details-card">
+
+                    <span class="vehicle-spec-details-label">
+                        Allowed Load
+                    </span>
+
+                    <strong>
+                        @Model.VehicleSpecification.AllowedLoad
+                    </strong>
+
+                    <span class="vehicle-spec-unit">
+                        Kg
+                    </span>
+
+                </div>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="vehicle-no-specifications">
+
+                <h3>
+                    No Specifications Available
+                </h3>
+
+                <p>
+                    No vehicle specification has been assigned to this vehicle yet.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+
+
+    <!-- Actions -->
+
+    <div class="vehicle-details-actions">
+
+
+        @if (User.IsInRole("Admin"))
+        {
+
+            <a asp-controller="Vehicle"
+               asp-action="Edit"
+               asp-route-id="@Model.VehicleId"
+               class="btn btn-primary">
+
+                Edit Vehicle
+
+            </a>
+
+
+            <a asp-controller="Vehicle"
+               asp-action="Index"
+               class="btn btn-outline">
+
+                Back to Vehicles
+
+            </a>
+
+        }
+        else if (User.IsInRole("User"))
+        {
+
+            @if (Model.Status == "Available")
+            {
+                <a asp-controller="UserReservation"
+                   asp-action="Create"
+                   asp-route-vehicleId="@Model.VehicleId"
+                   class="btn btn-primary">
+
+                    Reserve Vehicle
+
+                </a>
+            }
+
+
+            <a asp-controller="UserDashboard"
+               asp-action="Index"
+               class="btn btn-outline">
+
+                Back to Fleet
+
+            </a>
+
+        }
+        else
+        {
+
+            <a asp-controller="Vehicle"
+               asp-action="Index"
+               class="btn btn-outline">
+
+                Back to Vehicles
+
+            </a>
+
+        }
+
+    </div>
+
 </div>
-```
+

@@ -1,4 +1,5 @@
-﻿using BUA_project.Models;
+﻿
+using BUA_project.Models;
 using BUA_project.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BUA_project.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class VehicleController : Controller
     {
         private readonly Entity _context;
@@ -19,8 +20,10 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // GET: Vehicle
+        // ADMIN ONLY
         // ============================================================
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var vehicles = await _context.Vehicles
@@ -34,6 +37,7 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // GET: Vehicle/Details/5
+        // ADMIN + USER
         // ============================================================
 
         public async Task<IActionResult> Details(int? id)
@@ -55,8 +59,10 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // GET: Vehicle/Create
+        // ADMIN ONLY
         // ============================================================
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
             await LoadVehicleSpecifications();
@@ -67,10 +73,12 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // POST: Vehicle/Create
+        // ADMIN ONLY
         // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(
             VehicleCreateViewModel model)
         {
@@ -85,11 +93,13 @@ namespace BUA_project.Controllers
             Console.WriteLine($"PlateNumber: {model.PlateNumber}");
             Console.WriteLine($"Status: {model.Status}");
             Console.WriteLine($"Year: {model.Year}");
+
             Console.WriteLine(
                 $"SpecificationId: {model.VehicleSpecificationId}");
 
             Console.WriteLine(
                 $"ModelState Valid: {ModelState.IsValid}");
+
 
             foreach (var state in ModelState)
             {
@@ -106,6 +116,7 @@ namespace BUA_project.Controllers
                 }
             }
 
+
             if (!ModelState.IsValid)
             {
                 await LoadVehicleSpecifications();
@@ -113,14 +124,17 @@ namespace BUA_project.Controllers
                 return View(model);
             }
 
+
             var specificationExists =
                 await _context.VehicleSpecifications
                     .AnyAsync(vs =>
                         vs.VehicleSpecificationId ==
                         model.VehicleSpecificationId);
 
+
             Console.WriteLine(
                 $"Specification Exists: {specificationExists}");
+
 
             if (!specificationExists)
             {
@@ -140,29 +154,21 @@ namespace BUA_project.Controllers
 
             var vehicle = new Vehicle
             {
-                Type =
-                    model.Type,
+                Type = model.Type,
 
-                Brand =
-                    model.Brand,
+                Brand = model.Brand,
 
-                Model =
-                    model.Model,
+                Model = model.Model,
 
-                Seats =
-                    model.Seats,
+                Seats = model.Seats,
 
-                FuelType =
-                    model.FuelType,
+                FuelType = model.FuelType,
 
-                PlateNumber =
-                    model.PlateNumber,
+                PlateNumber = model.PlateNumber,
 
-                Status =
-                    model.Status,
+                Status = model.Status,
 
-                Year =
-                    model.Year,
+                Year = model.Year,
 
                 VehicleSpecificationId =
                     model.VehicleSpecificationId
@@ -183,21 +189,25 @@ namespace BUA_project.Controllers
                     "vehicles"
                 );
 
+
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(
                         uploadsFolder);
                 }
 
+
                 var fileName =
                     Guid.NewGuid().ToString()
                     + Path.GetExtension(
                         model.Image.FileName);
 
+
                 var filePath =
                     Path.Combine(
                         uploadsFolder,
                         fileName);
+
 
                 using (var stream =
                     new FileStream(
@@ -206,6 +216,7 @@ namespace BUA_project.Controllers
                 {
                     await model.Image.CopyToAsync(stream);
                 }
+
 
                 vehicle.ImageUrl =
                     "/images/vehicles/" + fileName;
@@ -218,13 +229,17 @@ namespace BUA_project.Controllers
 
             _context.Vehicles.Add(vehicle);
 
+
             Console.WriteLine(
                 "Calling SaveChangesAsync...");
 
+
             await _context.SaveChangesAsync();
+
 
             Console.WriteLine(
                 "Vehicle Created Successfully!");
+
 
             return RedirectToAction(nameof(Index));
         }
@@ -232,19 +247,24 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // GET: Vehicle/Edit/5
+        // ADMIN ONLY
         // ============================================================
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 return NotFound();
 
+
             var vehicle = await _context.Vehicles
                 .FirstOrDefaultAsync(v =>
                     v.VehicleId == id);
 
+
             if (vehicle == null)
                 return NotFound();
+
 
             var model = new VehicleEditViewModel
             {
@@ -282,7 +302,9 @@ namespace BUA_project.Controllers
                     vehicle.ImageUrl
             };
 
+
             await LoadVehicleSpecifications();
+
 
             return View(model);
         }
@@ -290,10 +312,12 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // POST: Vehicle/Edit/5
+        // ADMIN ONLY
         // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(
             int id,
             VehicleEditViewModel model)
@@ -337,6 +361,7 @@ namespace BUA_project.Controllers
             Console.WriteLine(
                 $"ModelState Valid: {ModelState.IsValid}");
 
+
             foreach (var state in ModelState)
             {
                 foreach (var error in state.Value.Errors)
@@ -352,8 +377,10 @@ namespace BUA_project.Controllers
                 }
             }
 
+
             if (id != model.VehicleId)
                 return NotFound();
+
 
             if (!ModelState.IsValid)
             {
@@ -362,14 +389,17 @@ namespace BUA_project.Controllers
                 return View(model);
             }
 
+
             var specificationExists =
                 await _context.VehicleSpecifications
                     .AnyAsync(vs =>
                         vs.VehicleSpecificationId ==
                         model.VehicleSpecificationId);
 
+
             Console.WriteLine(
                 $"Specification Exists: {specificationExists}");
+
 
             if (!specificationExists)
             {
@@ -382,9 +412,11 @@ namespace BUA_project.Controllers
                 return View(model);
             }
 
+
             var vehicle = await _context.Vehicles
                 .FirstOrDefaultAsync(v =>
                     v.VehicleId == id);
+
 
             if (vehicle == null)
                 return NotFound();
@@ -436,6 +468,7 @@ namespace BUA_project.Controllers
                     "vehicles"
                 );
 
+
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(
@@ -463,6 +496,7 @@ namespace BUA_project.Controllers
                                 )
                         );
 
+
                     if (System.IO.File.Exists(
                         oldImagePath))
                     {
@@ -481,10 +515,12 @@ namespace BUA_project.Controllers
                     + Path.GetExtension(
                         model.Image.FileName);
 
+
                 var filePath =
                     Path.Combine(
                         uploadsFolder,
                         fileName);
+
 
                 using (var stream =
                     new FileStream(
@@ -494,6 +530,7 @@ namespace BUA_project.Controllers
                     await model.Image.CopyToAsync(
                         stream);
                 }
+
 
                 vehicle.ImageUrl =
                     "/images/vehicles/" + fileName;
@@ -507,10 +544,13 @@ namespace BUA_project.Controllers
             Console.WriteLine(
                 "Calling SaveChangesAsync...");
 
+
             await _context.SaveChangesAsync();
+
 
             Console.WriteLine(
                 "Vehicle Updated Successfully!");
+
 
             return RedirectToAction(nameof(Index));
         }
@@ -518,20 +558,25 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // GET: Vehicle/Delete/5
+        // ADMIN ONLY
         // ============================================================
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
                 return NotFound();
+
 
             var vehicle = await _context.Vehicles
                 .Include(v => v.VehicleSpecification)
                 .FirstOrDefaultAsync(v =>
                     v.VehicleId == id);
 
+
             if (vehicle == null)
                 return NotFound();
+
 
             return View(vehicle);
         }
@@ -539,16 +584,19 @@ namespace BUA_project.Controllers
 
         // ============================================================
         // POST: Vehicle/Delete/5
+        // ADMIN ONLY
         // ============================================================
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(
             int id)
         {
             var vehicle = await _context.Vehicles
                 .FirstOrDefaultAsync(v =>
                     v.VehicleId == id);
+
 
             if (vehicle == null)
                 return NotFound();
@@ -574,6 +622,7 @@ namespace BUA_project.Controllers
                             )
                     );
 
+
                 if (System.IO.File.Exists(
                     imagePath))
                 {
@@ -589,6 +638,7 @@ namespace BUA_project.Controllers
 
             _context.Vehicles.Remove(vehicle);
 
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -602,6 +652,7 @@ namespace BUA_project.Controllers
                     nameof(Delete),
                     new { id });
             }
+
 
             return RedirectToAction(nameof(Index));
         }
@@ -633,3 +684,4 @@ namespace BUA_project.Controllers
         }
     }
 }
+

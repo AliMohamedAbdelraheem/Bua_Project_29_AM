@@ -1,593 +1,615 @@
 @model BUA_project.Models.ViewModels.UserDashboardViewModel
 
 @{
-    Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+Layout = "~/Views/UserNAV/_UserLayout.cshtml";
+ViewData["Title"] = "Fleet Catalog";
 }
 
-@{
-    ViewData["Title"] = "Fleet Catalog";
-}
+<link rel="stylesheet" href="~/css/userdash.css" />
 
 <section class="app-shell__content app-shell__content--padded">
 
-    <!-- Page Header -->
-    <div class="page-head">
+
+<!-- Page Header -->
+<div class="page-head">
+    <div>
+        <p class="text-caption page-subtitle">
+            Vehicle Catalog
+        </p>
+
+        <h1>Fleet Vehicle Catalog</h1>
+    </div>
+</div>
+
+
+<!-- Metrics -->
+<div class="metric-grid">
+
+    <div class="metric-card">
+        <div class="lbl">Available Vehicles</div>
+
+        <div class="num">
+            @Model.AvailableVehiclesCount
+        </div>
+
+        <div class="sub">
+            vehicles available for reservation
+        </div>
+    </div>
+
+
+    <div class="metric-card">
+        <div class="lbl">My Active Requests</div>
+
+        <div class="num">
+            @Model.MyActiveRequestsCount
+        </div>
+
+        <div class="sub">
+            pending or approved requests
+        </div>
+    </div>
+
+
+    <div class="metric-card">
+        <div class="lbl">Approved Upcoming Trips</div>
+
+        <div class="num">
+            @Model.ApprovedUpcomingTripsCount
+        </div>
+
+        <div class="sub">
+            confirmed trips
+        </div>
+    </div>
+
+
+    <div class="metric-card">
+        <div class="lbl">Completed Trips</div>
+
+        <div class="num">
+            @Model.CompletedTripsCount
+        </div>
+
+        <div class="sub">
+            trips recorded
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Filters -->
+<div class="fleet-filter-card">
+
+    <div class="fleet-filter-header">
         <div>
-            <p class="text-caption"
-               style="color:var(--color-primary);font-weight:700">
-                Vehicle Catalog
+            <h3>Filter Vehicles</h3>
+
+            <p>
+                Filter available vehicles by their specifications.
             </p>
-
-            <h1>Fleet Vehicle Catalog</h1>
         </div>
     </div>
 
 
-    <!-- Metrics -->
-    <div class="metric-grid">
+    <form method="get" asp-action="Index">
 
-        <!-- Available Vehicles -->
-        <div class="metric-card">
-            <div class="lbl">Available Vehicles</div>
+        <!-- Filter Grid -->
+        <div class="fleet-filter-grid">
 
-            <div class="num">
-                @Model.AvailableVehiclesCount
+            <!-- Vehicle Type -->
+            <div class="fleet-filter-group">
+
+                <label for="type">
+                    Vehicle Type
+                </label>
+
+                <select id="type" name="type">
+
+                    <option value="">All Types</option>
+
+                    <option value="Passenger Van"
+                            selected="@(Context.Request.Query["type"] == "Passenger Van")">
+                        Passenger Van
+                    </option>
+
+                    <option value="Cargo Van"
+                            selected="@(Context.Request.Query["type"] == "Cargo Van")">
+                        Cargo Van
+                    </option>
+
+                    <option value="Sedan"
+                            selected="@(Context.Request.Query["type"] == "Sedan")">
+                        Sedan
+                    </option>
+
+                    <option value="Electric"
+                            selected="@(Context.Request.Query["type"] == "Electric")">
+                        Electric
+                    </option>
+
+                    <option value="Campus Shuttle"
+                            selected="@(Context.Request.Query["type"] == "Campus Shuttle")">
+                        Campus Shuttle
+                    </option>
+
+                    <option value="Bus"
+                            selected="@(Context.Request.Query["type"] == "Bus")">
+                        Bus
+                    </option>
+
+                    <option value="SUV"
+                            selected="@(Context.Request.Query["type"] == "SUV")">
+                        SUV
+                    </option>
+
+                    <option value="Minivan"
+                            selected="@(Context.Request.Query["type"] == "Minivan")">
+                        Minivan
+                    </option>
+
+                </select>
+
             </div>
 
-            <div class="sub">
-                vehicles available for reservation
+
+            <!-- Brand -->
+            <div class="fleet-filter-group">
+
+                <label for="brand">
+                    Brand
+                </label>
+
+                <select id="brand" name="brand">
+
+                    <option value="">All Brands</option>
+
+                    <option value="Toyota"
+                            selected="@(Context.Request.Query["brand"] == "Toyota")">
+                        Toyota
+                    </option>
+
+                    <option value="Ford"
+                            selected="@(Context.Request.Query["brand"] == "Ford")">
+                        Ford
+                    </option>
+
+                    <option value="Nissan"
+                            selected="@(Context.Request.Query["brand"] == "Nissan")">
+                        Nissan
+                    </option>
+
+                    <option value="Mercedes-Benz"
+                            selected="@(Context.Request.Query["brand"] == "Mercedes-Benz")">
+                        Mercedes-Benz
+                    </option>
+
+                    <option value="Chevrolet"
+                            selected="@(Context.Request.Query["brand"] == "Chevrolet")">
+                        Chevrolet
+                    </option>
+
+                    <option value="Hyundai"
+                            selected="@(Context.Request.Query["brand"] == "Hyundai")">
+                        Hyundai
+                    </option>
+
+                </select>
+
             </div>
+
+
+            <!-- Capacity -->
+            <div class="fleet-filter-group">
+
+                <label for="seats">
+                    Capacity
+                </label>
+
+                <select id="seats" name="seats">
+
+                    <option value="">Any Capacity</option>
+
+                    <option value="5"
+                            selected="@(Context.Request.Query["seats"] == "5")">
+                        5 Seats
+                    </option>
+
+                    <option value="7"
+                            selected="@(Context.Request.Query["seats"] == "7")">
+                        7 Seats
+                    </option>
+
+                    <option value="9"
+                            selected="@(Context.Request.Query["seats"] == "9")">
+                        9 Seats
+                    </option>
+
+                    <option value="12"
+                            selected="@(Context.Request.Query["seats"] == "12")">
+                        12 Seats
+                    </option>
+
+                    <option value="15"
+                            selected="@(Context.Request.Query["seats"] == "15")">
+                        15 Seats
+                    </option>
+
+                    <option value="16"
+                            selected="@(Context.Request.Query["seats"] == "16")">
+                        16 Seats
+                    </option>
+
+                    <option value="32"
+                            selected="@(Context.Request.Query["seats"] == "32")">
+                        32 Seats
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Fuel -->
+            <div class="fleet-filter-group">
+
+                <label for="fuelType">
+                    Powertrain
+                </label>
+
+                <select id="fuelType" name="fuelType">
+
+                    <option value="">All Powertrains</option>
+
+                    <option value="Diesel"
+                            selected="@(Context.Request.Query["fuelType"] == "Diesel")">
+                        Diesel
+                    </option>
+
+                    <option value="Gasoline"
+                            selected="@(Context.Request.Query["fuelType"] == "Gasoline")">
+                        Gasoline
+                    </option>
+
+                    <option value="Hybrid"
+                            selected="@(Context.Request.Query["fuelType"] == "Hybrid")">
+                        Hybrid
+                    </option>
+
+                    <option value="Electric"
+                            selected="@(Context.Request.Query["fuelType"] == "Electric")">
+                        Electric
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Transmission -->
+            <div class="fleet-filter-group">
+
+                <label for="transmission">
+                    Transmission
+                </label>
+
+                <select id="transmission" name="transmission">
+
+                    <option value="">All Transmissions</option>
+
+                    <option value="Automatic"
+                            selected="@(Context.Request.Query["transmission"] == "Automatic")">
+                        Automatic
+                    </option>
+
+                    <option value="Manual"
+                            selected="@(Context.Request.Query["transmission"] == "Manual")">
+                        Manual
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Accessibility -->
+            <div class="fleet-filter-group">
+
+                <label for="accessibility">
+                    Accessibility
+                </label>
+
+                <select id="accessibility" name="accessibility">
+
+                    <option value="">Standard / Any</option>
+
+                    <option value="Wheelchair"
+                            selected="@(Context.Request.Query["accessibility"] == "Wheelchair")">
+                        Wheelchair
+                    </option>
+
+                </select>
+
+            </div>
+
         </div>
 
 
-        <!-- My Active Requests -->
-        <div class="metric-card">
-            <div class="lbl">My Active Requests</div>
+        <!-- Filter Actions -->
+        <div class="fleet-filter-actions">
 
-            <div class="num">
-                @Model.MyActiveRequestsCount
-            </div>
+            <button type="submit"
+                    class="btn btn-primary">
+                Apply Filters
+            </button>
 
-            <div class="sub">
-                pending or approved requests
-            </div>
+            <a asp-action="Index"
+               class="link-btn">
+                Reset Filters
+            </a>
+
         </div>
 
 
-        <!-- Approved Upcoming Trips -->
-        <div class="metric-card">
-            <div class="lbl">Approved Upcoming Trips</div>
+        <!-- Applied Filters -->
+        <div class="applied-filters">
 
-            <div class="num">
-                @Model.ApprovedUpcomingTripsCount
-            </div>
+            <span class="applied-filters-label">
+                Applied:
+            </span>
 
-            <div class="sub">
-                confirmed trips
-            </div>
-        </div>
 
+            <span class="chip">
+                Status: Available
+            </span>
 
-        <!-- Completed Trips -->
-        <div class="metric-card">
-            <div class="lbl">Completed Trips</div>
 
-            <div class="num">
-                @Model.CompletedTripsCount
-            </div>
-
-            <div class="sub">
-                trips recorded
-            </div>
-        </div>
-
-    </div>
-
-
-    <!-- Filters -->
-    <div class="panel" style="margin-bottom:14px">
-
-        <div class="panel-b">
-
-            <form method="get" asp-action="Index">
-
-                <div class="filters">
-
-                    <!-- Type -->
-                    <select name="type">
-
-                        <option value="">
-                            All Types
-                        </option>
-
-                        <option value="Passenger Van"
-                                selected="@(Context.Request.Query["type"] == "Passenger Van")">
-                            Passenger Van
-                        </option>
-
-                        <option value="Cargo Van"
-                                selected="@(Context.Request.Query["type"] == "Cargo Van")">
-                            Cargo Van
-                        </option>
-
-                        <option value="Sedan"
-                                selected="@(Context.Request.Query["type"] == "Sedan")">
-                            Sedan
-                        </option>
-
-                        <option value="Electric"
-                                selected="@(Context.Request.Query["type"] == "Electric")">
-                            Electric
-                        </option>
-
-                        <option value="Campus Shuttle"
-                                selected="@(Context.Request.Query["type"] == "Campus Shuttle")">
-                            Campus Shuttle
-                        </option>
-
-                        <option value="Bus"
-                                selected="@(Context.Request.Query["type"] == "Bus")">
-                            Bus
-                        </option>
-
-                        <option value="SUV"
-                                selected="@(Context.Request.Query["type"] == "SUV")">
-                            SUV
-                        </option>
-
-                        <option value="Minivan"
-                                selected="@(Context.Request.Query["type"] == "Minivan")">
-                            Minivan
-                        </option>
-
-                    </select>
-
-
-                    <!-- Brand -->
-                    <select name="brand">
-
-                        <option value="">
-                            All Brands
-                        </option>
-
-                        <option value="Toyota"
-                                selected="@(Context.Request.Query["brand"] == "Toyota")">
-                            Toyota
-                        </option>
-
-                        <option value="Ford"
-                                selected="@(Context.Request.Query["brand"] == "Ford")">
-                            Ford
-                        </option>
-
-                        <option value="Nissan"
-                                selected="@(Context.Request.Query["brand"] == "Nissan")">
-                            Nissan
-                        </option>
-
-                        <option value="Mercedes-Benz"
-                                selected="@(Context.Request.Query["brand"] == "Mercedes-Benz")">
-                            Mercedes-Benz
-                        </option>
-
-                        <option value="Chevrolet"
-                                selected="@(Context.Request.Query["brand"] == "Chevrolet")">
-                            Chevrolet
-                        </option>
-
-                        <option value="Hyundai"
-                                selected="@(Context.Request.Query["brand"] == "Hyundai")">
-                            Hyundai
-                        </option>
-
-                    </select>
-
-
-                    <!-- Seats -->
-                    <select name="seats">
-
-                        <option value="">
-                            Any Capacity
-                        </option>
-
-                        <option value="5"
-                                selected="@(Context.Request.Query["seats"] == "5")">
-                            5 Seats
-                        </option>
-
-                        <option value="7"
-                                selected="@(Context.Request.Query["seats"] == "7")">
-                            7 Seats
-                        </option>
-
-                        <option value="9"
-                                selected="@(Context.Request.Query["seats"] == "9")">
-                            9 Seats
-                        </option>
-
-                        <option value="12"
-                                selected="@(Context.Request.Query["seats"] == "12")">
-                            12 Seats
-                        </option>
-
-                        <option value="15"
-                                selected="@(Context.Request.Query["seats"] == "15")">
-                            15 Seats
-                        </option>
-
-                        <option value="16"
-                                selected="@(Context.Request.Query["seats"] == "16")">
-                            16 Seats
-                        </option>
-
-                        <option value="32"
-                                selected="@(Context.Request.Query["seats"] == "32")">
-                            32 Seats
-                        </option>
-
-                    </select>
-
-
-                    <!-- Fuel -->
-                    <select name="fuelType">
-
-                        <option value="">
-                            All Powertrains
-                        </option>
-
-                        <option value="Diesel"
-                                selected="@(Context.Request.Query["fuelType"] == "Diesel")">
-                            Diesel
-                        </option>
-
-                        <option value="Gasoline"
-                                selected="@(Context.Request.Query["fuelType"] == "Gasoline")">
-                            Gasoline
-                        </option>
-
-                        <option value="Hybrid"
-                                selected="@(Context.Request.Query["fuelType"] == "Hybrid")">
-                            Hybrid
-                        </option>
-
-                        <option value="Electric"
-                                selected="@(Context.Request.Query["fuelType"] == "Electric")">
-                            Electric
-                        </option>
-
-                    </select>
-
-
-                    <!-- Transmission -->
-                    <select name="transmission">
-
-                        <option value="">
-                            All Transmissions
-                        </option>
-
-                        <option value="Automatic"
-                                selected="@(Context.Request.Query["transmission"] == "Automatic")">
-                            Automatic
-                        </option>
-
-                        <option value="Manual"
-                                selected="@(Context.Request.Query["transmission"] == "Manual")">
-                            Manual
-                        </option>
-
-                    </select>
-
-
-                    <!-- Accessibility -->
-                    <select name="accessibility">
-
-                        <option value="">
-                            Standard / Any
-                        </option>
-
-                        <option value="Wheelchair"
-                                selected="@(Context.Request.Query["accessibility"] == "Wheelchair")">
-                            Wheelchair
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Applied Filters -->
-                <div style="
-                    margin-top:8px;
-                    display:flex;
-                    gap:8px;
-                    align-items:center;
-                    flex-wrap:wrap;
-                ">
-
-                    <span class="text-caption">
-                        Applied Filters:
-                    </span>
-
-
-                    <!-- Always Available -->
-                    <span class="chip">
-                        Status: Available
-                    </span>
-
-
-                    @if (!string.IsNullOrEmpty(Context.Request.Query["type"]))
-                    {
-                    <span class="chip">
-                        Type: @Context.Request.Query["type"]
-                    </span>
-                    }
-
-
-                    @if (!string.IsNullOrEmpty(Context.Request.Query["brand"]))
-                    {
-                    <span class="chip">
-                        Brand: @Context.Request.Query["brand"]
-                    </span>
-                    }
-
-
-                    @if (!string.IsNullOrEmpty(Context.Request.Query["seats"]))
-                    {
-                    <span class="chip">
-                        Seats: @Context.Request.Query["seats"]
-                    </span>
-                    }
-
-
-                    @if (!string.IsNullOrEmpty(Context.Request.Query["fuelType"]))
-                    {
-                    <span class="chip">
-                        Fuel: @Context.Request.Query["fuelType"]
-                    </span>
-                    }
-
-
-                    @if (!string.IsNullOrEmpty(Context.Request.Query["transmission"]))
-                    {
-                    <span class="chip">
-                        Transmission: @Context.Request.Query["transmission"]
-                    </span>
-                    }
-
-
-                    @if (!string.IsNullOrEmpty(Context.Request.Query["accessibility"]))
-                    {
-                    <span class="chip">
-                        Accessibility: @Context.Request.Query["accessibility"]
-                    </span>
-                    }
-
-
-                    <button type="submit"
-                            class="btn btn-primary"
-                            style="margin-left:auto">
-
-                        Apply Filters
-
-                    </button>
-
-
-                    <a asp-action="Index"
-                       class="link-btn">
-
-                        Reset Filters
-
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-    <!-- Vehicles -->
-    <div class="veh-grid">
-
-        @if (Model.Vehicles != null && Model.Vehicles.Any())
-        {
-
-        @foreach (var vehicle in Model.Vehicles)
+            @if (!string.IsNullOrEmpty(Context.Request.Query["type"]))
             {
-
-        <div class="veh-card">
-
-            <!-- Vehicle Image / Icon -->
-
-            <div class="veh-img"
-                 style="background:#ecfdf3; overflow:hidden; position:relative;">
-
-                @if (!string.IsNullOrEmpty(vehicle.ImageUrl))
-                            {
-                <img src="@vehicle.ImageUrl"
-                     alt="@vehicle.Brand @vehicle.Model"
-                     style="
-                                         width:100%;
-                                         height:100%;
-                                         object-fit:cover;
-                                         display:block;
-                                     " />
-                            }
-                            else
-                            {
-                <span class="icon"
-                      style="
-                                          width:34px;
-                                          height:34px;
-                                          color:currentColor;
-                                      ">
-
-                    <svg viewBox="0 0 24 24"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="1.8"
-                         stroke-linecap="round"
-                         stroke-linejoin="round">
-
-                        <path d="M3 13l1.6-4.8A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.2L21 13">
-                        </path>
-
-                        <rect x="2.5"
-                              y="13"
-                              width="19"
-                              height="5.5"
-                              rx="1.5">
-                        </rect>
-
-                        <circle cx="7"
-                                cy="18.5"
-                                r="1.5">
-                        </circle>
-
-                        <circle cx="17"
-                                cy="18.5"
-                                r="1.5">
-                        </circle>
-
-                    </svg>
-
+                <span class="chip">
+                    Type: @Context.Request.Query["type"]
                 </span>
-                            }
+            }
 
 
-                <!-- Available -->
-                <span class="avail pill green">
-                    ● Available
+            @if (!string.IsNullOrEmpty(Context.Request.Query["brand"]))
+            {
+                <span class="chip">
+                    Brand: @Context.Request.Query["brand"]
                 </span>
-
-            </div>
-
+            }
 
 
-
-            <!-- Vehicle Body -->
-            <div class="veh-body">
-
-                <!-- Type + Year -->
-                <p class="meta">
-                    @vehicle.Type
-                    ·
-                    @vehicle.Year
-                </p>
+            @if (!string.IsNullOrEmpty(Context.Request.Query["seats"]))
+            {
+                <span class="chip">
+                    Seats: @Context.Request.Query["seats"]
+                </span>
+            }
 
 
-                <!-- Brand + Model -->
-                <h4>
-                    @vehicle.Brand @vehicle.Model
-                </h4>
+            @if (!string.IsNullOrEmpty(Context.Request.Query["fuelType"]))
+            {
+                <span class="chip">
+                    Fuel: @Context.Request.Query["fuelType"]
+                </span>
+            }
 
 
-                <!-- Specifications -->
-                <div class="spec-row">
-
-                    <span class="spec-tag">
-                        @vehicle.Seats Seats
-                    </span>
-
-
-                    <span class="spec-tag">
-                        @vehicle.FuelType
-                    </span>
+            @if (!string.IsNullOrEmpty(Context.Request.Query["transmission"]))
+            {
+                <span class="chip">
+                    Transmission:
+                    @Context.Request.Query["transmission"]
+                </span>
+            }
 
 
-                    @if (vehicle.VehicleSpecification != null)
-                            {
+            @if (!string.IsNullOrEmpty(Context.Request.Query["accessibility"]))
+            {
+                <span class="chip">
+                    Accessibility:
+                    @Context.Request.Query["accessibility"]
+                </span>
+            }
 
-                    <span class="spec-tag">
-                        @vehicle.VehicleSpecification.Transmission
-                    </span>
+        </div>
 
-                            }
+    </form>
+
+</div>
 
 
-                    <span class="spec-tag">
-                        @vehicle.PlateNumber
+<!-- Vehicle Cards -->
+<div class="vehicle-cards-grid">
+
+    @if (Model.Vehicles != null && Model.Vehicles.Any())
+    {
+        @foreach (var vehicle in Model.Vehicles)
+        {
+            <div class="vehicle-card">
+
+                <!-- Vehicle Image -->
+                <div class="vehicle-card-image">
+
+                    @if (!string.IsNullOrEmpty(vehicle.ImageUrl))
+                    {
+                        <img src="@vehicle.ImageUrl"
+                             alt="@vehicle.Brand @vehicle.Model" />
+                    }
+                    else
+                    {
+                        <div class="vehicle-image-placeholder">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+
+                                <path d="M3 13l1.6-4.8A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.2L21 13">
+                                </path>
+
+                                <rect x="2.5"
+                                      y="13"
+                                      width="19"
+                                      height="5.5"
+                                      rx="1.5">
+                                </rect>
+
+                                <circle cx="7"
+                                        cy="18.5"
+                                        r="1.5">
+                                </circle>
+
+                                <circle cx="17"
+                                        cy="18.5"
+                                        r="1.5">
+                                </circle>
+
+                            </svg>
+
+                        </div>
+                    }
+
+
+                    <span class="vehicle-availability">
+                        Available
                     </span>
 
                 </div>
 
 
-                <!-- Accessibility -->
-                @if (vehicle.VehicleSpecification != null &&
-                             !string.IsNullOrEmpty(
-                                 vehicle.VehicleSpecification.Accessibility))
+                <!-- Vehicle Content -->
+                <div class="vehicle-card-body">
+
+                    <div class="vehicle-card-type">
+                        @vehicle.Type · @vehicle.Year
+                    </div>
+
+
+                    <h3 class="vehicle-card-title">
+                        @vehicle.Brand @vehicle.Model
+                    </h3>
+
+
+                    <!-- Specifications -->
+                    <div class="vehicle-specifications">
+
+                        <div class="vehicle-spec">
+                            <span class="vehicle-spec-label">
+                                Seats
+                            </span>
+
+                            <span class="vehicle-spec-value">
+                                @vehicle.Seats
+                            </span>
+                        </div>
+
+
+                        <div class="vehicle-spec">
+                            <span class="vehicle-spec-label">
+                                Fuel
+                            </span>
+
+                            <span class="vehicle-spec-value">
+                                @vehicle.FuelType
+                            </span>
+                        </div>
+
+
+                        @if (vehicle.VehicleSpecification != null)
                         {
+                            <div class="vehicle-spec">
 
-                <div style="margin-top:8px">
+                                <span class="vehicle-spec-label">
+                                    Transmission
+                                </span>
 
-                    <span class="text-caption">
+                                <span class="vehicle-spec-value">
+                                    @vehicle.VehicleSpecification.Transmission
+                                </span>
 
-                        Accessibility:
-                        @vehicle.VehicleSpecification.Accessibility
-
-                    </span>
-
-                </div>
-
+                            </div>
                         }
 
 
-                <!-- Actions -->
-                <div class="veh-actions">
+                        <div class="vehicle-spec">
 
-                    <a asp-controller="Vehicle"
-                       asp-action="Details"
-                       asp-route-id="@vehicle.VehicleId"
-                       class="btn btn-outline">
+                            <span class="vehicle-spec-label">
+                                Plate
+                            </span>
 
-                        View Details
+                            <span class="vehicle-spec-value">
+                                @vehicle.PlateNumber
+                            </span>
 
-                    </a>
+                        </div>
+
+                    </div>
 
 
-                    <a asp-controller="UserReservation"
-                       asp-action="Create"
-                       asp-route-vehicleId="@vehicle.VehicleId"
-                       class="btn btn-primary">
-                        Reserve ›
-                    </a>
+                    <!-- Accessibility -->
+                    @if (vehicle.VehicleSpecification != null &&
+                         !string.IsNullOrEmpty(
+                             vehicle.VehicleSpecification.Accessibility))
+                    {
+                        <div class="vehicle-accessibility">
+
+                            Accessibility:
+                            <strong>
+                                @vehicle.VehicleSpecification.Accessibility
+                            </strong>
+
+                        </div>
+                    }
+
+
+                    <!-- Actions -->
+                    <div class="vehicle-card-actions">
+
+                        <a asp-controller="Vehicle"
+                           asp-action="Details"
+                           asp-route-id="@vehicle.VehicleId"
+                           class="btn btn-outline">
+                            View Details
+                        </a>
+
+
+                        <a asp-controller="UserReservation"
+                           asp-action="Create"
+                           asp-route-vehicleId="@vehicle.VehicleId"
+                           class="btn btn-primary">
+                            Reserve
+                        </a>
+
+                    </div>
 
                 </div>
 
             </div>
+        }
+    }
+    else
+    {
+        <!-- No Vehicles -->
+        <div class="no-vehicles-card">
+
+            <h3>
+                No Available Vehicles
+            </h3>
+
+            <p class="text-caption">
+                There are currently no vehicles available
+                for reservation.
+            </p>
 
         </div>
+    }
 
-            }
+</div>
 
-        }
-        else
-        {
-
- <!-- No Vehicles -->
-        <div class="panel"
-             style="grid-column:1/-1">
-
-            <div class="panel-b"
-                 style="text-align:center;padding:40px">
-
-                <h3>
-                    No Available Vehicles
-                </h3>
-
-                <p class="text-caption">
-                    There are currently no vehicles available
-                    for reservation.
-                </p>
-
-            </div>
-
-        </div>
-
-        }
-
-    </div>
 
 </section>

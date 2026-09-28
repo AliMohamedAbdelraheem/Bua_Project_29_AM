@@ -1,0 +1,387 @@
+```css
+/* =========================================================
+   USER RESERVATION PAGE
+   ========================================================= */
+.reservation-page {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.reservation-page-header {
+    margin-bottom: 28px;
+}
+
+    .reservation-page-header .page-subtitle {
+        color: var(--color-primary);
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .reservation-page-header h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 750;
+        color: var(--color-text, #172033);
+    }
+
+    .reservation-page-header p {
+        margin-top: 8px;
+        color: #6b7280;
+    }
+
+
+/* =========================================================
+   FORM CARD
+   ========================================================= */
+
+.reservation-form-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+.reservation-card-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+    .reservation-card-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #172033;
+    }
+
+    .reservation-card-header p {
+        margin: 6px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+
+/* =========================================================
+   FORM BODY
+   ========================================================= */
+
+.reservation-form-body {
+    padding: 28px;
+}
+
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.reservation-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.reservation-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .reservation-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .reservation-form-group label {
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 650;
+        color: #374151;
+    }
+
+
+    /* =========================================================
+   INPUTS / SELECTS / TEXTAREA
+   ========================================================= */
+
+    .reservation-form-group .form-control,
+    .reservation-form-group .form-select {
+        width: 100%;
+        min-height: 46px;
+        padding: 10px 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #172033;
+        font-size: 14px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .reservation-form-group textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .reservation-form-group .form-control:focus,
+    .reservation-form-group .form-select:focus {
+        border-color: var(--color-primary, #2563eb);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        outline: none;
+    }
+
+
+/* =========================================================
+   HELPER TEXT
+   ========================================================= */
+
+.reservation-help {
+    margin-top: 7px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   VALIDATION MESSAGE
+   ========================================================= */
+
+.reservation-validation {
+    margin-top: -14px;
+    margin-bottom: 24px;
+    padding: 13px 16px;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+    .reservation-validation:empty {
+        display: none;
+    }
+
+    .reservation-validation ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .reservation-validation li {
+        margin-bottom: 4px;
+    }
+
+        .reservation-validation li:last-child {
+            margin-bottom: 0;
+        }
+
+
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
+
+.reservation-section {
+    margin-bottom: 30px;
+}
+
+    .reservation-section:last-child {
+        margin-bottom: 0;
+    }
+
+.reservation-section-title {
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+    .reservation-section-title h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: #172033;
+    }
+
+    .reservation-section-title p {
+        margin: 5px 0 0;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.reservation-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+    .reservation-actions .btn {
+        min-height: 44px;
+        padding: 10px 22px;
+        border-radius: 8px;
+        font-weight: 650;
+    }
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.reservation-back {
+    margin-top: 18px;
+}
+
+    .reservation-back .btn {
+        min-height: 42px;
+        padding: 9px 18px;
+        border-radius: 8px;
+    }
+
+
+/* =========================================================
+   VEHICLE INFO CARD
+   ========================================================= */
+
+.reservation-vehicle-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 26px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+.reservation-vehicle-image {
+    width: 110px;
+    height: 80px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #ecfdf3;
+}
+
+    .reservation-vehicle-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.reservation-vehicle-info {
+    min-width: 0;
+}
+
+.reservation-vehicle-type {
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.reservation-vehicle-name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #172033;
+}
+
+.reservation-vehicle-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 8px;
+}
+
+    .reservation-vehicle-meta span {
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 12px;
+    }
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .reservation-page {
+        width: 100%;
+    }
+
+    .reservation-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .reservation-form-group.full-width {
+        grid-column: auto;
+    }
+
+    .reservation-form-body {
+        padding: 20px;
+    }
+
+    .reservation-card-header {
+        padding: 20px;
+    }
+
+    .reservation-page-header h1 {
+        font-size: 27px;
+    }
+
+    .reservation-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+        .reservation-actions .btn {
+            width: 100%;
+        }
+
+    .reservation-vehicle-card {
+        align-items: flex-start;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .reservation-form-body {
+        padding: 16px;
+    }
+
+    .reservation-card-header {
+        padding: 18px 16px;
+    }
+
+    .reservation-vehicle-card {
+        flex-direction: column;
+    }
+
+    .reservation-vehicle-image {
+        width: 100%;
+        height: 170px;
+    }
+}

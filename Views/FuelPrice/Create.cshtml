@@ -1,4 +1,4 @@
-@model BUA_project.Models.FuelPrice
+@model BUA_project.Models.ViewModels.FuelPriceCreateViewModel
 
 @{
     ViewData["Title"] = "Add Fuel Price";
@@ -29,20 +29,24 @@
                      class="text-danger mb-3"></div>
 
                 <div class="mb-3">
-                    <label asp-for="FuelType" class="form-label fw-semibold">
-                        Fuel Type
-                    </label>
+                <label asp-for="FuelType" class="form-label fw-semibold">
+                    Fuel Type
+                </label>
 
-                    <select asp-for="FuelType" class="form-select">
-                        <option value="">-- Select Fuel Type --</option>
-                        <option value="Petrol 92">Petrol 92</option>
-                        <option value="Petrol 95">Petrol 95</option>
-                        <option value="Diesel">Diesel</option>
-                    </select>
+                <select asp-for="FuelType" class="form-select">
+                    <option value="">-- Select Fuel Type --</option>
 
-                    <span asp-validation-for="FuelType"
-                          class="text-danger"></span>
-                </div>
+                    @foreach (var fuelType in Model.FuelTypes)
+                    {
+                        <option value="@fuelType">
+                            @fuelType
+                        </option>
+                    }
+                </select>
+
+                <span asp-validation-for="FuelType"
+                      class="text-danger"></span>
+            </div>
 
                 <div class="mb-3">
                     <label asp-for="PricePerLiter" class="form-label fw-semibold">

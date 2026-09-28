@@ -74,9 +74,11 @@ namespace BUA_project.Controllers
 
 
                 if (user == null)
+                {
                     return RedirectToAction(
                         "Login",
                         "Account");
+                }
 
 
                 var roles =
@@ -94,8 +96,8 @@ namespace BUA_project.Controllers
                 if (roles.Contains("Dispatcher"))
                 {
                     return RedirectToAction(
-                        "Index",
-                        "DispatcherDashboard");
+                        "Dashboard",
+                        "Dispatcher");
                 }
 
 
@@ -122,7 +124,6 @@ namespace BUA_project.Controllers
                     "",
                     "No valid role assigned to this account.");
 
-
                 return View(model);
             }
 
@@ -130,7 +131,6 @@ namespace BUA_project.Controllers
             ModelState.AddModelError(
                 "",
                 "Invalid email or password.");
-
 
             return View(model);
         }
@@ -148,9 +148,6 @@ namespace BUA_project.Controllers
             // =====================================================
             // Account Type Selection
             // =====================================================
-
-            // The first buttons only select the account type.
-            // They do not create an account yet.
 
             if (string.IsNullOrEmpty(model.Name) &&
                 string.IsNullOrEmpty(model.Email) &&
@@ -276,15 +273,30 @@ namespace BUA_project.Controllers
 
                     Email = model.Email,
 
-                    // Authentication is handled
-                    // by ASP.NET Identity.
-
                     Role =
                         model.AccountType == "Driver"
                             ? "Driver"
                             : "User"
                 };
 
+
+                // =================================================
+                // Hash Password
+                // =================================================
+
+                var passwordHasher =
+                    new PasswordHasher<User>();
+
+                businessUser.PasswordHash =
+                    passwordHasher.HashPassword(
+                        businessUser,
+                        model.Password
+                    );
+
+
+                // =================================================
+                // Save Business User
+                // =================================================
 
                 _context.Users.Add(businessUser);
 
