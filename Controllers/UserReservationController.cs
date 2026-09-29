@@ -66,6 +66,153 @@ namespace BUA_project.Controllers
         }
 
         // ============================================================
+        // API: Get Calendar Availability
+        // ============================================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetCalendarAvailability(
+            int vehicleId,
+            int year,
+            int month)
+        {
+            var vehicleExists = await _context.Vehicles
+                .AnyAsync(v =>
+                    v.VehicleId == vehicleId);
+
+            if (!vehicleExists)
+                return NotFound();
+
+            var firstDay = new DateTime(year, month, 1);
+            var lastDay = firstDay.AddMonths(1);
+
+            var reservations = await _context.Reservations
+                .Where(r =>
+                    r.VehicleId == vehicleId &&
+                    r.StartDateTime < lastDay &&
+                    r.EndDateTime >= firstDay &&
+                    (
+                        r.Status == "Pending" ||
+                        r.Status == "Approved"
+                    ))
+                .Select(r => new
+                {
+                    r.StartDateTime,
+                    r.EndDateTime,
+                    r.Status
+                })
+                .ToListAsync();
+
+            var days = new List<object>();
+
+            for (
+                var date = firstDay;
+                date < lastDay;
+                date = date.AddDays(1))
+            {
+                var dayStart = date;
+                var dayEnd = date.AddDays(1);
+
+                var dayReservations = reservations
+                    .Where(r =>
+                        r.StartDateTime < dayEnd &&
+                        r.EndDateTime > dayStart)
+                    .ToList();
+
+                string status = "Available";
+
+                if (dayReservations.Any(r => r.Status == "Approved"))
+                {
+                    status = "Approved";
+                }
+                else if (dayReservations.Any(r => r.Status == "Pending"))
+                {
+                    status = "Pending";
+                }
+
+                days.Add(new
+                {
+                    date = date.ToString("yyyy-MM-dd"),
+                    status = status
+                });
+            }
+
+            return Json(days);
+        }
+
+        // ============================================================
+        // API: Get Hourly Availability
+        // ============================================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetDayAvailability(
+            int vehicleId,
+            string date)
+        {
+            if (!DateTime.TryParse(
+                    date,
+                    out DateTime selectedDate))
+            {
+                return BadRequest();
+            }
+
+            selectedDate = selectedDate.Date;
+
+            var nextDay = selectedDate.AddDays(1);
+
+            var reservations = await _context.Reservations
+                .Where(r =>
+                    r.VehicleId == vehicleId &&
+                    r.StartDateTime < nextDay &&
+                    r.EndDateTime > selectedDate &&
+                    (
+                        r.Status == "Pending" ||
+                        r.Status == "Approved"
+                    ))
+                .Select(r => new
+                {
+                    r.StartDateTime,
+                    r.EndDateTime,
+                    r.Status
+                })
+                .ToListAsync();
+
+            var hours = new List<object>();
+
+            // 24 hours
+            for (int hour = 0; hour < 24; hour++)
+            {
+                var slotStart =
+                    selectedDate.AddHours(hour);
+
+                var slotEnd =
+                    slotStart.AddHours(1);
+
+                var reservation =
+                    reservations.FirstOrDefault(r =>
+                        r.StartDateTime < slotEnd &&
+                        r.EndDateTime > slotStart);
+
+                string status = "Available";
+
+                if (reservation != null)
+                {
+                    status = reservation.Status;
+                }
+
+                hours.Add(new
+                {
+                    hour = hour,
+                    start = slotStart.ToString("HH:mm"),
+                    end = slotEnd.ToString("HH:mm"),
+                    status = status,
+                    available = status == "Available"
+                });
+            }
+
+            return Json(hours);
+        }
+
+        // ============================================================
         // POST: UserReservation/Create
         // ============================================================
 
@@ -109,13 +256,56 @@ namespace BUA_project.Controllers
 
             if (selectedVehicle == null)
             {
+                TempData.Clear();
+
+                return RedirectToAction(
+                    "Index",
+                    "UserDashboard");
+            }
+
+            // ========================================================
+            // Validate Date Range
+            // ========================================================
+
+            if (model.StartDateTime >= model.EndDateTime)
+            {
                 ModelState.AddModelError(
                     "",
-                    "This vehicle is no longer available.");
+                    "End date and time must be after the start date and time.");
+            }
 
-                await LoadCreateData(model.VehicleId);
+            // ========================================================
+            // Check Vehicle Maintenance
+            // ========================================================
 
-                return View(model);
+            var vehicleUnderMaintenance =
+                await IsVehicleUnderMaintenance(
+                    model.VehicleId,
+                    model.StartDateTime,
+                    model.EndDateTime);
+
+            if (vehicleUnderMaintenance)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "This vehicle is under maintenance during the selected trip period.");
+            }
+
+            // ========================================================
+            // Check Existing Reservations
+            // ========================================================
+
+            var overlappingReservation =
+                await HasOverlappingReservation(
+                    model.VehicleId,
+                    model.StartDateTime,
+                    model.EndDateTime);
+
+            if (overlappingReservation)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "This vehicle is already reserved during the selected time period.");
             }
 
             // --------------------------------------------------------
@@ -190,27 +380,36 @@ namespace BUA_project.Controllers
                 return View(model);
             }
 
-            // --------------------------------------------------------
-            // Get Fuel Price - TEMPORARY
-            // --------------------------------------------------------
+            // ========================================================
+            // Get Fuel Price
+            // ========================================================
 
             var fuelPrice = await _context.FuelPrices
+                .Where(f =>
+                    f.FuelType == selectedVehicle.FuelType)
                 .OrderByDescending(f => f.EffectiveDate)
                 .FirstOrDefaultAsync();
 
-            // Temporary fallback
             if (fuelPrice == null)
             {
-                fuelPrice = new FuelPrice
-                {
-                    FuelType = selectedVehicle.FuelType,
-                    PricePerLiter = 22.00m,
-                    EffectiveDate = DateTime.Now
-                };
+                fuelPrice = await _context.FuelPrices
+                    .OrderByDescending(f => f.EffectiveDate)
+                    .FirstOrDefaultAsync();
+            }
+
+            if (fuelPrice == null)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Fuel price has not been configured by administrator.");
+
+                await LoadCreateData(model.VehicleId);
+
+                return View(model);
             }
 
             // ========================================================
-            // Prepare ML Prediction Data
+            // Prepare ML Prediction
             // ========================================================
 
             float fuelDistance =
@@ -227,10 +426,6 @@ namespace BUA_project.Controllers
             float fuelDuration =
                 (float)route.Duration.TotalMinutes;
 
-            // --------------------------------------------------------
-            // Create ML Request
-            // --------------------------------------------------------
-
             var fuelRequest = new FuelPredictionRequest
             {
                 Distance_km = fuelDistance,
@@ -239,10 +434,6 @@ namespace BUA_project.Controllers
                 Nominal_L_per_100km = fuelNominal,
                 Duration_min = fuelDuration
             };
-
-            // ========================================================
-            // Call ML API
-            // ========================================================
 
             var fuelPrediction =
                 await _fuelPredictionService
@@ -289,7 +480,7 @@ namespace BUA_project.Controllers
                 fuelMax * fuelPricePerLiter;
 
             // ========================================================
-            // Store Fuel Data In TempData
+            // Store Fuel Data
             // ========================================================
 
             TempData["PredictedFuel"] =
@@ -377,10 +568,6 @@ namespace BUA_project.Controllers
             TempData["RouteEstimateId"] =
                 route.RouteEstimateId.ToString();
 
-            // ========================================================
-            // Go To Confirmation
-            // ========================================================
-
             return RedirectToAction(
                 "Confirm",
                 "UserReservation");
@@ -393,19 +580,11 @@ namespace BUA_project.Controllers
         [HttpGet]
         public async Task<IActionResult> Confirm()
         {
-            // --------------------------------------------------------
-            // Check Required TempData
-            // --------------------------------------------------------
-
             if (TempData["VehicleId"] == null ||
                 TempData["RouteEstimateId"] == null)
             {
                 return BadRequest();
             }
-
-            // --------------------------------------------------------
-            // Read IDs
-            // --------------------------------------------------------
 
             int vehicleId =
                 int.Parse(
@@ -416,10 +595,6 @@ namespace BUA_project.Controllers
                 int.Parse(
                     TempData["RouteEstimateId"]!
                         .ToString()!);
-
-            // --------------------------------------------------------
-            // Get Vehicle
-            // --------------------------------------------------------
 
             var vehicle = await _context.Vehicles
                 .Include(v => v.VehicleSpecification)
@@ -436,10 +611,6 @@ namespace BUA_project.Controllers
                     "UserDashboard");
             }
 
-            // --------------------------------------------------------
-            // Get Route
-            // --------------------------------------------------------
-
             var route = await _context.RouteEstimates
                 .FirstOrDefaultAsync(r =>
                     r.RouteEstimateId == routeEstimateId);
@@ -452,10 +623,6 @@ namespace BUA_project.Controllers
                     "Index",
                     "UserDashboard");
             }
-
-            // ========================================================
-            // Read Reservation Data
-            // ========================================================
 
             DateTime startDateTime =
                 DateTime.Parse(
@@ -489,10 +656,6 @@ namespace BUA_project.Controllers
             string purpose =
                 TempData["Purpose"]?
                     .ToString() ?? "";
-
-            // ========================================================
-            // Fuel Data
-            // ========================================================
 
             double predictedFuel =
                 double.Parse(
@@ -546,80 +709,31 @@ namespace BUA_project.Controllers
                     .ToString()
                 ?? "";
 
-            // ========================================================
-            // Build Confirmation ViewModel
-            // ========================================================
-
             var confirmationViewModel =
                 new UserReservationConfirmationViewModel
                 {
-                    VehicleId =
-                        vehicle.VehicleId,
-
-                    StartDateTime =
-                        startDateTime,
-
-                    EndDateTime =
-                        endDateTime,
-
-                    Origin =
-                        origin,
-
-                    Destination =
-                        destination,
-
-                    Passengers =
-                        passengers,
-
-                    Load =
-                        load,
-
-                    Purpose =
-                        purpose,
-
-                    Vehicle =
-                        vehicle,
-
-                    Distance =
-                        route.Distance,
-
-                    Duration =
-                        route.Duration,
-
-                    RouteProvider =
-                        route.ProviderSnapshot,
-
-                    EstimatedFuel =
-                        predictedFuel,
-
-                    FuelMin =
-                        fuelMin,
-
-                    FuelMax =
-                        fuelMax,
-
-                    FuelCost =
-                        fuelCost,
-
-                    FuelCostMin =
-                        fuelCostMin,
-
-                    FuelCostMax =
-                        fuelCostMax,
-
-                    FuelMethod =
-                        fuelMethod,
-
-                    FuelAssumptions =
-                        fuelAssumptions,
-
-                    FuelPricePerLiter =
-                        fuelPricePerLiter
+                    VehicleId = vehicle.VehicleId,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                    Origin = origin,
+                    Destination = destination,
+                    Passengers = passengers,
+                    Load = load,
+                    Purpose = purpose,
+                    Vehicle = vehicle,
+                    Distance = route.Distance,
+                    Duration = route.Duration,
+                    RouteProvider = route.ProviderSnapshot,
+                    EstimatedFuel = predictedFuel,
+                    FuelMin = fuelMin,
+                    FuelMax = fuelMax,
+                    FuelCost = fuelCost,
+                    FuelCostMin = fuelCostMin,
+                    FuelCostMax = fuelCostMax,
+                    FuelMethod = fuelMethod,
+                    FuelAssumptions = fuelAssumptions,
+                    FuelPricePerLiter = fuelPricePerLiter
                 };
-
-            // --------------------------------------------------------
-            // Keep TempData For POST ConfirmReservation
-            // --------------------------------------------------------
 
             TempData.Keep();
 
@@ -627,26 +741,18 @@ namespace BUA_project.Controllers
         }
 
         // ============================================================
-        // POST: UserReservation/ConfirmReservation
+        // POST: ConfirmReservation
         // ============================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmReservation()
         {
-            // --------------------------------------------------------
-            // Check TempData
-            // --------------------------------------------------------
-
             if (TempData["VehicleId"] == null ||
                 TempData["RouteEstimateId"] == null)
             {
                 return BadRequest();
             }
-
-            // --------------------------------------------------------
-            // Current User
-            // --------------------------------------------------------
 
             var currentUserEmail =
                 User.Identity?.Name;
@@ -658,10 +764,6 @@ namespace BUA_project.Controllers
 
             if (currentUser == null)
                 return Unauthorized();
-
-            // ========================================================
-            // Reservation Data
-            // ========================================================
 
             int vehicleId =
                 int.Parse(
@@ -706,10 +808,6 @@ namespace BUA_project.Controllers
                 TempData["Purpose"]?
                     .ToString() ?? "";
 
-            // ========================================================
-            // Fuel Data
-            // ========================================================
-
             double predictedFuel =
                 double.Parse(
                     TempData["PredictedFuel"]!
@@ -732,10 +830,6 @@ namespace BUA_project.Controllers
                 TempData["FuelMethod"]?
                     .ToString()
                 ?? "ML Prediction";
-
-            // ========================================================
-            // Fuel Features
-            // ========================================================
 
             double fuelDistance =
                 double.Parse(
@@ -761,7 +855,7 @@ namespace BUA_project.Controllers
                     CultureInfo.InvariantCulture);
 
             // ========================================================
-            // Check Vehicle Again
+            // Final Vehicle Check
             // ========================================================
 
             var selectedVehicle =
@@ -780,45 +874,66 @@ namespace BUA_project.Controllers
             }
 
             // ========================================================
+            // Final Maintenance Check
+            // ========================================================
+
+            var vehicleUnderMaintenance =
+                await IsVehicleUnderMaintenance(
+                    vehicleId,
+                    startDateTime,
+                    endDateTime);
+
+            if (vehicleUnderMaintenance)
+            {
+                TempData.Clear();
+
+                TempData["ReservationError"] =
+                    "This vehicle is under maintenance during the selected trip period.";
+
+                return RedirectToAction(
+                    "Index",
+                    "UserDashboard");
+            }
+
+            // ========================================================
+            // Final Overlap Check
+            // ========================================================
+
+            var overlappingReservation =
+                await HasOverlappingReservation(
+                    vehicleId,
+                    startDateTime,
+                    endDateTime);
+
+            if (overlappingReservation)
+            {
+                TempData.Clear();
+
+                TempData["ReservationError"] =
+                    "This vehicle has already been reserved during the selected time period.";
+
+                return RedirectToAction(
+                    "Index",
+                    "UserDashboard");
+            }
+
+            // ========================================================
             // Create Reservation
             // ========================================================
 
             var reservation = new Reservation
             {
-                VehicleId =
-                    vehicleId,
-
-                StartDateTime =
-                    startDateTime,
-
-                EndDateTime =
-                    endDateTime,
-
-                Origin =
-                    origin,
-
-                Destination =
-                    destination,
-
-                Passengers =
-                    passengers,
-
-                Load =
-                    load,
-
-                Purpose =
-                    purpose,
-
-                UserId =
-                    currentUser.UserId,
-
-                Status =
-                    "Pending"
+                VehicleId = vehicleId,
+                StartDateTime = startDateTime,
+                EndDateTime = endDateTime,
+                Origin = origin,
+                Destination = destination,
+                Passengers = passengers,
+                Load = load,
+                Purpose = purpose,
+                UserId = currentUser.UserId,
+                Status = "Pending"
             };
-
-            // ========================================================
-            // Save Reservation
-            // ========================================================
 
             _context.Reservations.Add(reservation);
 
@@ -830,17 +945,10 @@ namespace BUA_project.Controllers
 
             var fuelEstimate = new FuelEstimate
             {
-                PredictedFuel =
-                    predictedFuel,
-
-                FuelPricePerLiter =
-                    (decimal)fuelPricePerLiter,
-
-                EstimatedCost =
-                    (decimal)fuelCost,
-
-                Model =
-                    fuelMethod,
+                PredictedFuel = predictedFuel,
+                FuelPricePerLiter = (decimal)fuelPricePerLiter,
+                EstimatedCost = (decimal)fuelCost,
+                Model = fuelMethod,
 
                 Features =
                     $"Distance_km={fuelDistance}; " +
@@ -853,23 +961,11 @@ namespace BUA_project.Controllers
                     reservation.ReservationId
             };
 
-            // ========================================================
-            // Save Fuel Estimate
-            // ========================================================
-
             _context.FuelEstimates.Add(fuelEstimate);
 
             await _context.SaveChangesAsync();
 
-            // ========================================================
-            // Clear TempData
-            // ========================================================
-
             TempData.Clear();
-
-            // ========================================================
-            // Return Dashboard
-            // ========================================================
 
             return RedirectToAction(
                 "Index",
@@ -877,24 +973,16 @@ namespace BUA_project.Controllers
         }
 
         // ============================================================
-        // GET: UserReservation/MyReservations
+        // GET: MyReservations
         // ============================================================
 
         [HttpGet]
         public async Task<IActionResult> MyReservations()
         {
-            // ============================================
-            // Get Current User
-            // ============================================
-
             var currentUserEmail = User.Identity?.Name;
 
             if (string.IsNullOrEmpty(currentUserEmail))
                 return Unauthorized();
-
-            // ============================================
-            // Get Current User From Database
-            // ============================================
 
             var currentUser = await _context.Users
                 .FirstOrDefaultAsync(u =>
@@ -902,10 +990,6 @@ namespace BUA_project.Controllers
 
             if (currentUser == null)
                 return Unauthorized();
-
-            // ============================================
-            // Get User Reservations
-            // ============================================
 
             var reservations = await _context.Reservations
                 .Where(r =>
@@ -916,63 +1000,30 @@ namespace BUA_project.Controllers
                 .OrderByDescending(r => r.StartDateTime)
                 .ToListAsync();
 
-            // ============================================
-            // Convert To ViewModel
-            // ============================================
-
             var viewModel = reservations
                 .Select(r => new MyReservationViewModel
                 {
-                    ReservationId =
-                        r.ReservationId,
-
-                    StartDateTime =
-                        r.StartDateTime,
-
-                    EndDateTime =
-                        r.EndDateTime,
-
-                    Origin =
-                        r.Origin,
-
-                    Destination =
-                        r.Destination,
-
-                    Passengers =
-                        r.Passengers,
-
-                    Load =
-                        r.Load,
-
-                    Purpose =
-                        r.Purpose,
-
-                    Status =
-                        r.Status,
-
-                    Vehicle =
-                        r.Vehicle,
-
-                    PredictedFuel =
-                        r.FuelEstimate?.PredictedFuel,
-
-                    FuelPricePerLiter =
-                        r.FuelEstimate?.FuelPricePerLiter,
-
-                    EstimatedCost =
-                        r.FuelEstimate?.EstimatedCost
+                    ReservationId = r.ReservationId,
+                    StartDateTime = r.StartDateTime,
+                    EndDateTime = r.EndDateTime,
+                    Origin = r.Origin,
+                    Destination = r.Destination,
+                    Passengers = r.Passengers,
+                    Load = r.Load,
+                    Purpose = r.Purpose,
+                    Status = r.Status,
+                    Vehicle = r.Vehicle,
+                    PredictedFuel = r.FuelEstimate?.PredictedFuel,
+                    FuelPricePerLiter = r.FuelEstimate?.FuelPricePerLiter,
+                    EstimatedCost = r.FuelEstimate?.EstimatedCost
                 })
                 .ToList();
-
-            // ============================================
-            // Return View
-            // ============================================
 
             return View(viewModel);
         }
 
         // ============================================================
-        // GET: UserReservation/Cancel
+        // Cancel Confirmation
         // ============================================================
 
         [HttpGet]
@@ -986,7 +1037,7 @@ namespace BUA_project.Controllers
         }
 
         // ============================================================
-        // Helper Method
+        // Helper: Load Create Data
         // ============================================================
 
         private async Task LoadCreateData(int? vehicleId)
@@ -1004,18 +1055,149 @@ namespace BUA_project.Controllers
                 .ThenBy(r => r.Destination)
                 .ToListAsync();
 
-            ViewBag.Vehicle =
-                vehicle;
+            ViewBag.Vehicle = vehicle;
 
-            ViewBag.Origins =
-                routes
-                    .Select(r => r.Origin)
-                    .Distinct()
-                    .OrderBy(x => x)
+            ViewBag.Origins = routes
+                .Select(r => r.Origin)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            ViewBag.Routes = routes;
+        }
+
+        // ============================================================
+        // Helper: Maintenance
+        // ============================================================
+
+        private async Task<bool> IsVehicleUnderMaintenance(
+            int vehicleId,
+            DateTime startDateTime,
+            DateTime endDateTime)
+        {
+            return await _context.Set<VehicleMaintenance>()
+                .AnyAsync(m =>
+                    m.VehicleId == vehicleId &&
+                    (
+                        m.Status == "Scheduled" ||
+                        m.Status == "In Progress"
+                    ) &&
+                    m.ServiceDate <= endDateTime &&
+                    (
+                        m.NextServiceDate == null ||
+                        m.NextServiceDate >= startDateTime
+                    )
+                );
+        }
+
+        // ============================================================
+        // Helper: Reservation Overlap
+        // ============================================================
+
+        private async Task<bool> HasOverlappingReservation(
+            int vehicleId,
+            DateTime startDateTime,
+            DateTime endDateTime)
+        {
+            return await _context.Reservations
+                .AnyAsync(r =>
+                    r.VehicleId == vehicleId &&
+                    (
+                        r.Status == "Pending" ||
+                        r.Status == "Approved"
+                    ) &&
+                    r.StartDateTime < endDateTime &&
+                    r.EndDateTime > startDateTime
+                );
+        }
+        // ============================================================
+        // GET: UserReservation/GetVehicleAvailability
+        // ============================================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetVehicleAvailability(int vehicleId)
+        {
+            var vehicleExists = await _context.Vehicles
+                .AnyAsync(v => v.VehicleId == vehicleId);
+
+            if (!vehicleExists)
+                return NotFound();
+
+            var reservations = await _context.Reservations
+                .Where(r =>
+                    r.VehicleId == vehicleId &&
+                    (
+                        r.Status == "Pending" ||
+                        r.Status == "Approved"
+                    ))
+                .Select(r => new
+                {
+                    r.ReservationId,
+                    r.StartDateTime,
+                    r.EndDateTime,
+                    r.Status
+                })
+                .ToListAsync();
+
+            var firstDate = DateTime.Today.AddMonths(-1);
+            var lastDate = DateTime.Today.AddMonths(12);
+
+            var result = new List<object>();
+
+            for (
+                var date = firstDate;
+                date <= lastDate;
+                date = date.AddDays(1))
+            {
+                var dayReservations = reservations
+                    .Where(r =>
+                        r.StartDateTime.Date <= date.Date &&
+                        r.EndDateTime.Date >= date.Date)
+                    .Select(r => new
+                    {
+                        id = r.ReservationId,
+                        start = r.StartDateTime,
+                        end = r.EndDateTime,
+                        status = r.Status
+                    })
                     .ToList();
 
-            ViewBag.Routes =
-                routes;
+                string dayStatus = "available";
+
+                if (dayReservations.Any())
+                {
+                    var hasApproved =
+                        dayReservations.Any(r =>
+                            r.status == "Approved");
+
+                    var hasPending =
+                        dayReservations.Any(r =>
+                            r.status == "Pending");
+
+                    /*
+                     * Priority:
+                     * Approved > Pending > Available
+                     */
+
+                    if (hasApproved)
+                    {
+                        dayStatus = "approved";
+                    }
+                    else if (hasPending)
+                    {
+                        dayStatus = "pending";
+                    }
+                }
+
+                result.Add(new
+                {
+                    date = date.ToString("yyyy-MM-dd"),
+                    status = dayStatus,
+                    reservations = dayReservations
+                });
+            }
+
+            return Json(result);
         }
     }
 }

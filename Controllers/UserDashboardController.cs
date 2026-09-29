@@ -20,9 +20,29 @@ namespace BUA_project.Controllers
             string? accessibility)
         {
             // Get available vehicles
+            var now = DateTime.Now;
+
             var vehiclesQuery = _context.Vehicles
                 .Include(v => v.VehicleSpecification)
                 .Where(v => v.Status == "Available")
+                .Where(v =>
+                    !_context.Set<VehicleMaintenance>()
+                        .Any(m =>
+                            m.VehicleId == v.VehicleId &&
+
+                            (
+                                m.Status == "Scheduled" ||
+                                m.Status == "In Progress"
+                            ) &&
+
+                            m.ServiceDate <= now &&
+
+                            (
+                                m.NextServiceDate == null ||
+                                m.NextServiceDate >= now
+                            )
+                        )
+                )
                 .AsQueryable();
 
             // Filter by Type
@@ -92,8 +112,30 @@ namespace BUA_project.Controllers
             // =========================
 
             // Available vehicles
-            var availableVehiclesCount = await _context.Vehicles
-                .CountAsync(v => v.Status == "Available");
+            
+
+            var availableVehiclesCount =
+                await _context.Vehicles
+                    .CountAsync(v =>
+                        v.Status == "Available" &&
+
+                        !_context.Set<VehicleMaintenance>()
+                            .Any(m =>
+                                m.VehicleId == v.VehicleId &&
+
+                                (
+                                    m.Status == "Scheduled" ||
+                                    m.Status == "In Progress"
+                                ) &&
+
+                                m.ServiceDate <= now &&
+
+                                (
+                                    m.NextServiceDate == null ||
+                                    m.NextServiceDate >= now
+                                )
+                            )
+                    );
 
 
             // Pending or Approved requests

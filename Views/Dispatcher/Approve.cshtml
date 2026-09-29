@@ -1,100 +1,316 @@
 ﻿@model BUA_project.Models.Reservation
 
 @{
-    Layout = "~/Views/Dispatcher/Shared/_DispatcherLayout.cshtml";
-    ViewData["Title"] = "Approve Reservation";
+Layout = "~/Views/Dispatcher/Shared/_DispatcherLayout.cshtml";
+ViewData["Title"] = "Approve Reservation";
 }
 
 <div class="container mt-4">
 
-    <div class="mb-4">
-        <h1 class="fw-bold">Approve Reservation</h1>
 
-        <p class="text-muted">
-            Review the reservation and assign an available vehicle and driver.
-        </p>
+<!-- ========================================================= -->
+<!-- Page Header -->
+<!-- ========================================================= -->
 
-        @if (!ViewData.ModelState.IsValid)
-{
-        <div class="alert alert-danger">
+<div class="mb-4">
+
+    <h1 class="fw-bold">
+        Approve Reservation
+    </h1>
+
+    <p class="text-muted">
+        Review the reservation and assign an available vehicle and driver.
+    </p>
+
+    <!-- Validation Errors -->
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3">
+
             <ul class="mb-0">
+
                 @foreach (var error in ViewData.ModelState.Values
-                .SelectMany(v => v.Errors))
-            {
-                <li>@error.ErrorMessage</li>
-            }
+                    .SelectMany(v => v.Errors))
+                {
+                    if (!string.IsNullOrWhiteSpace(error.ErrorMessage))
+                    {
+                        <li>
+                            @error.ErrorMessage
+                        </li>
+                    }
+                }
+
             </ul>
+
         </div>
-}
+    }
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Reservation Information -->
+<!-- ========================================================= -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-white">
+
+        <h5 class="mb-0 fw-bold">
+            Reservation Details
+        </h5>
+
     </div>
 
-    <!-- Reservation Information -->
+    <div class="card-body">
+
+        <div class="row g-3">
+
+            <!-- Requester -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Requester
+                </strong>
+
+                <div>
+                    @Model.User?.Name
+                </div>
+
+            </div>
+
+
+            <!-- Purpose -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Purpose
+                </strong>
+
+                <div>
+                    @Model.Purpose
+                </div>
+
+            </div>
+
+
+            <!-- Origin -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Origin
+                </strong>
+
+                <div>
+                    @Model.Origin
+                </div>
+
+            </div>
+
+
+            <!-- Destination -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Destination
+                </strong>
+
+                <div>
+                    @Model.Destination
+                </div>
+
+            </div>
+
+
+            <!-- Start -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Start
+                </strong>
+
+                <div>
+                    @Model.StartDateTime.ToString("dd/MM/yyyy HH:mm")
+                </div>
+
+            </div>
+
+
+            <!-- End -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    End
+                </strong>
+
+                <div>
+                    @Model.EndDateTime.ToString("dd/MM/yyyy HH:mm")
+                </div>
+
+            </div>
+
+
+            <!-- Passengers -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Passengers
+                </strong>
+
+                <div>
+                    @Model.Passengers
+                </div>
+
+            </div>
+
+
+            <!-- Load -->
+
+            <div class="col-md-6">
+
+                <strong>
+                    Load
+                </strong>
+
+                <div>
+                    @Model.Load
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Assignment Form -->
+<!-- ========================================================= -->
+
+<form asp-controller="Dispatcher"
+      asp-action="Approve"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Reservation ID -->
+
+    <input type="hidden"
+           name="id"
+           value="@Model.ReservationId" />
+
+
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
-                Reservation Details
+                Assign Resources
             </h5>
+
         </div>
+
 
         <div class="card-body">
 
-            <div class="row g-3">
+            <div class="row g-4">
+
+                <!-- ================================================= -->
+                <!-- Vehicle -->
+                <!-- ================================================= -->
 
                 <div class="col-md-6">
-                    <strong>Requester</strong>
-                    <div>
-                        @Model.User?.Name
-                    </div>
+
+                    <label for="vehicleId"
+                           class="form-label fw-bold">
+
+                        Vehicle
+
+                    </label>
+
+
+                    <select name="vehicleId"
+                            id="vehicleId"
+                            class="form-select"
+                            required>
+
+                        <option value="">
+                            -- Select Vehicle --
+                        </option>
+
+
+                        @if (ViewBag.Vehicles != null)
+                        {
+                            foreach (var vehicle in ViewBag.Vehicles)
+                            {
+                                <option value="@vehicle.VehicleId">
+
+                                    @vehicle.Brand
+                                    @vehicle.Model
+                                    -
+                                    @vehicle.PlateNumber
+                                    -
+                                    @vehicle.Seats seats
+
+                                </option>
+                            }
+                        }
+
+                    </select>
+
                 </div>
 
-                <div class="col-md-6">
-                    <strong>Purpose</strong>
-                    <div>
-                        @Model.Purpose
-                    </div>
-                </div>
+
+                <!-- ================================================= -->
+                <!-- Driver -->
+                <!-- ================================================= -->
 
                 <div class="col-md-6">
-                    <strong>Origin</strong>
-                    <div>
-                        @Model.Origin
-                    </div>
-                </div>
 
-                <div class="col-md-6">
-                    <strong>Destination</strong>
-                    <div>
-                        @Model.Destination
-                    </div>
-                </div>
+                    <label for="driverId"
+                           class="form-label fw-bold">
 
-                <div class="col-md-6">
-                    <strong>Start</strong>
-                    <div>
-                        @Model.StartDateTime.ToString("dd/MM/yyyy HH:mm")
-                    </div>
-                </div>
+                        Driver
 
-                <div class="col-md-6">
-                    <strong>End</strong>
-                    <div>
-                        @Model.EndDateTime.ToString("dd/MM/yyyy HH:mm")
-                    </div>
-                </div>
+                    </label>
 
-                <div class="col-md-6">
-                    <strong>Passengers</strong>
-                    <div>
-                        @Model.Passengers
-                    </div>
-                </div>
 
-                <div class="col-md-6">
-                    <strong>Load</strong>
-                    <div>
-                        @Model.Load
-                    </div>
+                    <select name="driverId"
+                            id="driverId"
+                            class="form-select"
+                            required>
+
+                        <option value="">
+                            -- Select Driver --
+                        </option>
+
+
+                        @if (ViewBag.Drivers != null)
+                        {
+                            foreach (var driver in ViewBag.Drivers)
+                            {
+                                <option value="@driver.DriverId">
+
+                                    @driver.Name
+                                    -
+                                    @driver.LicenseNumber
+
+                                </option>
+                            }
+                        }
+
+                    </select>
+
                 </div>
 
             </div>
@@ -104,121 +320,31 @@
     </div>
 
 
-    <!-- Assignment -->
-    <form asp-action="Approve"
-          method="post">
+    <!-- ========================================================= -->
+    <!-- Actions -->
+    <!-- ========================================================= -->
 
-        @Html.AntiForgeryToken()
+    <div class="d-flex gap-2">
 
-        <input type="hidden"
-               name="id"
-               value="@Model.ReservationId" />
+        <button type="submit"
+                class="btn btn-success">
 
+            Approve & Assign
 
-        <div class="card shadow-sm border-0 mb-4">
-
-            <div class="card-header bg-white">
-                <h5 class="mb-0 fw-bold">
-                    Assign Resources
-                </h5>
-            </div>
-
-            <div class="card-body">
-
-                <div class="row g-4">
-
-                    <!-- Vehicle -->
-                    <div class="col-md-6">
-
-                        <label for="vehicleId"
-                               class="form-label fw-bold">
-                            Vehicle
-                        </label>
-
-                        <select name="vehicleId"
-                                id="vehicleId"
-                                class="form-select"
-                                required>
-
-                            <option value="">
-                                -- Select Vehicle --
-                            </option>
-
-                            @if (ViewBag.Vehicles != null)
-                            {
-                                foreach (var vehicle in ViewBag.Vehicles)
-                                {
-                            <option value="@vehicle.VehicleId">
-                                @vehicle.Brand
-                                @vehicle.Model
-                                -
-                                @vehicle.PlateNumber
-                                -
-                                @vehicle.Seats seats
-                            </option>
-                                }
-                            }
-
-                        </select>
-
-                    </div>
+        </button>
 
 
-                    <!-- Driver -->
-                    <div class="col-md-6">
+        <a asp-controller="Dispatcher"
+           asp-action="Index"
+           class="btn btn-secondary">
 
-                        <label for="driverId"
-                               class="form-label fw-bold">
-                            Driver
-                        </label>
+            Cancel
 
-                        <select name="driverId"
-                                id="driverId"
-                                class="form-select"
-                                required>
+        </a>
 
-                            <option value="">
-                                -- Select Driver --
-                            </option>
+    </div>
 
-                            @if (ViewBag.Drivers != null)
-                            {
-                                foreach (var driver in ViewBag.Drivers)
-                                {
-                            <option value="@driver.DriverId">
-                                @driver.Name
-                                -
-                                @driver.LicenseNumber
-                            </option>
-                                }
-                            }
+</form>
 
-                        </select>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Actions -->
-        <div class="d-flex gap-2">
-
-            <button type="submit"
-                    class="btn btn-success">
-                Approve & Assign
-            </button>
-
-            <a asp-action="Index"
-               class="btn btn-secondary">
-                Cancel
-            </a>
-
-        </div>
-
-    </form>
 
 </div>

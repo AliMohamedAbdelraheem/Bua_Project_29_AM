@@ -1,0 +1,435 @@
+/* =========================================================
+   RESERVATION CONFIRMATION PAGE
+   ========================================================= */
+.reservation-confirmation-page {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.reservation-page-header {
+    margin-bottom: 28px;
+}
+
+.reservation-eyebrow {
+    margin: 0 0 7px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.reservation-page-header h1 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 750;
+    color: #0f172a;
+}
+
+.reservation-subtitle {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.reservation-confirmation-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.confirmation-section {
+    padding: 30px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+    .confirmation-section:last-of-type {
+        border-bottom: none;
+    }
+
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.confirmation-section-header {
+    margin-bottom: 24px;
+}
+
+    .confirmation-section-header > div {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+.section-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.section-label {
+    margin: 0 0 3px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.confirmation-section h2 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   INFORMATION GRID
+   ========================================================= */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.info-item {
+    min-width: 0;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.info-item-wide {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.info-value {
+    display: block;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   DATE / TIME
+   ========================================================= */
+
+.datetime-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.datetime-card {
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+    .datetime-card .info-label {
+        margin-bottom: 9px;
+    }
+
+    .datetime-card strong {
+        font-size: 16px;
+        color: #0f172a;
+    }
+
+    .datetime-card > span:last-child {
+        margin-top: 4px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+
+/* =========================================================
+   STATS
+   ========================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.stat-card {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.stat-label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.stat-card strong {
+    display: inline-block;
+    font-size: 22px;
+    line-height: 1.2;
+    color: #0f172a;
+}
+
+.stat-card .stat-unit {
+    margin-left: 4px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.stat-card .stat-text {
+    font-size: 16px;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   FUEL GRID
+   ========================================================= */
+
+.fuel-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   ASSUMPTIONS
+   ========================================================= */
+
+.assumptions-box {
+    margin-top: 16px;
+    padding: 18px 20px;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+.assumptions-title {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #334155;
+}
+
+.assumptions-box p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #475569;
+}
+
+
+/* =========================================================
+   WARNING
+   ========================================================= */
+
+.confirmation-warning {
+    margin: 0 30px;
+    padding: 18px 20px;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    background: #fffbeb;
+}
+
+.warning-content strong {
+    color: #92400e;
+    font-size: 14px;
+}
+
+.warning-content p {
+    margin: 6px 0 0;
+    color: #78350f;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+    .warning-content p strong {
+        font-weight: 750;
+    }
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 30px 30px;
+}
+
+    .confirmation-actions form {
+        margin: 0;
+    }
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.confirmation-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    border: 1px solid transparent;
+}
+
+    .confirmation-btn:hover {
+        transform: translateY(-1px);
+    }
+
+.confirmation-btn-primary {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+    .confirmation-btn-primary:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+        box-shadow: 0 5px 14px rgba(37, 99, 235, 0.2);
+    }
+
+.confirmation-btn-secondary {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+    .confirmation-btn-secondary:hover {
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .stats-grid,
+    .fuel-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .datetime-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .reservation-confirmation-page {
+        padding: 25px 15px 40px;
+    }
+
+    .reservation-page-header h1 {
+        font-size: 26px;
+    }
+
+    .confirmation-section {
+        padding: 22px 18px;
+    }
+
+    .info-grid,
+    .datetime-grid,
+    .stats-grid,
+    .fuel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-item-wide {
+        grid-column: auto;
+    }
+
+    .confirmation-warning {
+        margin: 0 18px;
+    }
+
+    .confirmation-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        padding: 20px 18px 24px;
+    }
+
+        .confirmation-actions form {
+            width: 100%;
+        }
+
+    .confirmation-btn {
+        width: 100%;
+    }
+}
+

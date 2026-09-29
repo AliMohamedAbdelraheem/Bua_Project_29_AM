@@ -1,107 +1,268 @@
 @model IEnumerable<BUA_project.Models.Trip>
 
-    @{
+@{
     Layout = "~/Views/Dispatcher/Shared/_DispatcherLayout.cshtml";
     ViewData["Title"] = "Active Trips";
-    }
+}
 
-    <div class="container mt-4">
+<div class="dispatcher-page">
 
-        <div class="mb-4">
-            <h1 class="fw-bold">Active Trips</h1>
-            <p class="text-muted">
+    <!-- ========================================================= -->
+    <!-- Page Header -->
+    <!-- ========================================================= -->
+
+    <div class="dispatcher-page-header">
+
+        <div>
+            <span class="dispatcher-page-label">
+                Fleet Monitoring
+            </span>
+
+            <h1>
+                Active Trips
+            </h1>
+
+            <p>
                 View all trips that are currently in progress.
             </p>
         </div>
 
-        @if (!Model.Any())
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- Active Trips -->
+    <!-- ========================================================= -->
+
+    @if (!Model.Any())
     {
-        <div class="alert alert-info">
-            There are no active trips at the moment.
+        <div class="dispatcher-empty-state">
+
+            <div class="dispatcher-empty-icon">
+                —
+            </div>
+
+            <h3>
+                No Active Trips
+            </h3>
+
+            <p>
+                There are no active trips at the moment.
+            </p>
+
         </div>
     }
     else
     {
-        <div class="card shadow-sm border-0">
+        <div class="dispatcher-table-card">
 
-            <div class="card-body">
+            <div class="dispatcher-table-header">
 
-                <div class="table-responsive">
+                <div>
+                    <h2>
+                        Trips in Progress
+                    </h2>
 
-                    <table class="table table-hover align-middle">
+                    <p>
+                        Currently active vehicle assignments.
+                    </p>
+                </div>
 
-                        <thead>
+                <div class="dispatcher-count">
+                    @Model.Count() Active
+                </div>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table class="table dispatcher-table align-middle">
+
+                    <thead>
+                        <tr>
+
+                            <th>
+                                Trip
+                            </th>
+
+                            <th>
+                                Requester
+                            </th>
+
+                            <th>
+                                Vehicle
+                            </th>
+
+                            <th>
+                                Driver
+                            </th>
+
+                            <th>
+                                Route
+                            </th>
+
+                            <th>
+                                Started At
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var trip in Model)
+                        {
                             <tr>
-                                <th>Trip</th>
-                                <th>Requester</th>
-                                <th>Vehicle</th>
-                                <th>Driver</th>
-                                <th>Route</th>
-                                <th>Started At</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
-
-                            @foreach (var trip in Model)
-                            {
-                            <tr>
+                                <!-- Trip -->
 
                                 <td>
-                                    <strong>#@trip.TripId</strong>
-                                </td>
-
-                                <td>
-                                    @trip.Reservation?.User?.Name
-                                </td>
-
-                                <td>
-                                    @trip.Reservation?.Vehicle?.PlateNumber
-                                </td>
-
-                                <td>
-                                    @trip.Reservation?.Driver?.Name
-                                </td>
-
-                                <td>
-                                    @trip.Reservation?.Origin
-                                    ?
-                                    @trip.Reservation?.Destination
-                                </td>
-
-                                <td>
-                                    @trip.StartedAt.ToString("dd/MM/yyyy HH:mm")
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-success">
-                                        In Progress
+                                    <span class="trip-id">
+                                        #@trip.TripId
                                     </span>
                                 </td>
 
+
+                                <!-- Requester -->
+
                                 <td>
+
+                                    @if (trip.Reservation?.User != null)
+                                    {
+                                        <span class="table-primary-text">
+                                            @trip.Reservation.User.Name
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="table-muted">
+                                            N/A
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Vehicle -->
+
+                                <td>
+
+                                    @if (trip.Reservation?.Vehicle != null)
+                                    {
+                                        <span class="table-primary-text">
+                                            @trip.Reservation.Vehicle.PlateNumber
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="table-muted">
+                                            N/A
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Driver -->
+
+                                <td>
+
+                                    @if (trip.Reservation?.Driver != null)
+                                    {
+                                        <span class="table-primary-text">
+                                            @trip.Reservation.Driver.Name
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="table-muted">
+                                            N/A
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Route -->
+
+                                <td>
+
+                                    <div class="trip-route">
+
+                                        <span>
+                                            @trip.Reservation?.Origin
+                                        </span>
+
+                                        <span class="trip-route-arrow">
+                                            →
+                                        </span>
+
+                                        <span>
+                                            @trip.Reservation?.Destination
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Started At -->
+
+                                <td>
+
+                                    <span class="table-date">
+                                        @trip.StartedAt.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Status -->
+
+                                <td>
+
+                                    <span class="trip-status">
+                                        In Progress
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Action -->
+
+                                <td>
+
                                     <a asp-controller="Trip"
                                        asp-action="Details"
                                        asp-route-id="@trip.TripId"
-                                       class="btn btn-sm btn-info">
+                                       class="dispatcher-view-btn">
+
                                         Details
+
                                     </a>
+
                                 </td>
 
                             </tr>
-                            }
+                        }
 
-                        </tbody>
+                    </tbody>
 
-                    </table>
-
-                </div>
+                </table>
 
             </div>
 
         </div>
     }
 
-    </div>
+</div>

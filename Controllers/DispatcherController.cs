@@ -16,7 +16,6 @@ namespace BUA_project.Controllers
             _context = context;
         }
 
-
         // =========================================================
         // DASHBOARD
         // =========================================================
@@ -63,13 +62,17 @@ namespace BUA_project.Controllers
             var activeTrips = await _context.Trips
                 .Include(t => t.Reservation)
                     .ThenInclude(r => r.Vehicle)
+
                 .Include(t => t.Reservation)
                     .ThenInclude(r => r.User)
+
                 .Include(t => t.Reservation)
                     .ThenInclude(r => r.Driver)
+
                 .Where(t =>
                     t.Status == "InProgress" &&
                     t.CompletedAt == null)
+
                 .OrderByDescending(t => t.StartedAt)
                 .ToListAsync();
 
@@ -87,9 +90,11 @@ namespace BUA_project.Controllers
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
                 .Include(r => r.Driver)
+
                 .Where(r =>
                     r.Status == "Pending" ||
                     (r.Status == "Approved" && r.DriverId == null))
+
                 .OrderBy(r => r.StartDateTime)
                 .ToListAsync();
 
@@ -110,6 +115,7 @@ namespace BUA_project.Controllers
                 .Include(r => r.Vehicle)
                 .Include(r => r.User)
                 .Include(r => r.Driver)
+
                 .FirstOrDefaultAsync(
                     r => r.ReservationId == id);
 
@@ -118,7 +124,6 @@ namespace BUA_project.Controllers
 
             return View(reservation);
         }
-
 
         // =========================================================
         // APPROVE - GET
@@ -201,9 +206,9 @@ namespace BUA_project.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(
-        int id,
-        int vehicleId,
-        int driverId)
+            int id,
+            int vehicleId,
+            int driverId)
         {
             // =========================================================
             // Get Reservation
@@ -222,8 +227,12 @@ namespace BUA_project.Controllers
             // =========================================================
 
             if (reservation.Status != "Pending")
-                return BadRequest(
-                    "Only pending reservations can be approved.");
+            {
+                TempData["Error"] =
+                    "This reservation is no longer pending.";
+
+                return RedirectToAction(nameof(Index));
+            }
 
 
             // =========================================================
@@ -235,7 +244,13 @@ namespace BUA_project.Controllers
                     v.VehicleId == vehicleId);
 
             if (vehicle == null)
-                return NotFound("Vehicle not found.");
+            {
+                ModelState.AddModelError(
+                    "",
+                    "The selected vehicle was not found.");
+
+                return await ReturnApproveView(reservation);
+            }
 
 
             // =========================================================
@@ -253,6 +268,38 @@ namespace BUA_project.Controllers
 
 
             // =========================================================
+            // Check Vehicle Maintenance
+            // =========================================================
+
+            var vehicleUnderMaintenance =
+                await _context.Set<VehicleMaintenance>()
+                    .AnyAsync(m =>
+                        m.VehicleId == vehicleId &&
+
+                        (
+                            m.Status == "Scheduled" ||
+                            m.Status == "In Progress"
+                        ) &&
+
+                        m.ServiceDate <= reservation.EndDateTime &&
+
+                        (
+                            m.NextServiceDate == null ||
+                            m.NextServiceDate >= reservation.StartDateTime
+                        )
+                    );
+
+            if (vehicleUnderMaintenance)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "This vehicle is under maintenance during the reservation period.");
+
+                return await ReturnApproveView(reservation);
+            }
+
+
+            // =========================================================
             // Get Driver
             // =========================================================
 
@@ -261,7 +308,13 @@ namespace BUA_project.Controllers
                     d.DriverId == driverId);
 
             if (driver == null)
-                return NotFound("Driver not found.");
+            {
+                ModelState.AddModelError(
+                    "",
+                    "The selected driver was not found.");
+
+                return await ReturnApproveView(reservation);
+            }
 
 
             // =========================================================
@@ -293,18 +346,20 @@ namespace BUA_project.Controllers
 
 
             // =========================================================
-            // Find Overlapping Reservations
+            // Find Existing Approved / Active Conflicts
             // =========================================================
 
-            var overlappingReservations =
+            var existingConflicts =
                 await _context.Reservations
                     .Where(r =>
                         r.ReservationId != reservation.ReservationId &&
+
                         (
                             r.Status == "Approved" ||
                             r.Status == "Dispatched" ||
                             r.Status == "Active"
                         ) &&
+
                         r.StartDateTime < reservation.EndDateTime &&
                         r.EndDateTime > reservation.StartDateTime
                     )
@@ -316,14 +371,27 @@ namespace BUA_project.Controllers
             // =========================================================
 
             var vehicleConflict =
-                overlappingReservations
-                    .Any(r => r.VehicleId == vehicleId);
+                await _context.Reservations
+                    .AnyAsync(r =>
+                        r.ReservationId != reservation.ReservationId &&
+
+                        r.VehicleId == vehicleId &&
+
+                        (
+                            r.Status == "Approved" ||
+                            r.Status == "Dispatched" ||
+                            r.Status == "Active"
+                        ) &&
+
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    );
 
             if (vehicleConflict)
             {
                 ModelState.AddModelError(
                     "",
-                    "The selected vehicle is already reserved during this time.");
+                    "The selected vehicle is already assigned to another reservation during this period.");
 
                 return await ReturnApproveView(reservation);
             }
@@ -334,38 +402,77 @@ namespace BUA_project.Controllers
             // =========================================================
 
             var driverConflict =
-                overlappingReservations
-                    .Any(r => r.DriverId == driverId);
+                await _context.Reservations
+                    .AnyAsync(r =>
+                        r.ReservationId != reservation.ReservationId &&
+
+                        r.DriverId == driverId &&
+
+                        (
+                            r.Status == "Approved" ||
+                            r.Status == "Dispatched" ||
+                            r.Status == "Active"
+                        ) &&
+
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    );
 
             if (driverConflict)
             {
                 ModelState.AddModelError(
                     "",
-                    "The selected driver is already assigned during this time.");
+                    "The selected driver is already assigned to another reservation during this period.");
 
                 return await ReturnApproveView(reservation);
             }
 
 
             // =========================================================
-            // Assign Vehicle
+            // ASSIGN VEHICLE
             // =========================================================
 
             reservation.VehicleId = vehicleId;
 
 
             // =========================================================
-            // Assign Driver
+            // ASSIGN DRIVER
             // =========================================================
 
             reservation.DriverId = driverId;
 
 
             // =========================================================
-            // Approve Reservation
+            // APPROVE RESERVATION
             // =========================================================
 
             reservation.Status = "Approved";
+
+
+            // =========================================================
+            // REJECT OVERLAPPING PENDING RESERVATIONS
+            // =========================================================
+
+            var conflictingPendingReservations =
+                await _context.Reservations
+                    .Where(r =>
+                        r.ReservationId != reservation.ReservationId &&
+
+                        r.VehicleId == reservation.VehicleId &&
+
+                        r.Status == "Pending" &&
+
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    )
+                    .ToListAsync();
+
+
+            foreach (var conflictingReservation
+                     in conflictingPendingReservations)
+            {
+                conflictingReservation.Status = "Rejected";
+            }
 
 
             // =========================================================
@@ -376,35 +483,69 @@ namespace BUA_project.Controllers
                 .FirstOrDefaultAsync(t =>
                     t.ReservationId == reservation.ReservationId);
 
-            reservation.VehicleId = vehicleId;
-            reservation.DriverId = driverId;
-            reservation.Status = "Approved";
 
-            var trip = new Trip
+            if (existingTrip == null)
             {
-                ReservationId = reservation.ReservationId,
-                Status = "Assigned",
+                var trip = new Trip
+                {
+                    ReservationId = reservation.ReservationId,
 
-                StartedAt = DateTime.Now,
-                CompletedAt = null,
+                    Status = "Assigned",
 
-                ActualDistanceKm = 0,
-                ActualFuelLiters = 0,
-                ActualFuelCost = 0,
+                    StartedAt = DateTime.Now,
 
-                StartOdometer = 0,
-                EndOdometer = 0,
+                    CompletedAt = null,
 
-                IncidentNotes = null,
-                FuelPricePerLiter = 0
-            };
+                    ActualDistanceKm = 0,
 
-            _context.Trips.Add(trip);
+                    ActualFuelLiters = 0,
+
+                    ActualFuelCost = 0,
+
+                    StartOdometer = 0,
+
+                    EndOdometer = 0,
+
+                    IncidentNotes = null,
+
+                    FuelPricePerLiter = 0
+                };
+
+                _context.Trips.Add(trip);
+            }
+            else
+            {
+                existingTrip.Status = "Assigned";
+            }
+
+
+            // =========================================================
+            // SAVE EVERYTHING
+            // =========================================================
 
             await _context.SaveChangesAsync();
 
+
+            // =========================================================
+            // SUCCESS MESSAGE
+            // =========================================================
+
+            if (conflictingPendingReservations.Any())
+            {
+                TempData["Success"] =
+                    $"Reservation approved successfully. " +
+                    $"{conflictingPendingReservations.Count} conflicting pending reservation(s) were rejected.";
+            }
+            else
+            {
+                TempData["Success"] =
+                    "Reservation approved and trip assigned successfully.";
+            }
+
+
             return RedirectToAction(nameof(Index));
         }
+
 
         // =========================================================
         // RELOAD APPROVE VIEW
@@ -413,19 +554,30 @@ namespace BUA_project.Controllers
         private async Task<IActionResult> ReturnApproveView(
             Reservation reservation)
         {
+            // =========================================================
+            // Find Existing Conflicts
+            // =========================================================
+
             var conflictingReservations =
                 await _context.Reservations
                     .Where(r =>
                         r.ReservationId != reservation.ReservationId &&
+
                         (
                             r.Status == "Approved" ||
                             r.Status == "Dispatched" ||
                             r.Status == "Active"
                         ) &&
+
                         r.StartDateTime < reservation.EndDateTime &&
                         r.EndDateTime > reservation.StartDateTime
                     )
                     .ToListAsync();
+
+
+            // =========================================================
+            // Conflicting Vehicle IDs
+            // =========================================================
 
             var conflictingVehicleIds =
                 conflictingReservations
@@ -433,12 +585,22 @@ namespace BUA_project.Controllers
                     .Distinct()
                     .ToList();
 
+
+            // =========================================================
+            // Conflicting Driver IDs
+            // =========================================================
+
             var conflictingDriverIds =
                 conflictingReservations
-                    .Where(r => r.DriverId.HasValue)
-                    .Select(r => r.DriverId!.Value)
+                    .Where(r => r.VehicleId > 0)
+                    .Select(r => r.VehicleId)
                     .Distinct()
                     .ToList();
+
+
+            // =========================================================
+            // Available Vehicles
+            // =========================================================
 
             var vehicles = await _context.Vehicles
                 .Where(v =>
@@ -448,16 +610,28 @@ namespace BUA_project.Controllers
                 .ThenBy(v => v.Model)
                 .ToListAsync();
 
-            // Qualified Drivers
+
+            // =========================================================
+            // Available Drivers
+            // =========================================================
+
             var drivers = await _context.Drivers
                 .Where(d =>
                     d.QualificationStatus == "Qualified" &&
-                    d.QualificationValidUntil >= reservation.EndDateTime)
+
+                    d.QualificationValidUntil >=
+                        reservation.EndDateTime &&
+
+                    !conflictingDriverIds.Contains(d.DriverId)
+                )
                 .OrderBy(d => d.Name)
                 .ToListAsync();
 
+
             ViewBag.Vehicles = vehicles;
+
             ViewBag.Drivers = drivers;
+
 
             return View("Approve", reservation);
         }
@@ -476,6 +650,7 @@ namespace BUA_project.Controllers
                 .Include(r => r.Vehicle)
                 .Include(r => r.User)
                 .Include(r => r.Driver)
+
                 .FirstOrDefaultAsync(
                     r => r.ReservationId == id);
 
@@ -505,6 +680,9 @@ namespace BUA_project.Controllers
 
             await _context.SaveChangesAsync();
 
+            TempData["Success"] =
+                "Reservation rejected successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -522,6 +700,7 @@ namespace BUA_project.Controllers
                 .Include(r => r.Vehicle)
                 .Include(r => r.User)
                 .Include(r => r.Driver)
+
                 .FirstOrDefaultAsync(
                     r => r.ReservationId == id);
 
@@ -532,13 +711,16 @@ namespace BUA_project.Controllers
                 return BadRequest(
                     "Reservation must be approved first.");
 
-            // Only Qualified and non-expired drivers
+
             ViewBag.Drivers = await _context.Drivers
                 .Where(d =>
                     d.QualificationStatus == "Qualified" &&
-                    d.QualificationValidUntil >= reservation.EndDateTime)
+
+                    d.QualificationValidUntil >=
+                        reservation.EndDateTime)
                 .OrderBy(d => d.Name)
                 .ToListAsync();
+
 
             return View(reservation);
         }
@@ -561,9 +743,11 @@ namespace BUA_project.Controllers
             if (reservation == null)
                 return NotFound();
 
+
             if (reservation.Status != "Approved")
                 return BadRequest(
                     "Reservation must be approved first.");
+
 
             var driver = await _context.Drivers
                 .FirstOrDefaultAsync(d =>
@@ -572,7 +756,11 @@ namespace BUA_project.Controllers
             if (driver == null)
                 return NotFound();
 
-            // Driver must be Qualified
+
+            // =========================================================
+            // Driver Qualification
+            // =========================================================
+
             if (driver.QualificationStatus != "Qualified")
             {
                 ModelState.AddModelError(
@@ -582,7 +770,11 @@ namespace BUA_project.Controllers
                 return await AssignDriver(id);
             }
 
-            // Driver qualification must be valid
+
+            // =========================================================
+            // Driver Qualification Validity
+            // =========================================================
+
             if (driver.QualificationValidUntil <
                 reservation.EndDateTime)
             {
@@ -593,35 +785,81 @@ namespace BUA_project.Controllers
                 return await AssignDriver(id);
             }
 
-            // Assign driver
+
+            // =========================================================
+            // Driver Conflict Check
+            // =========================================================
+
+            var driverConflict =
+                await _context.Reservations
+                    .AnyAsync(r =>
+                        r.ReservationId != reservation.ReservationId &&
+
+                        r.DriverId == driverId &&
+
+                        (
+                            r.Status == "Approved" ||
+                            r.Status == "Dispatched" ||
+                            r.Status == "Active"
+                        ) &&
+
+                        r.StartDateTime < reservation.EndDateTime &&
+                        r.EndDateTime > reservation.StartDateTime
+                    );
+
+
+            if (driverConflict)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "The selected driver is already assigned during this time.");
+
+                return await AssignDriver(id);
+            }
+
+
+            // =========================================================
+            // Assign Driver
+            // =========================================================
+
             reservation.DriverId = driverId;
 
-            // Check if Trip already exists
+
+            // =========================================================
+            // Create Trip if not exists
+            // =========================================================
+
             var existingTrip = await _context.Trips
                 .FirstOrDefaultAsync(t =>
-                    t.ReservationId == reservation.ReservationId);
+                    t.ReservationId ==
+                    reservation.ReservationId);
+
 
             if (existingTrip == null)
             {
                 var trip = new Trip
                 {
-                    ReservationId = reservation.ReservationId,
+                    ReservationId =
+                        reservation.ReservationId,
 
                     Status = "Assigned",
 
-                    // Temporary value until driver actually starts trip
                     StartedAt = DateTime.Now,
 
                     CompletedAt = null,
 
                     ActualDistanceKm = 0,
+
                     ActualFuelLiters = 0,
+
                     ActualFuelCost = 0,
 
                     StartOdometer = 0,
+
                     EndOdometer = 0,
 
                     IncidentNotes = null,
+
                     FuelPricePerLiter = 0
                 };
 
@@ -632,9 +870,15 @@ namespace BUA_project.Controllers
                 existingTrip.Status = "Assigned";
             }
 
+
             await _context.SaveChangesAsync();
+
+
+            TempData["Success"] =
+                "Driver assigned successfully.";
 
             return RedirectToAction(nameof(Index));
         }
     }
 }
+

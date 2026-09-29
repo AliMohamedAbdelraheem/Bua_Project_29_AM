@@ -524,72 +524,369 @@
     </div>
 
 
-    <!-- Actions -->
+<!-- ========================================================= -->
+<!-- Availability -->
+<!-- ========================================================= -->
 
-    <div class="vehicle-details-actions">
+<div class="vehicle-details-section">
+
+    <!-- Section Header -->
+    <div class="vehicle-section-header">
+
+        <div>
+
+            <p class="vehicle-section-label">
+                Availability
+            </p>
+
+            <h2>
+                Availability Calendar
+            </h2>
+
+            <p class="vehicle-section-description">
+                View upcoming reservations and scheduled maintenance periods.
+            </p>
+
+        </div>
+
+    </div>
 
 
-        @if (User.IsInRole("Admin"))
+    <!-- ===================================================== -->
+    <!-- Reserved Periods -->
+    <!-- ===================================================== -->
+
+    <div class="vehicle-availability-card">
+
+        <div class="vehicle-availability-card-header">
+
+            <div>
+
+                <span class="vehicle-availability-icon reserved-icon">
+                    R
+                </span>
+
+                <div>
+
+                    <h3>
+                        Reserved Periods
+                    </h3>
+
+                    <p>
+                        Approved reservations for this vehicle
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        @if (ViewBag.BusySlots != null &&
+             ViewBag.BusySlots.Count > 0)
         {
 
-            <a asp-controller="Vehicle"
-               asp-action="Edit"
-               asp-route-id="@Model.VehicleId"
-               class="btn btn-primary">
+            <div class="vehicle-availability-list">
 
-                Edit Vehicle
+                @foreach (var slot in ViewBag.BusySlots)
+                {
 
-            </a>
+                    <div class="vehicle-availability-item reserved">
 
+                        <div class="availability-item-status">
 
-            <a asp-controller="Vehicle"
-               asp-action="Index"
-               class="btn btn-outline">
+                            <span class="availability-dot reserved-dot"></span>
 
-                Back to Vehicles
+                            <span>
+                                Reserved
+                            </span>
 
-            </a>
-
-        }
-        else if (User.IsInRole("User"))
-        {
-
-            @if (Model.Status == "Available")
-            {
-                <a asp-controller="UserReservation"
-                   asp-action="Create"
-                   asp-route-vehicleId="@Model.VehicleId"
-                   class="btn btn-primary">
-
-                    Reserve Vehicle
-
-                </a>
-            }
+                        </div>
 
 
-            <a asp-controller="UserDashboard"
-               asp-action="Index"
-               class="btn btn-outline">
+                        <div class="availability-dates">
 
-                Back to Fleet
+                            <div class="availability-date">
 
-            </a>
+                                <span class="availability-date-label">
+                                    Start
+                                </span>
+
+                                <strong>
+                                    @slot.StartDateTime.ToString("MMM dd, yyyy")
+                                </strong>
+
+                                <span class="availability-time">
+                                    @slot.StartDateTime.ToString("hh:mm tt")
+                                </span>
+
+                            </div>
+
+
+                            <div class="availability-arrow">
+                                →
+                            </div>
+
+
+                            <div class="availability-date">
+
+                                <span class="availability-date-label">
+                                    End
+                                </span>
+
+                                <strong>
+                                    @slot.EndDateTime.ToString("MMM dd, yyyy")
+                                </strong>
+
+                                <span class="availability-time">
+                                    @slot.EndDateTime.ToString("hh:mm tt")
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
 
         }
         else
         {
 
-            <a asp-controller="Vehicle"
-               asp-action="Index"
-               class="btn btn-outline">
+            <div class="vehicle-availability-empty">
 
-                Back to Vehicles
+                <div class="empty-icon">
+                    ✓
+                </div>
 
-            </a>
+                <div>
+
+                    <strong>
+                        No upcoming reservations
+                    </strong>
+
+                    <span>
+                        This vehicle has no approved reservations in the upcoming period.
+                    </span>
+
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Maintenance -->
+    <!-- ===================================================== -->
+
+    <div class="vehicle-availability-card">
+
+        <div class="vehicle-availability-card-header">
+
+            <div>
+
+                <span class="vehicle-availability-icon maintenance-icon">
+                    M
+                </span>
+
+                <div>
+
+                    <h3>
+                        Maintenance
+                    </h3>
+
+                    <p>
+                        Scheduled maintenance periods
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        @if (ViewBag.MaintenanceSlots != null &&
+             ViewBag.MaintenanceSlots.Count > 0)
+        {
+
+            <div class="vehicle-availability-list">
+
+                @foreach (var maintenance in ViewBag.MaintenanceSlots)
+                {
+
+                    <div class="vehicle-availability-item maintenance">
+
+                        <div class="availability-item-status">
+
+                            <span class="availability-dot maintenance-dot"></span>
+
+                            <span>
+                                Maintenance
+                            </span>
+
+                        </div>
+
+
+                        <div class="availability-dates">
+
+                            <div class="availability-date">
+
+                                <span class="availability-date-label">
+                                    Service Date
+                                </span>
+
+                                <strong>
+                                    @maintenance.ServiceDate.ToString("MMM dd, yyyy")
+                                </strong>
+
+                                <span class="availability-time">
+                                    @maintenance.MaintenanceType
+                                </span>
+
+                            </div>
+
+
+                            @if (maintenance.NextServiceDate != null)
+                            {
+
+                                <div class="availability-arrow">
+                                    →
+                                </div>
+
+
+                                <div class="availability-date">
+
+                                    <span class="availability-date-label">
+                                        Next Service
+                                    </span>
+
+                                    <strong>
+                                        @maintenance.NextServiceDate.Value.ToString("MMM dd, yyyy")
+                                    </strong>
+
+                                    <span class="availability-time">
+                                        Scheduled maintenance
+                                    </span>
+
+                                </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="vehicle-availability-empty">
+
+                <div class="empty-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <strong>
+                        No upcoming maintenance
+                    </strong>
+
+                    <span>
+                        No maintenance periods are currently scheduled.
+                    </span>
+
+                </div>
+
+            </div>
 
         }
 
     </div>
 
 </div>
+
+
+<!-- ========================================================= -->
+<!-- Actions -->
+<!-- ========================================================= -->
+
+<div class="vehicle-details-actions">
+
+    @if (User.IsInRole("Admin"))
+    {
+
+        <a asp-controller="Vehicle"
+           asp-action="Edit"
+           asp-route-id="@Model.VehicleId"
+           class="btn btn-primary">
+
+            Edit Vehicle
+
+        </a>
+
+
+        <a asp-controller="Vehicle"
+           asp-action="Index"
+           class="btn btn-outline">
+
+            Back to Vehicles
+
+        </a>
+
+    }
+    else if (User.IsInRole("User"))
+    {
+
+        @if (Model.Status == "Available")
+        {
+
+            <a asp-controller="UserReservation"
+               asp-action="Create"
+               asp-route-vehicleId="@Model.VehicleId"
+               class="btn btn-primary">
+
+                Reserve Vehicle
+
+            </a>
+
+        }
+
+
+        <a asp-controller="UserDashboard"
+           asp-action="Index"
+           class="btn btn-outline">
+
+            Back to Fleet
+
+        </a>
+
+    }
+    else
+    {
+
+        <a asp-controller="Vehicle"
+           asp-action="Index"
+           class="btn btn-outline">
+
+            Back to Vehicles
+
+        </a>
+
+    }
+
+</div>
+
 

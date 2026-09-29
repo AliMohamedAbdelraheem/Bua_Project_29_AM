@@ -581,3 +581,307 @@
 }
 
 
+
+
+/* =========================================================
+   AVAILABILITY SECTION
+   ========================================================= */
+
+.vehicle-details-section {
+    margin-top: 36px;
+}
+
+.vehicle-section-header {
+    margin-bottom: 20px;
+}
+
+.vehicle-section-label {
+    margin: 0 0 5px;
+    color: var(--color-primary, #2563eb);
+    font-size: 12px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.vehicle-section-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 750;
+    color: #172033;
+}
+
+.vehicle-section-description {
+    margin: 7px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   AVAILABILITY CARD
+   ========================================================= */
+
+.vehicle-availability-card {
+    margin-bottom: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.vehicle-availability-card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+    .vehicle-availability-card-header > div {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .vehicle-availability-card-header h3 {
+        margin: 0;
+        color: #172033;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .vehicle-availability-card-header p {
+        margin: 4px 0 0;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.vehicle-availability-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.reserved-icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.maintenance-icon {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+
+/* =========================================================
+   AVAILABILITY LIST
+   ========================================================= */
+
+.vehicle-availability-list {
+    padding: 14px 18px;
+}
+
+.vehicle-availability-item {
+    padding: 16px;
+    margin-bottom: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+    .vehicle-availability-item:last-child {
+        margin-bottom: 0;
+    }
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.availability-item-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.reserved .availability-item-status {
+    color: #2563eb;
+}
+
+.maintenance .availability-item-status {
+    color: #ea580c;
+}
+
+.availability-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.reserved-dot {
+    background: #2563eb;
+}
+
+.maintenance-dot {
+    background: #ea580c;
+}
+
+
+/* =========================================================
+   DATES
+   ========================================================= */
+
+.availability-dates {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.availability-date {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.availability-date-label {
+    margin-bottom: 4px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.availability-date strong {
+    color: #172033;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.availability-time {
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.availability-arrow {
+    color: #9ca3af;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.vehicle-availability-empty {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 14px 18px;
+    padding: 18px;
+    border: 1px dashed #d1d5db;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+    .vehicle-availability-empty .empty-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #ecfdf5;
+        color: #16a34a;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .vehicle-availability-empty strong {
+        display: block;
+        color: #374151;
+        font-size: 14px;
+    }
+
+    .vehicle-availability-empty span {
+        display: block;
+        margin-top: 3px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.vehicle-details-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .availability-dates {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .availability-arrow {
+        transform: rotate(90deg);
+    }
+
+    .availability-date {
+        min-width: 0;
+    }
+
+    .vehicle-details-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .vehicle-details-actions .btn {
+            width: 100%;
+        }
+}
+
+
+@media (max-width: 480px) {
+
+    .vehicle-availability-card-header {
+        padding: 16px;
+    }
+
+    .vehicle-availability-list {
+        padding: 12px;
+    }
+
+    .vehicle-availability-item {
+        padding: 14px;
+    }
+}

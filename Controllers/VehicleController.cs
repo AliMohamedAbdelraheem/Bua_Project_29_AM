@@ -53,6 +53,48 @@ namespace BUA_project.Controllers
             if (vehicle == null)
                 return NotFound();
 
+            // ============================================================
+            // Vehicle Availability
+            // ============================================================
+
+            var busySlots = await _context.Reservations
+                .Where(r =>
+                    r.VehicleId == vehicle.VehicleId &&
+                    r.EndDateTime > DateTime.Now &&
+                    (
+                        r.Status == "Approved" ||
+                        r.Status == "Dispatched" ||
+                        r.Status == "Active"
+                    ))
+                .OrderBy(r => r.StartDateTime)
+                .Select(r => new
+                {
+                    r.StartDateTime,
+                    r.EndDateTime
+                })
+                .ToListAsync();
+
+            // ============================================================
+            // Maintenance
+            // ============================================================
+
+            var maintenanceSlots = await _context.Set<VehicleMaintenance>()
+                .Where(m =>
+                    m.VehicleId == vehicle.VehicleId &&
+                    m.NextServiceDate >= DateTime.Now)
+                .OrderBy(m => m.ServiceDate)
+                .Select(m => new
+                {
+                    m.ServiceDate,
+                    m.NextServiceDate,
+                    m.MaintenanceType,
+                    m.Status
+                })
+                .ToListAsync();
+
+            ViewBag.BusySlots = busySlots;
+            ViewBag.MaintenanceSlots = maintenanceSlots;
+
             return View(vehicle);
         }
 

@@ -7,31 +7,38 @@
 
 <link rel="stylesheet" href="~/css/user_reservation.css" />
 
-    <section class="app-shell__content app-shell__content--padded">
+<section class="app-shell__content app-shell__content--padded">
 
-        <div class="reservation-page">
-        
-            <!-- Page Header -->
-    <div class="reservation-page-header">
+    <div class="reservation-page">
 
-        <p class="page-subtitle">
-            Fleet Reservation
-        </p>
+        <!-- ===================================================== -->
+        <!-- PAGE HEADER -->
+        <!-- ===================================================== -->
 
-        <h1>Create Reservation</h1>
+        <div class="reservation-page-header">
 
-        <p>
-            Enter your trip information to submit a vehicle reservation.
-        </p>
+            <p class="page-subtitle">
+                Fleet Reservation
+            </p>
 
-        <div asp-validation-summary="All"
-             class="reservation-validation">
+            <h1>Create Reservation</h1>
+
+            <p>
+                Enter your trip information to submit a vehicle reservation.
+            </p>
+
+            <div asp-validation-summary="All"
+                 class="reservation-validation">
+            </div>
+
         </div>
 
-    </div>
 
+        <!-- ===================================================== -->
+        <!-- FORM CARD -->
+        <!-- ===================================================== -->
 
-    <div class="reservation-form-card">
+        <div class="reservation-form-card">
 
             <div class="reservation-card-header">
 
@@ -48,7 +55,8 @@
 
                 <form asp-controller="UserReservation"
                       asp-action="Create"
-                      method="post">
+                      method="post"
+                      id="reservationForm">
 
                     @Html.AntiForgeryToken()
 
@@ -56,9 +64,9 @@
                            asp-for="VehicleId" />
 
 
-                    <!-- ============================= -->
-                    <!-- Trip Information -->
-                    <!-- ============================= -->
+                    <!-- ================================================= -->
+                    <!-- TRIP INFORMATION -->
+                    <!-- ================================================= -->
 
                     <div class="reservation-section">
 
@@ -73,9 +81,101 @@
                         </div>
 
 
+                        <!-- ================================================= -->
+                        <!-- VEHICLE AVAILABILITY CALENDAR -->
+                        <!-- ================================================= -->
+
+                        <div class="vehicle-calendar-wrapper">
+
+                            <div class="calendar-header">
+
+                                <button type="button"
+                                        id="previousMonth"
+                                        class="calendar-nav-button">
+                                    ‹
+                                </button>
+
+                                <h3 id="calendarMonth">
+                                    Loading...
+                                </h3>
+
+                                <button type="button"
+                                        id="nextMonth"
+                                        class="calendar-nav-button">
+                                    ›
+                                </button>
+
+                            </div>
+
+
+                            <!-- Legend -->
+
+                            <div class="calendar-legend">
+
+                                <div class="legend-item">
+                                    <span class="legend-color available"></span>
+                                    Available
+                                </div>
+
+                                <div class="legend-item">
+                                    <span class="legend-color pending"></span>
+                                    Pending
+                                </div>
+
+                                <div class="legend-item">
+                                    <span class="legend-color approved"></span>
+                                    Booked
+                                </div>
+
+                            </div>
+
+
+                            <!-- Calendar -->
+
+                            <div class="calendar-weekdays">
+
+                                <div>Sun</div>
+                                <div>Mon</div>
+                                <div>Tue</div>
+                                <div>Wed</div>
+                                <div>Thu</div>
+                                <div>Fri</div>
+                                <div>Sat</div>
+
+                            </div>
+
+
+                            <div id="calendarDays"
+                                 class="calendar-days">
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================= -->
+                        <!-- SELECTED DATE -->
+                        <!-- ================================================= -->
+
+                        <div id="selectedDateInfo"
+                             class="selected-date-info"
+                             style="display:none;">
+
+                            <strong>
+                                Selected Date:
+                            </strong>
+
+                            <span id="selectedDateText"></span>
+
+                        </div>
+
+
+                        <!-- ================================================= -->
+                        <!-- START / END -->
+                        <!-- ================================================= -->
+
                         <div class="reservation-form-grid">
 
-                            <!-- Start Date -->
+                            <!-- Start -->
 
                             <div class="reservation-form-group">
 
@@ -85,7 +185,8 @@
 
                                 <input asp-for="StartDateTime"
                                        type="datetime-local"
-                                       class="form-control" />
+                                       class="form-control"
+                                       id="startDateTime" />
 
                                 <span asp-validation-for="StartDateTime"
                                       class="field-validation-error">
@@ -94,7 +195,7 @@
                             </div>
 
 
-                            <!-- End Date -->
+                            <!-- End -->
 
                             <div class="reservation-form-group">
 
@@ -104,7 +205,8 @@
 
                                 <input asp-for="EndDateTime"
                                        type="datetime-local"
-                                       class="form-control" />
+                                       class="form-control"
+                                       id="endDateTime" />
 
                                 <span asp-validation-for="EndDateTime"
                                       class="field-validation-error">
@@ -112,8 +214,14 @@
 
                             </div>
 
+                        </div>
 
-                            <!-- Origin -->
+
+                        <!-- ================================================= -->
+                        <!-- ORIGIN -->
+                        <!-- ================================================= -->
+
+                        <div class="reservation-form-grid">
 
                             <div class="reservation-form-group">
 
@@ -190,9 +298,9 @@
                     </div>
 
 
-                    <!-- ============================= -->
-                    <!-- Capacity -->
-                    <!-- ============================= -->
+                    <!-- ===================================================== -->
+                    <!-- PASSENGERS & LOAD -->
+                    <!-- ===================================================== -->
 
                     <div class="reservation-section">
 
@@ -273,9 +381,9 @@
                     </div>
 
 
-                    <!-- ============================= -->
-                    <!-- Purpose -->
-                    <!-- ============================= -->
+                    <!-- ===================================================== -->
+                    <!-- PURPOSE -->
+                    <!-- ===================================================== -->
 
                     <div class="reservation-section">
 
@@ -298,8 +406,7 @@
 
                             <textarea asp-for="Purpose"
                                       class="form-control"
-                                      placeholder="Enter the purpose of your trip...">
-                            </textarea>
+                                      placeholder="Enter the purpose of your trip..."></textarea>
 
                             <span asp-validation-for="Purpose"
                                   class="field-validation-error">
@@ -310,7 +417,9 @@
                     </div>
 
 
-                    <!-- Actions -->
+                    <!-- ===================================================== -->
+                    <!-- ACTIONS -->
+                    <!-- ===================================================== -->
 
                     <div class="reservation-actions">
 
@@ -343,20 +452,979 @@
 </section>
 
 
+<!-- ============================================================= -->
+<!-- TIME POPUP -->
+<!-- ============================================================= -->
+
+<div id="timeModal"
+     class="time-modal"
+     style="display:none;">
+
+    <div class="time-modal-overlay"></div>
+
+    <div class="time-modal-content">
+
+        <div class="time-modal-header">
+
+            <div>
+
+                <p class="time-modal-label">
+                    Vehicle Availability
+                </p>
+
+                <h2 id="modalDate">
+                    Selected Date
+                </h2>
+
+            </div>
+
+            <button type="button"
+                    id="closeTimeModal"
+                    class="time-modal-close">
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- Legend -->
+
+        <div class="time-legend">
+
+            <div class="legend-item">
+                <span class="legend-color available"></span>
+                Available
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-color pending"></span>
+                Pending
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-color approved"></span>
+                Booked
+            </div>
+
+        </div>
+
+
+        <div id="timeSlots"
+             class="time-slots">
+        </div>
+
+
+        <div class="time-modal-footer">
+
+            <button type="button"
+                    id="cancelTimeSelection"
+                    class="btn btn-secondary">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 @section Scripts {
 
     <partial name="_ValidationScriptsPartial" />
 
+
     <script>
 
+        /* =========================================================
+           VARIABLES
+        ========================================================= */
+
+        const vehicleId =
+            document.querySelector(
+                'input[name="VehicleId"]'
+            ).value;
+
+
+        const calendarDays =
+            document.getElementById(
+                "calendarDays"
+            );
+
+
+        const calendarMonth =
+            document.getElementById(
+                "calendarMonth"
+            );
+
+
+        const previousMonth =
+            document.getElementById(
+                "previousMonth"
+            );
+
+
+        const nextMonth =
+            document.getElementById(
+                "nextMonth"
+            );
+
+
+        const timeModal =
+            document.getElementById(
+                "timeModal"
+            );
+
+
+        const timeSlots =
+            document.getElementById(
+                "timeSlots"
+            );
+
+
+        const modalDate =
+            document.getElementById(
+                "modalDate"
+            );
+
+
+        const closeTimeModal =
+            document.getElementById(
+                "closeTimeModal"
+            );
+
+
+        const cancelTimeSelection =
+            document.getElementById(
+                "cancelTimeSelection"
+            );
+
+
+        const startInput =
+            document.getElementById(
+                "startDateTime"
+            );
+
+
+        const endInput =
+            document.getElementById(
+                "endDateTime"
+            );
+
+
+        let currentCalendarDate =
+            new Date();
+
+
+        let availabilityData = [];
+
+
+        let selectedDate = null;
+
+
+        /* =========================================================
+           LOAD AVAILABILITY
+        ========================================================= */
+
+        async function loadAvailability() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/UserReservation/GetVehicleAvailability?vehicleId=${vehicleId}`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load availability."
+                    );
+
+                }
+
+
+                availabilityData =
+                    await response.json();
+
+
+                renderCalendar();
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                calendarDays.innerHTML = `
+                    <div class="calendar-error">
+                        Unable to load vehicle availability.
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           FORMAT DATE KEY
+        ========================================================= */
+
+        function getDateKey(date) {
+
+            const year =
+                date.getFullYear();
+
+            const month =
+                String(
+                    date.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    date.getDate()
+                ).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+
+        }
+
+
+        /* =========================================================
+           FIND DAY DATA
+        ========================================================= */
+
+        function getDayData(date) {
+
+            const key =
+                getDateKey(date);
+
+            return availabilityData.find(
+                x => x.date === key
+            );
+
+        }
+
+
+        /* =========================================================
+           RENDER CALENDAR
+        ========================================================= */
+
+        function renderCalendar() {
+
+            calendarDays.innerHTML = "";
+
+
+            const year =
+                currentCalendarDate.getFullYear();
+
+
+            const month =
+                currentCalendarDate.getMonth();
+
+
+            const monthName =
+                currentCalendarDate.toLocaleString(
+                    "default",
+                    {
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
+
+
+            calendarMonth.textContent =
+                monthName;
+
+
+            const firstDay =
+                new Date(
+                    year,
+                    month,
+                    1
+                ).getDay();
+
+
+            const daysInMonth =
+                new Date(
+                    year,
+                    month + 1,
+                    0
+                ).getDate();
+
+
+            /* Empty cells */
+
+            for (
+                let i = 0;
+                i < firstDay;
+                i++
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+                empty.className =
+                    "calendar-day empty";
+
+                calendarDays.appendChild(
+                    empty
+                );
+
+            }
+
+
+            /* Days */
+
+            for (
+                let day = 1;
+                day <= daysInMonth;
+                day++
+            ) {
+
+                const date =
+                    new Date(
+                        year,
+                        month,
+                        day
+                    );
+
+
+                const dayElement =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                dayElement.type =
+                    "button";
+
+
+                dayElement.className =
+                    "calendar-day";
+
+
+                const dayData =
+                    getDayData(date);
+
+
+                /*
+                    Default = Available
+                */
+
+                let status =
+                    "available";
+
+
+                if (dayData) {
+
+                    status =
+                        dayData.status;
+
+                }
+
+
+                dayElement.classList.add(
+                    status
+                );
+
+
+                dayElement.innerHTML = `
+
+                    <span class="calendar-day-number">
+                        ${day}
+                    </span>
+
+                    <span class="calendar-day-status">
+                        ${getStatusText(status)}
+                    </span>
+
+                `;
+
+
+                /*
+                    If fully booked,
+                    disable click
+                */
+
+                if (
+                    status ===
+                    "approved"
+                ) {
+
+                    /*
+                       Still allow opening the day
+                       so user can see hours.
+                    */
+
+                    dayElement.disabled =
+                        false;
+
+                }
+
+
+                dayElement.addEventListener(
+                    "click",
+                    function () {
+
+                        openTimeModal(date);
+
+                    }
+                );
+
+
+                calendarDays.appendChild(
+                    dayElement
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           STATUS TEXT
+        ========================================================= */
+
+        function getStatusText(status) {
+
+            if (
+                status ===
+                "approved"
+            ) {
+
+                return "Booked";
+
+            }
+
+
+            if (
+                status ===
+                "pending"
+            ) {
+
+                return "Pending";
+
+            }
+
+
+            return "Available";
+
+        }
+
+
+        /* =========================================================
+           OPEN TIME MODAL
+        ========================================================= */
+
+        function openTimeModal(date) {
+
+            selectedDate =
+                date;
+
+
+            modalDate.textContent =
+                date.toLocaleDateString(
+                    "en-US",
+                    {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                    }
+                );
+
+
+            timeSlots.innerHTML = "";
+
+
+            const dayData =
+                getDayData(date);
+
+
+            /*
+               Create slots every 30 minutes
+            */
+
+            for (
+                let hour = 0;
+                hour < 24;
+                hour++
+            ) {
+
+                for (
+                    let minute = 0;
+                    minute < 60;
+                    minute += 30
+                ) {
+
+                    const slot =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    slot.type =
+                        "button";
+
+
+                    slot.className =
+                        "time-slot";
+
+
+                    const hourText =
+                        String(hour)
+                            .padStart(2, "0");
+
+
+                    const minuteText =
+                        String(minute)
+                            .padStart(2, "0");
+
+
+                    const time =
+                        `${hourText}:${minuteText}`;
+
+
+                    slot.textContent =
+                        time;
+
+
+                    let slotStatus =
+                        getTimeSlotStatus(
+                            date,
+                            hour,
+                            minute,
+                            dayData
+                        );
+
+
+                    slot.classList.add(
+                        slotStatus
+                    );
+
+
+                    if (
+                        slotStatus ===
+                        "available"
+                    ) {
+
+                        slot.addEventListener(
+                            "click",
+                            function () {
+
+                                selectTime(
+                                    date,
+                                    hour,
+                                    minute
+                                );
+
+                            }
+                        );
+
+                    }
+
+
+                    timeSlots.appendChild(
+                        slot
+                    );
+
+                }
+
+            }
+
+
+            timeModal.style.display =
+                "flex";
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+        }
+
+
+        /* =========================================================
+           GET TIME SLOT STATUS
+        ========================================================= */
+
+        function getTimeSlotStatus(
+            date,
+            hour,
+            minute,
+            dayData
+        ) {
+
+            if (!dayData)
+                return "available";
+
+
+            const slotDate =
+                new Date(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate(),
+                    hour,
+                    minute
+                );
+
+
+            const reservations =
+                dayData.reservations || [];
+
+
+            for (
+                const reservation
+                of reservations
+            ) {
+
+                const start =
+                    new Date(
+                        reservation.start
+                    );
+
+
+                const end =
+                    new Date(
+                        reservation.end
+                    );
+
+
+                if (
+                    slotDate >= start &&
+                    slotDate < end
+                ) {
+
+                    if (
+                        reservation.status
+                            .toLowerCase()
+                        ===
+                        "approved"
+                    ) {
+
+                        return "approved";
+
+                    }
+
+
+                    if (
+                        reservation.status
+                            .toLowerCase()
+                        ===
+                        "pending"
+                    ) {
+
+                        return "pending";
+
+                    }
+
+                }
+
+            }
+
+
+            return "available";
+
+        }
+
+
+        /* =========================================================
+           SELECT TIME
+        ========================================================= */
+
+        function selectTime(
+            date,
+            hour,
+            minute
+        ) {
+
+            const selected =
+                new Date(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate(),
+                    hour,
+                    minute
+                );
+
+
+            /*
+                If Start is empty,
+                choose Start.
+            */
+
+            if (
+                !startInput.value ||
+                (
+                    startInput.value &&
+                    endInput.value
+                )
+            ) {
+
+                startInput.value =
+                    formatDateTimeLocal(
+                        selected
+                    );
+
+                endInput.value =
+                    "";
+
+
+                closeModal();
+
+                return;
+
+            }
+
+
+            /*
+                Otherwise choose End.
+            */
+
+            const start =
+                new Date(
+                    startInput.value
+                );
+
+
+            if (
+                selected <= start
+            ) {
+
+                alert(
+                    "End time must be after the start time."
+                );
+
+                return;
+
+            }
+
+
+            /*
+                Check overlapping
+                reservations.
+            */
+
+            if (
+                hasReservationBetween(
+                    start,
+                    selected
+                )
+            ) {
+
+                alert(
+                    "The selected period contains a reserved or pending time."
+                );
+
+                return;
+
+            }
+
+
+            endInput.value =
+                formatDateTimeLocal(
+                    selected
+                );
+
+
+            closeModal();
+
+        }
+
+
+        /* =========================================================
+           CHECK OVERLAPPING RESERVATION
+        ========================================================= */
+
+        function hasReservationBetween(
+            start,
+            end
+        ) {
+
+            for (
+                const day
+                of availabilityData
+            ) {
+
+                for (
+                    const reservation
+                    of (
+                        day.reservations ||
+                        []
+                    )
+                ) {
+
+                    const reservationStart =
+                        new Date(
+                            reservation.start
+                        );
+
+
+                    const reservationEnd =
+                        new Date(
+                            reservation.end
+                        );
+
+
+                    if (
+                        start <
+                        reservationEnd
+                        &&
+                        end >
+                        reservationStart
+                    ) {
+
+                        return true;
+
+                    }
+
+                }
+
+            }
+
+
+            return false;
+
+        }
+
+
+        /* =========================================================
+           FORMAT DATETIME-LOCAL
+        ========================================================= */
+
+        function formatDateTimeLocal(
+            date
+        ) {
+
+            const year =
+                date.getFullYear();
+
+
+            const month =
+                String(
+                    date.getMonth() + 1
+                ).padStart(2, "0");
+
+
+            const day =
+                String(
+                    date.getDate()
+                ).padStart(2, "0");
+
+
+            const hour =
+                String(
+                    date.getHours()
+                ).padStart(2, "0");
+
+
+            const minute =
+                String(
+                    date.getMinutes()
+                ).padStart(2, "0");
+
+
+            return `${year}-${month}-${day}T${hour}:${minute}`;
+
+        }
+
+
+        /* =========================================================
+           CLOSE MODAL
+        ========================================================= */
+
+        function closeModal() {
+
+            timeModal.style.display =
+                "none";
+
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        closeTimeModal.addEventListener(
+            "click",
+            closeModal
+        );
+
+
+        cancelTimeSelection.addEventListener(
+            "click",
+            closeModal
+        );
+
+
+        document
+            .querySelector(
+                ".time-modal-overlay"
+            )
+            .addEventListener(
+                "click",
+                closeModal
+            );
+
+
+        /* =========================================================
+           MONTH NAVIGATION
+        ========================================================= */
+
+        previousMonth.addEventListener(
+            "click",
+            function () {
+
+                currentCalendarDate.setMonth(
+                    currentCalendarDate.getMonth() - 1
+                );
+
+                renderCalendar();
+
+            }
+        );
+
+
+        nextMonth.addEventListener(
+            "click",
+            function () {
+
+                currentCalendarDate.setMonth(
+                    currentCalendarDate.getMonth() + 1
+                );
+
+                renderCalendar();
+
+            }
+        );
+
+
+        /* =========================================================
+           ORIGIN / DESTINATION
+        ========================================================= */
+
         const originSelect =
-            document.getElementById("origin");
+            document.getElementById(
+                "origin"
+            );
+
 
         const destinationSelect =
-            document.getElementById("destination");
+            document.getElementById(
+                "destination"
+            );
+
 
         const allDestinationOptions =
-            Array.from(destinationSelect.options);
+            Array.from(
+                destinationSelect.options
+            );
 
 
         originSelect.addEventListener(
@@ -366,15 +1434,24 @@
                 const selectedOrigin =
                     this.value;
 
-                destinationSelect.innerHTML = "";
+
+                destinationSelect.innerHTML =
+                    "";
+
 
                 const defaultOption =
-                    document.createElement("option");
+                    document.createElement(
+                        "option"
+                    );
 
-                defaultOption.value = "";
+
+                defaultOption.value =
+                    "";
+
 
                 defaultOption.textContent =
                     "Select Destination";
+
 
                 destinationSelect.appendChild(
                     defaultOption
@@ -384,8 +1461,11 @@
                 allDestinationOptions.forEach(
                     function (option) {
 
-                        if (!option.dataset.origin)
+                        if (
+                            !option.dataset.origin
+                        )
                             return;
+
 
                         if (
                             option.dataset.origin ===
@@ -403,6 +1483,13 @@
 
             }
         );
+
+
+        /* =========================================================
+           LOAD CALENDAR
+        ========================================================= */
+
+        loadAvailability();
 
     </script>
 }

@@ -5,42 +5,68 @@
     ViewData["Title"] = "Dispatcher Dashboard";
 }
 
-<div class="container-fluid mt-4">
+<link rel="stylesheet" href="~/css/dispatcher-dashboard.css" />
 
-    <div class="mb-4">
-        <h1 class="fw-bold">Dispatcher Dashboard</h1>
+<div class="dispatcher-dashboard">
 
-        <p class="text-muted">
-            Overview of reservations, vehicles, drivers, and active trips.
-        </p>
+    <!-- =========================================================
+         PAGE HEADER
+         ========================================================= -->
+
+    <div class="dispatcher-page-header">
+
+        <div>
+            <p class="dispatcher-eyebrow">
+                Fleet Operations
+            </p>
+
+            <h1>
+                Dispatcher Dashboard
+            </h1>
+
+            <p class="dispatcher-subtitle">
+                Overview of reservations, vehicles, drivers, and active trips.
+            </p>
+        </div>
+
     </div>
 
 
-    <!-- Dashboard Cards -->
-    <div class="row g-4 mb-5">
+    <!-- =========================================================
+         DASHBOARD METRICS
+         ========================================================= -->
+
+    <div class="dispatcher-metrics-grid">
 
         <!-- Pending Requests -->
-        <div class="col-md-6 col-lg-3">
 
-            <div class="card shadow-sm border-0 h-100">
+        <div class="dispatcher-metric-card">
 
-                <div class="card-body">
+            <div class="dispatcher-metric-top">
 
-                    <h6 class="text-muted">
-                        Pending Requests
-                    </h6>
+                <span class="dispatcher-metric-label">
+                    Pending Requests
+                </span>
 
-                    <h2 class="fw-bold mt-2">
-                        @Model.PendingRequestsCount
-                    </h2>
+                <span class="dispatcher-metric-number">
+                    @Model.PendingRequestsCount
+                </span>
 
-                    <a asp-controller="Dispatcher"
-                       asp-action="Index"
-                       class="btn btn-sm btn-primary mt-2">
-                        View Requests
-                    </a>
+            </div>
 
-                </div>
+            <div class="dispatcher-metric-footer">
+
+                <span>
+                    Requests waiting for review
+                </span>
+
+                <a asp-controller="Dispatcher"
+                   asp-action="Index"
+                   class="dispatcher-card-link">
+
+                    View Requests
+
+                </a>
 
             </div>
 
@@ -48,21 +74,26 @@
 
 
         <!-- Available Vehicles -->
-        <div class="col-md-6 col-lg-3">
 
-            <div class="card shadow-sm border-0 h-100">
+        <div class="dispatcher-metric-card">
 
-                <div class="card-body">
+            <div class="dispatcher-metric-top">
 
-                    <h6 class="text-muted">
-                        Available Vehicles
-                    </h6>
+                <span class="dispatcher-metric-label">
+                    Available Vehicles
+                </span>
 
-                    <h2 class="fw-bold mt-2">
-                        @Model.AvailableVehiclesCount
-                    </h2>
+                <span class="dispatcher-metric-number">
+                    @Model.AvailableVehiclesCount
+                </span>
 
-                </div>
+            </div>
+
+            <div class="dispatcher-metric-footer">
+
+                <span>
+                    Vehicles ready for reservation
+                </span>
 
             </div>
 
@@ -70,21 +101,26 @@
 
 
         <!-- Available Drivers -->
-        <div class="col-md-6 col-lg-3">
 
-            <div class="card shadow-sm border-0 h-100">
+        <div class="dispatcher-metric-card">
 
-                <div class="card-body">
+            <div class="dispatcher-metric-top">
 
-                    <h6 class="text-muted">
-                        Available Drivers
-                    </h6>
+                <span class="dispatcher-metric-label">
+                    Available Drivers
+                </span>
 
-                    <h2 class="fw-bold mt-2">
-                        @Model.AvailableDriversCount
-                    </h2>
+                <span class="dispatcher-metric-number">
+                    @Model.AvailableDriversCount
+                </span>
 
-                </div>
+            </div>
+
+            <div class="dispatcher-metric-footer">
+
+                <span>
+                    Drivers ready for assignment
+                </span>
 
             </div>
 
@@ -92,27 +128,34 @@
 
 
         <!-- Active Trips -->
-        <div class="col-md-6 col-lg-3">
 
-            <div class="card shadow-sm border-0 h-100">
+        <div class="dispatcher-metric-card">
 
-                <div class="card-body">
+            <div class="dispatcher-metric-top">
 
-                    <h6 class="text-muted">
-                        Active Trips
-                    </h6>
+                <span class="dispatcher-metric-label">
+                    Active Trips
+                </span>
 
-                    <h2 class="fw-bold mt-2">
-                        @Model.ActiveTripsCount
-                    </h2>
+                <span class="dispatcher-metric-number">
+                    @Model.ActiveTripsCount
+                </span>
 
-                    <a asp-controller="Dispatcher"
-                       asp-action="ActiveTrips"
-                       class="btn btn-sm btn-outline-primary mt-2">
-                        View Active Trips
-                    </a>
+            </div>
 
-                </div>
+            <div class="dispatcher-metric-footer">
+
+                <span>
+                    Trips currently in progress
+                </span>
+
+                <a asp-controller="Dispatcher"
+                   asp-action="ActiveTrips"
+                   class="dispatcher-card-link">
+
+                    View Active Trips
+
+                </a>
 
             </div>
 
@@ -121,37 +164,80 @@
     </div>
 
 
-    <!-- Recent Pending Requests -->
-    <div class="card shadow-sm border-0">
+    <!-- =========================================================
+         RECENT PENDING REQUESTS
+         ========================================================= -->
 
-        <div class="card-header bg-white">
+    <div class="dispatcher-requests-card">
 
-            <h5 class="mb-0 fw-bold">
-                Recent Pending Requests
-            </h5>
+        <div class="dispatcher-requests-header">
+
+            <div>
+
+                <p class="dispatcher-section-label">
+                    Reservations
+                </p>
+
+                <h2>
+                    Recent Pending Requests
+                </h2>
+
+                <p>
+                    Review the latest reservation requests awaiting dispatcher action.
+                </p>
+
+            </div>
+
+            <div class="dispatcher-request-count">
+
+                @Model.PendingRequestsCount
+                <span>
+                    pending
+                </span>
+
+            </div>
 
         </div>
 
 
-        <div class="card-body">
+        <div class="dispatcher-requests-body">
 
             @if (Model.RecentPendingRequests != null &&
                  Model.RecentPendingRequests.Any())
             {
-                <div class="table-responsive">
 
-                    <table class="table table-hover align-middle">
+                <div class="dispatcher-table-wrapper">
+
+                    <table class="dispatcher-table">
 
                         <thead>
 
                             <tr>
-                                <th>ID</th>
-                                <th>Requester</th>
-                                <th>Vehicle</th>
-                                <th>Origin</th>
-                                <th>Destination</th>
-                                <th>Start</th>
-                                <th>Action</th>
+
+                                <th>
+                                    ID
+                                </th>
+
+                                <th>
+                                    Requester
+                                </th>
+
+                                <th>
+                                    Vehicle
+                                </th>
+
+                                <th>
+                                    Route
+                                </th>
+
+                                <th>
+                                    Start
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
                             </tr>
 
                         </thead>
@@ -161,52 +247,110 @@
 
                             @foreach (var reservation in Model.RecentPendingRequests)
                             {
+
                                 <tr>
 
+                                    <!-- ID -->
+
                                     <td>
-                                        #@reservation.ReservationId
+
+                                        <span class="reservation-id">
+                                            #@reservation.ReservationId
+                                        </span>
+
                                     </td>
 
 
+                                    <!-- Requester -->
+
                                     <td>
-                                        @reservation.User?.Name
+
+                                        <div class="requester-cell">
+
+                                            <span class="requester-name">
+                                                @reservation.User?.Name
+                                            </span>
+
+                                        </div>
+
                                     </td>
 
 
+                                    <!-- Vehicle -->
+
                                     <td>
-                                        @reservation.Vehicle?.Brand
-                                        @reservation.Vehicle?.Model
+
+                                        <div class="vehicle-cell">
+
+                                            <strong>
+                                                @reservation.Vehicle?.Brand
+                                                @reservation.Vehicle?.Model
+                                            </strong>
+
+                                        </div>
+
                                     </td>
 
 
+                                    <!-- Route -->
+
                                     <td>
-                                        @reservation.Origin
+
+                                        <div class="route-cell">
+
+                                            <span>
+                                                @reservation.Origin
+                                            </span>
+
+                                            <span class="route-arrow">
+                                                →
+                                            </span>
+
+                                            <span>
+                                                @reservation.Destination
+                                            </span>
+
+                                        </div>
+
                                     </td>
 
 
+                                    <!-- Start -->
+
                                     <td>
-                                        @reservation.Destination
+
+                                        <div class="start-cell">
+
+                                            <strong>
+                                                @reservation.StartDateTime.ToString("dd/MM/yyyy")
+                                            </strong>
+
+                                            <span>
+                                                @reservation.StartDateTime.ToString("HH:mm")
+                                            </span>
+
+                                        </div>
+
                                     </td>
 
 
-                                    <td>
-                                        @reservation.StartDateTime
-                                            .ToString("dd/MM/yyyy HH:mm")
-                                    </td>
-
+                                    <!-- Action -->
 
                                     <td>
 
                                         <a asp-controller="Dispatcher"
                                            asp-action="Details"
                                            asp-route-id="@reservation.ReservationId"
-                                           class="btn btn-sm btn-outline-primary">
+                                           class="dispatcher-view-btn">
+
                                             View
+
                                         </a>
 
                                     </td>
 
                                 </tr>
+
                             }
 
                         </tbody>
@@ -214,16 +358,31 @@
                     </table>
 
                 </div>
+
             }
             else
             {
-                <div class="text-center py-4">
 
-                    <p class="text-muted mb-0">
-                        No pending requests at the moment.
+                <div class="dispatcher-empty-state">
+
+                    <div class="dispatcher-empty-icon">
+
+                        <span>
+                            —
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        No Pending Requests
+                    </h3>
+
+                    <p>
+                        There are currently no reservation requests waiting for approval.
                     </p>
 
                 </div>
+
             }
 
         </div>
