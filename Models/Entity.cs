@@ -187,7 +187,7 @@ namespace BUA_project.Models
             // option(dbms)
 
             optionsBuilder.UseSqlServer(
-                "Server=.;Database=BUA_ProjectDB;Trusted_Connection=True;TrustServerCertificate=True;");
+                "workstation id=BUA_Fleet.mssql.somee.com;packet size=4096;user id=Men3m_SQLLogin_1;pwd=9nd3assplc;data source=BUA_Fleet.mssql.somee.com;persist security info=False;initial catalog=BUA_Fleet;TrustServerCertificate=True");
 
             base.OnConfiguring(optionsBuilder);
         }
